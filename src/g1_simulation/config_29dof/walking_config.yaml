@@ -1,0 +1,85 @@
+
+controller: "qpm"
+
+
+
+pose_command: 
+  dt_lowpass: 0.0005
+  velX_dt_cutoff: 2 
+  velY_dt_cutoff: 1
+  vx_offset: 0.0
+  vy_offset: 0.0
+  TSS: 0.3
+  TDS: 0.0
+  znom: 0.65
+  zsw_max: 0.1
+  zsw_neg: -0.01
+  stepWidthNominal: 0.2
+  bezierSwingHorizontal: [0, 0, 1, 1, 1]
+  bezierComVertical: [0, 0, 0, 1, 1, 1]
+  maxStepSize: 1.
+  velXmax: 1
+  velYmax: 0.5
+
+
+friction:  
+  frictionCoef: 1
+  Lfront: 0.085
+  Lback: 0.085
+  W: 0.025
+  Fz_lb: 100.
+  Rot_frictionCoef: 1
+
+  
+
+
+qp:
+  ifprintQP: true
+
+  # #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
+  OutputKP: [150,  300,  400,  400,  300, 300,500,  300,     800,    400]
+  OutputKD: [10,    10,    8,   8,     8,   8 , 3,   10,      20,      3]
+  # #multidomain
+  # #zCOM stHipYaw basePitch baseRoll StPitch swx swy swz swHipYaw SwPitch SwRoll
+  # # OutputKP: [ 150, 450, 500, 500, 600, 500, 500,  500, 450, 600, 900]   
+  # # OutputKD: [  15,    5,  5,  5,   10,  5,   5,   5,   5,   10,    10]
+  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
+  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
+
+
+qpm:
+  AngKD: [10,10, 10]
+  AngKP: [100, 100, 100]
+  LinKP: [10, 10, 10]
+  LinKD: [1, 1, 1]  
+  # AngKD: [10, 10, 10]
+  # LinKP: [10, 10, 10]
+  # LinKD: [1, 1, 1]  
+  # AngKD: [0, 0, 0]
+  # LinKP: [0, 0, 0]
+  # LinKD: [0, 0, 0]
+
+id:
+#the ID gain works reasonably well, use it as baseline for tuning
+  threshold: 0.000001
+  OutputKP: [150, 400, 400,400, 300, 300,300, 400,200,200]
+  OutputKD: [2,5,8,8,3,3,3,5,3,3]
+  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
+  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
+
+
+posik:
+  tol: 0.0001
+  max_iter: 1000
+  #HipPitch HipRoll HipYaw KneePitch AnklePitch AnkleRoll
+  JointKP: [200, 200, 150, 150, 150, 150]
+  JointKD: [10,10,10,10,10,10]
+
+
+velik:
+  #for each leg
+  JointKP: [200, 200, 200, 200, 100, 100]
+  #for each leg
+  JointKD: [3,3,3,3,3,3] 
+  ik_gain: [1, 1, 1, 1, 1, 1,1,1,1,1]
+

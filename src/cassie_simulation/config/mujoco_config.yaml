@@ -1,0 +1,19 @@
+robot_name: "cassie"          # The name of the robot
+
+
+mujoco_settings:
+  # model_name: "/model_files/xml/cassieRigidMultiDomain.xml" 
+  model_name: "xml/cassieRigid.xml"
+
+
+video_settings:                  # Video recording settings
+  record_video: yes             # Enable or disable video recording
+  video_width: 2500              # Video resolution width (pixels)
+  video_height: 2000             # Video resolution height (pixels)
+  video_fps: 50                  # Frames per second for video
+  video_name: "cassievideo.mp4"         # Output video file name
+
+
+
+urdf_name: "urdf/cassieRigid_new.urdf"
+locked_joints_names:

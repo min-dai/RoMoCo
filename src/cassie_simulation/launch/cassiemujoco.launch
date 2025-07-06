@@ -1,0 +1,5 @@
+<!-- launch g1_sim_main_node -->
+<launch>
+  <node pkg="cassie_simulation" type="cassie_state_machine" name="state_machine" output="screen"/>
+  <node pkg="biped_command" type="fake_radio_node" name="fake_radio_node" output="screen"/>
+</launch>

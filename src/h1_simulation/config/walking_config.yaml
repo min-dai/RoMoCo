@@ -1,0 +1,69 @@
+
+controller: "qp"
+
+
+
+pose_command: 
+  dt_lowpass: 0.0005
+  velX_dt_cutoff: 0.01
+  velY_dt_cutoff: 0.01
+  vx_offset: 0.0
+  vy_offset: 0.0
+  TSS: 0.3
+  TDS: 0.0
+  znom: 0.8
+  zsw_max: 0.1
+  zsw_neg: -0.02
+  stepWidthNominal: 0.25
+  bezierSwingHorizontal: [0, 0, 1, 1, 1]
+  bezierComVertical: [0, 0, 0, 1, 1, 1]
+  maxStepSize: 1.0
+  velXmax: 1.0
+  velYmax: 0.5
+
+
+friction:  
+  frictionCoef: 1
+  Lfront: 0.085
+  Lback: 0.085
+  W: 0.025
+  Fz_lb: 100.
+  Rot_frictionCoef: 0.046
+
+  
+#only id works for multidomain
+
+
+qp:
+  ifprintQP: true
+  #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
+  # OutputKP: [ 150, 450, 400, 400, 500, 500,  500, 450, 600, 600]   
+  # OutputKD: [  15,    5,  5,  5,    5,   5,   5,   5,   10,    5]
+  OutputKP: [150, 400, 400,400,300, 300,300, 400,200,200]
+  OutputKD: [2,5,8,8,3,3,3,5,3,3]
+
+id:
+  threshold: 0.000001
+  OutputKP: [150, 400, 400,400, 300, 300,300, 400,200,200]
+  OutputKD: [2,5,8,8,3,3,3,5,3,3]
+  # #multidomain
+  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
+  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
+
+
+
+posik:
+  tol: 0.0001
+  max_iter: 1000
+  #HipPitch HipRoll HipYaw KneePitch AnklePitch AnkleRoll
+  JointKP: [200, 200, 150, 150, 150, 150]
+  JointKD: [10,10,10,10,10,10]
+
+
+velik:
+  #for each leg
+  JointKP: [200, 200, 200, 200, 100, 100]
+  #for each leg
+  JointKD: [3,3,3,3,3,3] 
+  ik_gain: [1, 1, 1, 1, 1, 1,1,1,1,1]
+

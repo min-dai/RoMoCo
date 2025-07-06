@@ -1,0 +1,7 @@
+<!-- launch h1_sim_main_node -->
+<launch>
+  <!-- <node pkg="h1_simulation" type="h1_sim_main_node" name="h1_sim_main_node" output="screen"/> -->
+  <node pkg="h1_simulation" type="h1_state_machine" name="h1_state_machine" output="screen"/>
+  <!-- <node pkg="h1_simulation" type="test_node" name="test_node" output="screen"/> -->
+  <!-- <node pkg="biped_command" type="fake_radio_node" name="fake_radio_node" output="screen"/> -->
+</launch>

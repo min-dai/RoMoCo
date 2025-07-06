@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<robot name="box">
+  <link name="box">
+    <inertial>
+      <mass value="1"/>
+      <!-- Inertia values were calculated to be consistent with the mass and
+           geometry size, assuming a uniform density. -->
+      <inertia ixx="0.0108" ixy="0" ixz="0" iyy="0.0083" iyz="0" izz="0.0042"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size=".2 10 .1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size=".2 1 .1"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <slip1 = "0"/>
+            <slip2 = "0"/>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <gazebo reference="box">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+</robot>

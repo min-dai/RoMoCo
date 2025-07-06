@@ -1,0 +1,54 @@
+# qp, id, velik
+controller: "qp"
+
+
+
+pose_command: 
+  dt_lowpass: 0.001
+  yd_lowpass_dt_cutoff: [.5, .5, .25, .5, .5, .5]
+  stand2step_y_offset: 0.04
+  x_offset: 0
+  x_range: 0.05
+  y_range: 0.05
+  z_lb: .65
+  z_ub: .95
+  pitch_range: 0.1
+  roll_range: 0.1
+  yaw_range: 0.3
+
+
+qp:
+  ifprintQP: false
+  # OutputKP: [150, 150, 150, 120, 120, 120]
+  # OutputKD: [3,3,3,3,3,3]
+  OutputKP: [200,200,200,50,50,50]
+  OutputKD: [5,5,5,1,1,1]
+
+id:
+  threshold: 0.00000001
+  # OutputKP: [300, 300, 250, 250, 100, 100]
+  # OutputKD: [5,5,5,5,5,5]
+  OutputKP: [10,10,10,10,10,10]
+  OutputKD: [0.1,0.1,0.1,0.1,0.1,0.1]
+
+velik:
+  #for each leg
+  JointKP: [150, 150, 150, 150, 150]
+  #for each leg
+  JointKD: [2,2,2,2,2]
+  ik_gain: [1, 1, 1, 1, 1, 1]
+  
+friction:  
+  frictionCoef: 1
+  Lfront: 0.1
+  Lback: 0.06
+  W: 0
+  Fz_lb: 100.
+  Rot_frictionCoef: 0.046
+
+
+posik:
+  tol: 0.0001
+  max_iter: 1000
+  JointKP: [150, 150, 150, 150, 150]
+  JointKD: [2,2,2,2,2]

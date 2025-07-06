@@ -1,0 +1,453 @@
+<?xml version="1.0" ?>
+<!-- Cassie V4 Model Description                                                           -->
+<!-- Author: Jenna Reher (jreher@caltech.edu)                                              -->
+<!-- This URDF is up to date with Agility Robotics specifications as of 03/20/2018.        -->
+<!-- Reference: https://github.com/agilityrobotics/agility-cassie-doc/wiki/Kinematic-Model -->
+<robot name ="cassie_v4">
+	<!-- Robot Link Definitions -->
+	<!--     22 linkages        -->
+	<link name="pelvis">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.05066 0.000346 0.02841"/>
+      		<mass value="10.33"/>
+      		<inertia ixx="0.0942" ixy="0.000169" ixz="0.015" iyy="0.084" iyz="0.000516" izz="0.113"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/cassie-pelvis.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="lefthiproll">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.01793 0.0001 0.0257"/>
+      		<mass value="1.965608"/>
+      		<inertia ixx="0.00464" ixy="0" ixz="0" iyy="0.00559" iyz="0" izz="0.00272"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/LeftHipRoll.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="lefthipyaw">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0.0557"/>
+			<mass value="1.316608"/>
+			<inertia ixx="0.00644" ixy="0" ixz="0" iyy="0.00608" iyz="0" izz="0.000842"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/LeftHipYaw.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="lefthippitch">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.05946 5e-05 -0.03581"/>
+			<mass value="5.79228"/>
+			<inertia ixx="0.018" ixy="0" ixz="-0.0117" iyy="0.0563" iyz="0" izz="0.0498"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/LeftHipPitch.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="leftknee">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.045862 0.0412393 -0.0016676"/>
+			<mass value="1.03008"/>
+			<inertia ixx="0.00264784327347" ixy="0" ixz="0" iyy="0.00534853175914" iyz="0" izz="0.00764061083179"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-knee.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="leftshin">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.18338 0.001169 0.0002123"/>
+			<mass value="0.763"/>
+			<inertia ixx="0.00036" ixy="0.000334" ixz="0" iyy="0.0341" iyz="0" izz="0.0341"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-shin.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="lefttarsus">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.121147466 -0.02258861359 0.00325857427"/>
+			<mass value="1.03"/>
+			<inertia ixx="0.00210029904934" ixy="-0.00254635550557" ixz="0" iyy="0.0255394864105" iyz="0" izz="0.0268199407448"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-tarsus.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+    <link name="leftheelspring">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.081 0.0022 0"/>
+			<mass value="0.126"/>
+			<inertia ixx="3.02e-05" ixy="0" ixz="0" iyy="0.00105" iyz="0" izz="0.00103"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-heel-spring.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="leftfoot">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.00474 0.02748 -0.00014"/>
+			<mass value="0.1498"/>
+			<inertia ixx="0.000287" ixy="0" ixz="0" iyy="0.000171" iyz="0" izz="0.000449"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-foot.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="righthiproll">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.01793 -0.0001 0.0257"/>
+      		<mass value="1.965608"/>
+      		<inertia ixx="0.00464" ixy="0" ixz="0" iyy="0.00559" iyz="0" izz="0.00272"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/RightHipRoll.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="righthipyaw">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0.0557"/>
+			<mass value="1.316608"/>
+			<inertia ixx="0.00644" ixy="0" ixz="0" iyy="0.00608" iyz="0" izz="0.000842"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/RightHipYaw.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="righthippitch">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.05946 5e-05 0.03581"/>
+			<mass value="5.79228"/>
+			<inertia ixx="0.018" ixy="0" ixz="0.0117" iyy="0.0563" iyz="0" izz="0.0498"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/RightHipPitch.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="rightknee">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.045862 0.0412393 0.0016676"/>
+			<mass value="1.03008"/>
+			<inertia ixx="0.00264784327347" ixy="0" ixz="0" iyy="0.00534853175914" iyz="0" izz="0.00764061083179"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/right-knee.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="rightshin">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.18338 0.001169 -0.0002123"/>
+			<mass value="0.763"/>
+			<inertia ixx="0.00036" ixy="0.000334" ixz="0" iyy="0.0341" iyz="0" izz="0.0341"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/right-shin.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="righttarsus">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.121147466 -0.02258861359 -0.00325857427"/>
+			<mass value="1.03"/>
+			<inertia ixx="0.00210029904934" ixy="-0.00254635550557" ixz="0" iyy="0.0255394864105" iyz="0" izz="0.0268199407448"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/right-tarsus.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+    <link name="rightheelspring">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.081 0.0022 0"/>
+			<mass value="0.126"/>
+			<inertia ixx="3.02e-05" ixy="0" ixz="0" iyy="0.00105" iyz="0" izz="0.00103"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/left-heel-spring.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	<link name="rightfoot">	
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.00474 0.02748 0.00014"/>
+			<mass value="0.1498"/>
+			<inertia ixx="0.000287" ixy="0" ixz="0" iyy="0.000171" iyz="0" izz="0.000449"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<mesh filename="package://cassie_description/meshes/right-foot.stl" scale="1 1 1"/>
+			</geometry>
+			<material name="">
+				<color rgba="1.0 0.45 0.15 1"/>
+			</material>
+		</visual>
+	</link>
+	
+
+	<!-- Robot Joint Definitions -->
+	<!--                         -->
+	<joint name="LeftHipRoll" type="revolute">
+		<origin rpy="0 1.570796326794897 0" xyz="-0.049 0.135 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="pelvis"/>
+		<child link="lefthiproll"/>
+		<limit effort="4.5" lower="-0.3927" upper="0.3927" velocity="12.15"/>
+	</joint>
+	<joint name="LeftHipYaw" type="revolute">
+		<origin rpy="0 -1.570796326794897 0" xyz="0.09 0 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="lefthiproll"/>
+		<child link="lefthipyaw"/>
+		<limit effort="4.5" lower="-0.3927" upper="0.3927" velocity="12.15"/>
+	</joint>
+	<joint name="LeftHipPitch" type="revolute">
+		<origin rpy="1.57079632679 1.57079632679 0.0" xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="lefthipyaw"/>
+		<child link="lefthippitch"/>
+		<limit effort="12.2" lower="-0.8727" upper="1.3963" velocity="8.5"/>
+	</joint>
+	<joint name="LeftKneePitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.12 0 0.0045"/>
+		<axis xyz="0 0 1"/>
+		<parent link="lefthippitch"/>
+		<child link="leftknee"/>
+		<limit effort="12.2" lower="-2.8623" upper="-0.95" velocity="8.5"/>
+	</joint>
+	<joint name="LeftShinPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.06068 0.04741 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="leftknee"/>
+		<child link="leftshin"/>
+		<limit effort="0" lower="-0.3" upper="0.3" velocity="20"/>
+	</joint>
+	<joint name="LeftTarsusPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.43476 0.020 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="leftshin"/>
+		<child link="lefttarsus"/>
+		<limit effort="0" lower="0.75" upper="3.0" velocity="20"/>
+	</joint>
+        <joint name="LeftAchillesSpring" type="revolute">
+		<origin rpy="-0.0689428 -0.036956 2.7207121" xyz="-0.01269 -0.03059 0.00092"/>
+		<axis xyz="0 0 1"/>
+		<parent link="lefttarsus"/>
+		<child link="leftheelspring"/>
+		<limit effort="0" lower="-0.3" upper="0.3" velocity="20"/>
+	</joint>
+	<joint name="LeftFootPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.408 -0.040 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="lefttarsus"/>
+		<child link="leftfoot"/>
+		<limit effort="0.9" lower="-2.4435" upper="-0.5236" velocity="11.52"/>
+	</joint>
+	<joint name="RightHipRoll" type="revolute">
+		<origin rpy="0 1.570796326794897 0" xyz="-0.049 -0.135 0.0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="pelvis"/>
+		<child link="righthiproll"/>
+		<limit effort="4.5" lower="-0.3927" upper="0.3927" velocity="12.15"/>
+	</joint>
+	<joint name="RightHipYaw" type="revolute">
+		<origin rpy="0 -1.570796326794897 0" xyz="0.09 0 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="righthiproll"/>
+		<child link="righthipyaw"/>
+		<limit effort="4.5" lower="-0.3927" upper="0.3927" velocity="12.15"/>
+	</joint>
+	<joint name="RightHipPitch" type="revolute">
+		<origin rpy="1.57079632679 1.57079632679 0.0" xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="righthipyaw"/>
+		<child link="righthippitch"/>
+		<limit effort="12.2" lower="-0.8727" upper="1.3963" velocity="8.5"/>
+	</joint>
+	<joint name="RightKneePitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.12 0 -0.0045"/>
+		<axis xyz="0 0 1"/>
+		<parent link="righthippitch"/>
+		<child link="rightknee"/>
+		<limit effort="12.2" lower="-2.8623" upper="-0.95" velocity="8.5"/>
+	</joint>
+	<joint name="RightShinPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.06068 0.04741 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="rightknee"/>
+		<child link="rightshin"/>
+		<limit effort="0" lower="-0.3" upper="0.3" velocity="20"/>
+	</joint>
+	<joint name="RightTarsusPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.43476 0.020 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="rightshin"/>
+		<child link="righttarsus"/>
+		<limit effort="0" lower="0.75" upper="3.0" velocity="20"/>
+	</joint>
+        <joint name="RightAchillesSpring" type="revolute">
+		<origin rpy="0.0689428 0.036956 2.7207121" xyz="-0.01269 -0.03059 -0.00092"/>
+		<axis xyz="0 0 1"/>
+		<parent link="righttarsus"/>
+		<child link="rightheelspring"/>
+		<limit effort="0" lower="-0.3" upper="0.3" velocity="20"/>
+	</joint>
+	<joint name="RightFootPitch" type="revolute">
+		<origin rpy="0 0 0" xyz="0.408 -0.040 0"/>
+		<axis xyz="0 0 1"/>
+		<parent link="righttarsus"/>
+		<child link="rightfoot"/>
+		<limit effort="0.9" lower="-2.4435" upper="-0.5236" velocity="11.52"/>
+	</joint>
+
+	<!-- Robot Transmission Definitions -->
+	<!--                                -->
+	<transmission name="LeftHipRollTransmission">
+            <joint name="LeftHipRoll"/>
+            <actuator>
+                    <mechanicalReduction>25</mechanicalReduction>
+                    <motorInertia>6.1e-05</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="LeftHipYawTransmission">
+            <joint name="LeftHipYaw"/>
+            <actuator>
+                    <mechanicalReduction>25</mechanicalReduction>
+                    <motorInertia>6.1e-05</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="LeftHipPitchTransmission">
+            <joint name="LeftHipPitch"/>
+            <actuator>
+                    <mechanicalReduction>16</mechanicalReduction>
+                    <motorInertia>0.000365</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="LeftKneePitchTransmission">
+            <joint name="LeftKneePitch"/>
+            <actuator>
+                    <mechanicalReduction>16</mechanicalReduction>
+                    <motorInertia>0.000365</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="LeftFootPitchTransmission">
+            <joint name="LeftFootPitch"/>
+            <actuator>
+                    <mechanicalReduction>50</mechanicalReduction>
+                    <motorInertia>4.9e-06</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="RightHipRollTransmission">
+            <joint name="RightHipRoll"/>
+            <actuator>
+                    <mechanicalReduction>25</mechanicalReduction>
+                    <motorInertia>6.1e-05</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="RightHipYawTransmission">
+            <joint name="RightHipYaw"/>
+            <actuator>
+                    <mechanicalReduction>25</mechanicalReduction>
+                    <motorInertia>6.1e-05</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="RightHipPitchTransmission">
+            <joint name="RightHipPitch"/>
+            <actuator>
+                    <mechanicalReduction>16</mechanicalReduction>
+                    <motorInertia>0.000365</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="RightKneePitchTransmission">
+            <joint name="RightKneePitch"/>
+            <actuator>
+                    <mechanicalReduction>16</mechanicalReduction>
+                    <motorInertia>0.000365</motorInertia>
+            </actuator>
+  	</transmission>
+  	<transmission name="RightFootPitchTransmission">
+            <joint name="RightFootPitch"/>
+            <actuator>
+                    <mechanicalReduction>50</mechanicalReduction>
+                    <motorInertia>4.9e-06</motorInertia>
+            </actuator>
+  	</transmission>
+</robot>

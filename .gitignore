@@ -1,0 +1,58 @@
+# Build and development directories
+build/
+devel/
+logs/
+msg_gen/
+srv_gen/
+build_isolated/
+devel_isolated/
+
+# Catkin tools
+.catkin_tools/
+.catkin_workspace
+CATKIN_IGNORE
+
+# Dynamic reconfigure generated files
+*.cfgc
+/cfg/cpp/
+/cfg/*.py
+
+# Auto-generated files and scripts
+srv/_*.py
+
+# Generated documentation
+*.dox
+*.wikidoc
+/planning/docs
+
+# IDE and editor files
+.project        # Eclipse
+.cproject       # Eclipse
+CMakeLists.txt.user  # QtCreator
+qtcreator-*     # QtCreator
+*.user          # Generic IDE files
+
+# Temporary and backup files
+*~
+*.asv
+
+# Python files
+__pycache__/
+*.py[cod]
+
+# Media files
+*.avi
+*.mp4
+*.jpg
+*.png
+*.pcd
+
+# Emacs temporary files
+.#*
+
+#zip files
+*.zip
+
+# vscode files
+.vscode/
+

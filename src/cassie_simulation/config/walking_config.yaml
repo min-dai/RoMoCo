@@ -1,0 +1,67 @@
+# qp, id
+controller: "qp"
+
+
+
+pose_command: 
+  dt_lowpass: 0.0005
+  velX_dt_cutoff: 0.01
+  velY_dt_cutoff: 0.01
+  vx_offset: 0.0
+  vy_offset: 0.0
+  TSS: 0.3
+  TDS: 0.0
+  znom: 0.75
+  zsw_max: 0.2
+  zsw_neg: -0.01 #-0.01
+  stepWidthNominal: 0.3
+  bezierSwingHorizontal: [0, 0, 1, 1, 1]
+  bezierComVertical: [0, 0, 0, 1, 1, 1]
+  maxStepSize: 1.0
+  velXmax: 1.0
+  velYmax: 0.5
+
+
+friction:  
+  frictionCoef: 1
+  Lfront: 0.08
+  Lback: 0.08
+  W: 0
+  Fz_lb: 100.
+  Rot_frictionCoef: 0.046
+
+  
+
+
+qp:
+  ifprintQP: false
+  #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch 
+  OutputKP: [150, 200, 600,500, 300, 300,300, 200,200]
+  OutputKD: [2,5,8,8,3,3,3,5,3]
+  # #multidomain
+  # OutputKP: [150, 200, 600,500, 300,  300, 300,300, 200,200]
+  # OutputKD: [2,5,8,8,3, 3,3,3,5,3]
+
+
+id:
+  threshold: 0.000001
+  OutputKP: [150, 200, 600,500, 500, 300,300, 200,200]
+  OutputKD: [2,5,8,8,3,3,3,5,3]
+
+
+velik:
+  #for each leg
+  JointKP: [750, 750, 750, 750, 750]
+  #for each leg
+  JointKD: [2,2,2,2,2]
+  ik_gain: [1, 1, 1, 1, 1, 1,1,1,1]
+
+
+posik:
+  tol: 0.0001
+  max_iter: 1000
+  JointKP: [600., 100., 500., 1000., 100. ]
+  JointKD: [20., 10., 20., 20., 10. ]
+
+
+

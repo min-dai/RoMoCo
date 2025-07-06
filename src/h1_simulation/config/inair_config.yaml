@@ -1,0 +1,36 @@
+
+controller: "qp"
+
+
+
+pose_command: 
+  dt_lowpass: 0.005
+  yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
+  swingZ_lb: -0.7
+  swingZ_ub: -0.4
+  swingX_backward: -0.2
+  swingX_forward: 0.2
+  swingY_inner: 0.1
+  swingY_outer: 0.2
+  yaw_lb: -0.5
+  yaw_ub: 0.5
+  pitch_lb: -0.5
+  pitch_ub: 0.5
+  roll_lb: -0.5
+  roll_ub: 0.5
+
+
+qp:
+  ifprintQP: true
+  OutputKP: [ 300, 250, 300, 300, 300, 300,  300, 250, 300, 300, 300, 300]   
+  OutputKD: [ 10,   5,   10,  5,    5,   5,  10,   5,   10,    5,  5,   5]
+
+
+posik:
+  tol: 0.0001
+  max_iter: 1000
+  JointKP: [100., 100., 100., 100., 100., 100.]
+  JointKD: [3,3,3,3,3,3]
+
+
+

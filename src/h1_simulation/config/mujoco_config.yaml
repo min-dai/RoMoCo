@@ -1,0 +1,78 @@
+robot_name: "h1"          # The name of the robot
+
+
+mujoco_settings:
+  model_name: "h1_2.xml" 
+
+
+video_settings:                  # Video recording settings
+  record_video: false             # Enable or disable video recording
+  video_width: 2500              # Video resolution width (pixels)
+  video_height: 2000             # Video resolution height (pixels)
+  video_fps: 50                  # Frames per second for video, 25 is real-time
+  video_name: "h1video.mp4"         # Output video file name
+
+
+
+Kp_locked_joints: [700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700]
+Kd_locked_joints: [15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15 ]
+qdes_locked_joints: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+urdf_name: "h1_2.urdf"
+
+
+
+pinocchio_joints_names:
+  - left_hip_yaw_joint
+  - left_hip_pitch_joint
+  - left_hip_roll_joint
+  - left_knee_joint
+  - left_ankle_pitch_joint
+  - left_ankle_roll_joint
+  - right_hip_yaw_joint
+  - right_hip_pitch_joint
+  - right_hip_roll_joint
+  - right_knee_joint
+  - right_ankle_pitch_joint
+  - right_ankle_roll_joint
+
+locked_joints_names:
+  - torso_joint
+  - left_shoulder_pitch_joint
+  - left_shoulder_roll_joint
+  - left_shoulder_yaw_joint
+  - left_elbow_pitch_joint
+  - left_elbow_roll_joint
+  - left_wrist_pitch_joint
+  - left_wrist_yaw_joint
+  - L_thumb_proximal_yaw_joint
+  - L_thumb_proximal_pitch_joint
+  - L_thumb_intermediate_joint  
+  - L_thumb_distal_joint
+  - L_index_proximal_joint
+  - L_index_intermediate_joint
+  - L_middle_proximal_joint
+  - L_middle_intermediate_joint
+  - L_ring_proximal_joint
+  - L_ring_intermediate_joint
+  - L_pinky_proximal_joint
+  - L_pinky_intermediate_joint
+  - right_shoulder_pitch_joint
+  - right_shoulder_roll_joint 
+  - right_shoulder_yaw_joint
+  - right_elbow_pitch_joint
+  - right_elbow_roll_joint
+  - right_wrist_pitch_joint
+  - right_wrist_yaw_joint
+  - R_thumb_proximal_yaw_joint
+  - R_thumb_proximal_pitch_joint
+  - R_thumb_intermediate_joint
+  - R_thumb_distal_joint
+  - R_index_proximal_joint
+  - R_index_intermediate_joint
+  - R_middle_proximal_joint
+  - R_middle_intermediate_joint
+  - R_ring_proximal_joint
+  - R_ring_intermediate_joint
+  - R_pinky_proximal_joint
+  - R_pinky_intermediate_joint
+
