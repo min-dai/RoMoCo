@@ -22,7 +22,7 @@ namespace bezier_tools
     double factorial(int n);
     double nchoosek(int n, int k);
 
-    Eigen::MatrixXd A_bezier(const Eigen::VectorXd &coeff, double s, double sdot);
+    Eigen::MatrixXd A_bezier(const Eigen::VectorXd &coeff, double s);
     Eigen::MatrixXd dA_bezier(const Eigen::VectorXd &coeff, double s, double sdot);
     Eigen::MatrixXd d2A_bezier(const Eigen::VectorXd &coeff, double s, double sdot);
 

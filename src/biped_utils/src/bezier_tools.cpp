@@ -111,7 +111,7 @@ namespace bezier_tools
         return out;
     }
 
-    Eigen::MatrixXd A_bezier(const Eigen::VectorXd &coeff, double s, double sdot)
+    Eigen::MatrixXd A_bezier(const Eigen::VectorXd &coeff, double s)
     {
         Eigen::MatrixXd A;
         int ncoeff = coeff.size();

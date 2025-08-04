@@ -61,7 +61,7 @@ TEST(BezierToolsTest, AandDerivatives)
 
    double s = 0.5, sdot = 1.0;
 
-   Eigen::MatrixXd A = A_bezier(coeff, s, sdot);
+   Eigen::MatrixXd A = A_bezier(coeff, s);
    Eigen::MatrixXd dA = dA_bezier(coeff, s, sdot);
    Eigen::MatrixXd d2A = d2A_bezier(coeff, s, sdot);
 

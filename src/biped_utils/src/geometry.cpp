@@ -35,7 +35,7 @@ Eigen::EulerAnglesZYXd eulerZYX(const Eigen::Matrix3d &R)
     int k = 2;
 
     double cySq = R(i, i) * R(i, i) + R(j, i) * R(j, i);
-    bool singular = cySq < 1e-15;
+    // bool singular = cySq < 1e-15;
     double cy = sqrt(cySq);
 
     euler.alpha() = atan2(R(j, i), R(i, i));
@@ -69,17 +69,13 @@ Eigen::EulerAnglesXYZd eulerXYZ(const Eigen::Quaterniond &q)
 Eigen::EulerAnglesXYZd eulerXYZ(const Eigen::Matrix3d &R)
 {
     Eigen::EulerAnglesXYZd euler;
-    double y1, y2, x1, x2, z1, z2, x, y, z;
+    double y1, x1,  z1, x, y, z;
     if (abs(abs(R(2, 0)) - 1.0) > 0.00000001)
     {
         y1 = -asin(R(2, 0));
-        // y2 = 3.14159265359 - y1;
-
         x1 = atan2(R(2, 1) / cos(y1), R(2, 2) / cos(y1));
-        // x2 = atan2(R(2,1)/cos(y2), R(2,2)/cos(y2));
-
         z1 = atan2(R(1, 0) / cos(y1), R(0, 0) / cos(y1));
-        // z2 = atan2(R(1,0)/cos(y2), R(0,0)/cos(y2));
+
 
         euler.alpha() = x1;
         euler.beta() = y1;
