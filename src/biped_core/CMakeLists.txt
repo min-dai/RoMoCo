@@ -26,7 +26,6 @@ set(dependencies
 
 set(include_dirs
   ${EIGEN3_INCLUDE_DIR}
-  # ${PINOCCHIO_INCLUDE_DIRS}
 )
 
 

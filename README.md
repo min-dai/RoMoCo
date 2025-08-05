@@ -42,13 +42,25 @@ It provides modular components for planning, control, and simulation interfaces,
 Robots: G1, Cassie, H1, more to come  
 
 ## Build & Run
-Tested with ROS Noetic and Ubuntu 20.04. 
+Tested with ROS2 Humble and Ubuntu 22.04. 
+
+### Run from Docker
+```
+./docker/build.sh
+./docker/run.sh
+```
+
+```
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+. install/setup.bash
+```
+
 
 ### Build
-Install the dependencies listed below then clone the repository and build it using `catkin_make` or `catkin build`.
+Install the dependencies listed below then clone the repository and build it using `colcon build`.
 
 ### Run Tests
-To run tests, `catkin build [package_name] --make-args tests`
+To run tests, `colcon test`
 
 ### Launch
 Source the workspace `source devel/setup.bash` and run the example launch files in g1_simulation, cassie_simulation, or h1_simulation (no tuning, walking is very rough) packages. The controllers included are not extensively tuned, but they should work for basic walking.

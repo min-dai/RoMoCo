@@ -20,7 +20,7 @@ find_package(biped_core REQUIRED)
 
 
 set(clarabel_LIB $ENV{HOME}/repos/Clarabel.cpp/rust_wrapper/target/release/libclarabel_c.so)
-set(clarabel_INCLUDE_DIR $ENV{HOME}/repos/Clarabel.cpp/include/) 
+set(clarabel_INCLUDE_DIR $ENV{HOME}/repos/Clarabel.cpp/include) 
 
 set(dependencies 
   rclcpp
@@ -31,6 +31,7 @@ set(include_dirs
   ${EIGEN3_INCLUDE_DIR}
   ${clarabel_INCLUDE_DIR}
 )
+
 
 # Library target
 add_library(${PROJECT_NAME}

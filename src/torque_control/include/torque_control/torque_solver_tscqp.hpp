@@ -2,7 +2,7 @@
 #define TORQUE_SOLVER_TSCQP_HPP
 
 #include "torque_control/torque_solver_base.hpp"
-#include <Clarabel>
+#include <clarabel.hpp>
 
 
 
