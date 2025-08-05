@@ -1,3 +1,7 @@
+#include <rclcpp/rclcpp.hpp>
+#include "ament_index_cpp/get_package_share_directory.hpp"
+
+
 #include "biped_state_machine/basic_state_machine.hpp"
 
 #include "h1_model_leg.hpp"
@@ -13,21 +17,19 @@
 
 //need to set up sim
 #include "h1_mujoco_sim.hpp"
-#include <ros/package.h>
+
 
 
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "h1_mujoco_node");
-    ros::NodeHandle nh;
-    // ros::Subscriber sub = nh.subscribe("radio_slider_values", 10, sliderCallback);
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<RadioSubscriber>("h1_sim_node");
 
-    RadioSubscriber radio_subscriber(nh, "radio_slider_values");
 
     std::string home = std::string(getenv("HOME"));
 
-    std::string package_folder = ros::package::getPath("h1_simulation");
+    std::string package_folder = ament_index_cpp::get_package_share_directory("h1_simulation");
     std::string config_folder = package_folder + "/config";
     std::string log_path = home + "/ROBOTLOG/H1";
 
@@ -59,12 +61,13 @@ int main(int argc, char *argv[])
     double t_sim = 0.0;
 
 
-    while (ros::ok())
+    while (rclcpp::ok())
     {
-        ros::spinOnce();
+        rclcpp::spin_some(node);
 
-        int mode_command = radio_subscriber.mode_command();
-        VectorXd fake_radio = radio_subscriber.fake_radio();
+
+        int mode_command = node->mode_command();
+        VectorXd fake_radio = node->fake_radio();
 
         t_sim = state_machine.Update(mode_command, fake_radio, robot_ptr, output, torque_solver, getLegModel, getUpper);
 
@@ -72,7 +75,8 @@ int main(int argc, char *argv[])
 
     state_machine.Close();
 
-      return 0;
+    rclcpp::shutdown();
+    return 0;
 }
 
 

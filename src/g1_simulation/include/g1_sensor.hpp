@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef G1_SIMULATION_INCLUDE_G1_SENSOR_HPP
+#define G1_SIMULATION_INCLUDE_G1_SENSOR_HPP
 
 
 #include <Eigen/Dense>
@@ -28,3 +28,4 @@ struct g1_sensor
 
 void getAllJointStateFromSensorMujoco(const g1_sensor &sensor, Eigen::VectorXd &q, Eigen::VectorXd &qdot);
 
+#endif // G1_SIMULATION_INCLUDE_G1_SENSOR_HPP

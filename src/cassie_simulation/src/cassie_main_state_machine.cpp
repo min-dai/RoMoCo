@@ -1,3 +1,6 @@
+#include <rclcpp/rclcpp.hpp>
+#include "ament_index_cpp/get_package_share_directory.hpp"
+
 #include "biped_state_machine/basic_state_machine.hpp"
 
 #include "cassie_model.hpp"
@@ -8,22 +11,21 @@
 #include "biped_command/radio_subscriber.hpp"
 
 #include <cstdlib> // For getenv()
-#include <ros/package.h>
+
 
 // need to set up sim
 #include "cassie_mujoco_sim.hpp"
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "cassie_mujoco_node");
-    ros::NodeHandle nh;
-    // ros::Subscriber sub = nh.subscribe("radio_slider_values", 10, sliderCallback);
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<RadioSubscriber>("cassie_sim_node");
 
-    RadioSubscriber radio_subscriber(nh, "radio_slider_values");
 
     std::string home = std::string(getenv("HOME"));
 
-    std::string package_folder = ros::package::getPath("cassie_simulation");
+    std::string package_folder = ament_index_cpp::get_package_share_directory("cassie_simulation");
+    
     std::string config_folder = package_folder + "/config";
     std::string log_path = home + "/ROBOTLOG/Cassie";
 
@@ -47,17 +49,17 @@ int main(int argc, char *argv[])
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 
     double t_sim = 0.0;
-    while (ros::ok())
+    while (rclcpp::ok())
     {
-        ros::spinOnce();
+        rclcpp::spin_some(node);
 
-        int mode_command = radio_subscriber.mode_command();
-        VectorXd fake_radio = radio_subscriber.fake_radio();
+        int mode_command = node->mode_command();
+        VectorXd fake_radio = node->fake_radio();
 
         t_sim = state_machine.Update(mode_command, fake_radio, robot_ptr, output, torque_solver, getLegModel, getUpper);
     }
 
     state_machine.Close();
-
+    rclcpp::shutdown();
     return 0;
 }

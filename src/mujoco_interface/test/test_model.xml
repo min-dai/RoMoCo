@@ -9,8 +9,8 @@
 
     <worldbody>
         <body name="base" pos="0 0 0.1">
-            <joint name="joint_1" type="hinge" axis="0 1 0" pos="0 0 0" />
-            <joint name="joint_2" type="hinge" axis="1 0 0" pos="0 0 0.1" />
+            <joint name="joint_1" type="hinge" range="-1 1" axis="0 1 0" pos="0 0 0" />
+            <joint name="joint_2" type="hinge" range="-1 1" axis="1 0 0" pos="0 0 0.1" />
             <geom name="base_geom" type="box" size="0.1 0.1 0.1" />
         </body>
     </worldbody>

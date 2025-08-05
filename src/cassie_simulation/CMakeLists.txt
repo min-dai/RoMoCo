@@ -1,27 +1,43 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5.0)
 project(cassie_simulation)
 
-## Compile as C++17, supported in ROS Kinetic and newer
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-set(CATKIN_DEPS
-  roscpp
-  roslib
+
+# Humble Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+
+# Dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(Eigen3 3.4 REQUIRED)
+find_package(mujoco_interface REQUIRED)
+find_package(biped_core REQUIRED)
+find_package(torque_control REQUIRED)
+find_package(biped_control REQUIRED)
+find_package(biped_utils REQUIRED)
+find_package(biped_command REQUIRED)
+find_package(biped_state_machine REQUIRED)
+
+
+
+set(dependencies
+  rclcpp
+  mujoco_interface
   biped_core
   torque_control
   biped_control
   biped_utils
   biped_command
   biped_state_machine
-)
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPS}
+  Eigen3
 )
 
-find_package(Eigen3 3.4 REQUIRED)
 
 set(MUJOCO_DIR ${CMAKE_CURRENT_LIST_DIR}/lib/mujoco210)
 set(GLFWDIR ${CMAKE_CURRENT_LIST_DIR}/lib/mujoco210)
@@ -30,36 +46,10 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
- INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
- LIBRARIES ${PROJECT_NAME} 
- CATKIN_DEPENDS roscpp biped_core torque_control biped_control biped_utils biped_state_machine
- DEPENDS Eigen3 
-)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+set(include_dirs
   ${EIGEN3_INCLUDE_DIR}
-  ${MUJOCO_DIR}/include
+  $<BUILD_INTERFACE:${MUJOCO_DIR}/include>
+  $<INSTALL_INTERFACE:include/mujoco>
 )
 
 
@@ -70,13 +60,15 @@ add_library(${PROJECT_NAME}
    src/cassie_sensor.cpp
    src/cassie_interface/cassiemujoco.c
 )
-
-
-
-# Specify libraries to link a library or executable target against
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${include_dirs}
+)
+ament_target_dependencies(${PROJECT_NAME} 
+  ${dependencies}
+)
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  Eigen3::Eigen
   ${PROJECT_SOURCE_DIR}/lib/libagilitycassie.a 
                         ${MUJOCO_DIR}/bin/libmujoco210.so
                         ${MUJOCO_DIR}/bin/libglew.so
@@ -87,32 +79,71 @@ target_link_libraries(${PROJECT_NAME}
                         ${MUJOCO_DIR}/bin/libglfw.so.3
 )
 
+# Install headers and library
+ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+ament_export_dependencies(${dependencies})
+ament_export_include_directories(${include_dirs})
+ament_export_libraries(${PROJECT_NAME} 
+  ${PROJECT_SOURCE_DIR}/lib/libagilitycassie.a 
+  ${MUJOCO_DIR}/bin/libmujoco210.so 
+  ${MUJOCO_DIR}/bin/libglew.so 
+  ${MUJOCO_DIR}/bin/libglewegl.so
+  ${MUJOCO_DIR}/bin/libglewosmesa.so 
+  ${MUJOCO_DIR}/bin/libmujoco210nogl.so
+  ${MUJOCO_DIR}/bin/libglfw3.a 
+  ${MUJOCO_DIR}/bin/libglfw.so.3
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+install(
+  TARGETS ${PROJECT_NAME} 
+  EXPORT ${PROJECT_NAME}Targets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
 
 
+
+## Ros Node
 add_executable(cassie_state_machine src/cassie_main_state_machine.cpp)
 target_link_libraries(cassie_state_machine
-${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
-
-
-
-
-
-# Add folders to be run by python nosetests
-catkin_add_nosetests(test)
-catkin_add_gtest(${PROJECT_NAME}_test
-  test/test.cpp
-
-)
-# target_include_directories(${PROJECT_NAME}_test PRIVATE
-#   test/include
-# )
-target_link_libraries(${PROJECT_NAME}_test
-  gtest_main
   ${PROJECT_NAME}
-
 )
-target_compile_options(${PROJECT_NAME}_test PRIVATE ${FLAGS})
+install(
+  TARGETS cassie_state_machine
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+## config files
+install(DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
+)
+install(DIRECTORY model_files/
+  DESTINATION share/${PROJECT_NAME}/model_files
+)
+
+# # Tests
+# if(BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+#   ament_add_gtest(${PROJECT_NAME}_test 
+#     test/test_slider_gui.cpp
+#   )
+#   target_include_directories(${PROJECT_NAME}_test PRIVATE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+#   )
+#   target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+
+#   # find_package(ament_lint_auto REQUIRED)
+#   # ament_lint_auto_find_test_dependencies()
+# endif()
+
+
+ament_package()
+
 
 

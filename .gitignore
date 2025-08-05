@@ -2,6 +2,8 @@
 build/
 devel/
 logs/
+log/
+install/
 msg_gen/
 srv_gen/
 build_isolated/

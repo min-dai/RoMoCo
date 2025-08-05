@@ -1,98 +1,164 @@
-
-#include <Eigen/Dense>
-
-
-#include <iostream>
-#include <fstream>
-#include <ctime>
-#include <iomanip>
 #include <Clarabel>
+#include <Eigen/Eigen>
+#include <cmath>
+#include <gtest/gtest.h>
+#include <iostream>
+#include <limits>
+#include <vector>
 
-using namespace clarabel;
 using namespace std;
+using namespace clarabel;
 using namespace Eigen;
 
-class TestClarabel : public ::testing::Test
+class BasicQPTest : public ::testing::Test
 {
-public:
-    TestClarabel()
+  protected:
+    SparseMatrix<double> P, A;
+    Vector<double, 2> c = { 1., 1. };
+    Vector<double, 6> b = { -1., 0., 0., 1., 0.7, 0.7 };
+    vector<SupportedConeT<double>> cones = {
+        NonnegativeConeT<double>(3),
+        NonnegativeConeT<double>(3)
+    };
+    DefaultSettings<double> settings = DefaultSettings<double>::default_settings();
+
+    BasicQPTest()
     {
+        MatrixXd P_dense(2, 2);
+        P_dense << 4., 1.,
+            1., 2.;
+        P = P_dense.sparseView();
+        P.makeCompressed();
+
+        MatrixXd A_dense(6, 2);
+        A_dense <<
+            -1., -1.,
+            -1., 0.,
+            0., -1.,
+            1., 1.,
+            1., 0.,
+            0., 1.;
+        A = A_dense.sparseView();
+        A.makeCompressed();
     }
-    static constexpr double tol = 1e-5;
 };
 
-TEST_F(TestClarabel, solve)
+TEST_F(BasicQPTest, Univariate)
 {
-
-    /* From dense matrix:
-     * [[6., 0.],
-     *  [0., 4.]]
-     */
-    MatrixXd P_dense(2, 2);
-    P_dense << 6., 0.,
-        0., 4.;
-
-    SparseMatrix<double> P = P_dense.sparseView();
-
+    P = MatrixXd::Identity(1, 1).sparseView();
     P.makeCompressed();
 
-    Vector<double, 2> q = {-1., -4.};
+    Vector<double, 1> c1 { 0. };
 
-    MatrixXd A_dense(5, 2);
-    A_dense << 1., -2., // <-- LHS of equality constraint (lower bound)
-        1., 0.,         // <-- LHS of inequality constraint (upper bound)
-        0., 1.,         // <-- LHS of inequality constraint (upper bound)
-        -1., 0.,        // <-- LHS of inequality constraint (lower bound)
-        0., -1.;        // <-- LHS of inequality constraint (lower bound)
-
-    SparseMatrix<double> A = A_dense.sparseView();
+    A = MatrixXd::Identity(1, 1).sparseView();
     A.makeCompressed();
 
-    Vector<double, 5> b = {0., 1., 1., 1., 1.};
+    Vector<double, 1> b1 { 1. };
 
-    vector<SupportedConeT<double>> cones{
-        ZeroConeT<double>(1),
-        NonnegativeConeT<double>(4),
+    vector<SupportedConeT<double>> cones = {
+        NonnegativeConeT<double>(1)
     };
 
-    // Settings
-    DefaultSettings<double> settings = DefaultSettings<double>::default_settings();
-    settings.presolve_enable = false;
-    // Build solver
-    DefaultSolver<double> solver(P, q, A, b, cones, settings);
-
-    // Solve
+    DefaultSolver<double> solver(P, c1, A, b1, cones, settings);
     solver.solve();
 
-    P_dense << 16., 0.,
-        0., 4.;
-
-    SparseMatrix<double> P2 = P_dense.sparseView();
-
-    A_dense << 1., -2., // <-- LHS of equality constraint (lower bound)
-        1., 1.,         // <-- LHS of inequality constraint (upper bound)
-        0., 1.,         // <-- LHS of inequality constraint (upper bound)
-        -1., 0.,        // <-- LHS of inequality constraint (lower bound)
-        0., -1.;        // <-- LHS of inequality constraint (lower bound)
-
-    SparseMatrix<double> A2 = A_dense.sparseView();
-
-    // revised original solver
-    solver.update_P(P2);
-    solver.update_A(A2);
-    b(0) = 1;
-    solver.update_b(b);
-    q(0) = 0;
-    solver.update_q(q);
-    solver.solve();
-
-    // Get solution
     DefaultSolution<double> solution = solver.solution();
-    VectorXd solutionVector = solution.x;
+    ASSERT_EQ(solution.status, SolverStatus::Solved);
 
-    cout << "Solution: " << solutionVector.transpose() << endl;
-    // utils::print_solution(solution);
+    // Compare the solution to the reference solution
+    ASSERT_NEAR(solution.x[0], 0.0, 1e-6);
+    ASSERT_NEAR(solution.obj_val, 0.0, 1e-6);
+    ASSERT_NEAR(solution.obj_val_dual, 0.0, 1e-6);
+}
 
-    cout << "A*x = " << (A_dense * solutionVector).transpose() << endl;
-    cout << "b   = " << b.transpose() << endl;
+TEST_F(BasicQPTest, Feasible)
+{
+    DefaultSolver<double> solver(P, c, A, b, cones, settings);
+    solver.solve();
+
+    DefaultSolution<double> solution = solver.solution();
+    ASSERT_EQ(solution.status, SolverStatus::Solved);
+
+    // Check the solution
+    Vector2d ref_solution{ 0.3, 0.7 };
+    ASSERT_EQ(solution.x.size(), 2);
+    ASSERT_TRUE(solution.x.isApprox(ref_solution, 1e-6));
+
+    double ref_obj = 1.8800000298331538;
+    ASSERT_NEAR(solution.obj_val, ref_obj, 1e-6);
+    ASSERT_NEAR(solution.obj_val_dual, ref_obj, 1e-6);
+}
+
+TEST_F(BasicQPTest, PrimalInfeasible)
+{
+    b[0] = -1.;
+    b[3] = -1.;
+
+    DefaultSolver<double> solver(P, c, A, b, cones, settings);
+    solver.solve();
+    DefaultSolution<double> solution = solver.solution();
+
+    ASSERT_EQ(solution.status, SolverStatus::PrimalInfeasible);
+    ASSERT_TRUE(std::isnan(solution.obj_val));
+    ASSERT_TRUE(std::isnan(solution.obj_val_dual));
+
+}
+
+class BasicQPDualInfeasibleTest : public ::testing::Test
+{
+  protected:
+    SparseMatrix<double> P, A;
+    Vector<double, 2> c = { 1., -1. };
+    Vector<double, 2> b = { 1., 1. };
+    vector<SupportedConeT<double>> cones = {
+        NonnegativeConeT<double>(2)
+    };
+    DefaultSettings<double> settings = DefaultSettings<double>::default_settings();
+
+    BasicQPDualInfeasibleTest()
+    {
+        P = MatrixXd::Ones(2, 2).sparseView();
+        P.makeCompressed();
+
+        MatrixXd A_dense(2, 2);
+        A_dense <<
+            1., 1.,
+            1., 0.;
+        A = A_dense.sparseView();
+        A.makeCompressed();
+    }
+};
+
+TEST_F(BasicQPDualInfeasibleTest, DualInfeasible)
+{
+    DefaultSolver<double> solver(P, c, A, b, cones, settings);
+    solver.solve();
+    DefaultSolution<double> solution = solver.solution();
+
+
+    ASSERT_EQ(solution.status, SolverStatus::DualInfeasible);
+    ASSERT_TRUE(std::isnan(solution.obj_val));
+    ASSERT_TRUE(std::isnan(solution.obj_val_dual));
+}
+
+TEST_F(BasicQPDualInfeasibleTest, DualInfeasibleIllConditioned)
+{
+    MatrixXd A_dense(1, 2);
+    A_dense << 1., 1.;
+    A = A_dense.sparseView();
+    A.makeCompressed();
+
+    cones = {
+        NonnegativeConeT<double>(1)
+    };
+
+    Vector<double, 1> b1{ 1. };
+
+    DefaultSolver<double> solver(P, c, A, b1, cones, settings);
+    solver.solve();
+    DefaultSolution<double> solution = solver.solution();
+
+    ASSERT_EQ(solution.status, SolverStatus::DualInfeasible);
+    ASSERT_TRUE(std::isnan(solution.obj_val));
+    ASSERT_TRUE(std::isnan(solution.obj_val_dual));
 }

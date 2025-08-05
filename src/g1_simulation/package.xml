@@ -3,29 +3,16 @@
   <name>g1_simulation</name>
   <version>0.0.0</version>
   <description>The g1 simulation package</description>
-
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="mdai@caltech.edu">mdai</maintainer>
+  <license>GPL-3.0-or-later</license>
+  <author email="mdai@caltech.edu">Min Dai</author>
 
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <depend>rclcpp</depend>
 
-
-
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-
-
-
-  <build_export_depend>roscpp</build_export_depend>
-  <exec_depend>roscpp</exec_depend>
-
-  <depend>roslib</depend>
+  <build_export_depend>eigen</build_export_depend>
+  <exec_depend>eigen</exec_depend>
 
 
   <depend>mujoco_interface</depend>
@@ -36,14 +23,14 @@
   <depend>biped_command</depend>
   <depend>biped_state_machine</depend>
 
-  
-
-
+  <!-- <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend> -->
+  <test_depend>ament_cmake_gtest</test_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

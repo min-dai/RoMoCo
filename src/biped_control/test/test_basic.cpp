@@ -1,14 +1,14 @@
 
 #include <Eigen/Dense>
 
-#include <ros/ros.h>
+
 #include <iostream>
 #include <fstream>
 #include <ctime>
 #include <iomanip>
-#include <Clarabel>
+
 #include <gtest/gtest.h>
-using namespace clarabel;
+
 using namespace std;
 using namespace Eigen;
 

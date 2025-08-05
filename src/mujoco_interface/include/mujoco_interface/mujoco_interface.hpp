@@ -17,7 +17,7 @@ public:
     MujocoInterface();
     ~MujocoInterface();
 
-    bool Init(const char *modelfile, int width, int height);
+    bool Init(const char *modelfile, int width, int height, bool headless = false);
     void Close();
 
     void Render();

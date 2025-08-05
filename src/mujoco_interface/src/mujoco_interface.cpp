@@ -66,12 +66,21 @@ bool MujocoInterface::IsWindowOpen() const
     return vis_.window && !glfwWindowShouldClose(vis_.window);
 }
 
-bool MujocoInterface::Init(const char *modelfile, int width, int height)
+bool MujocoInterface::Init(const char *modelfile, int width, int height, bool headless)
 {
     char error[1000] = "Could not load binary model";
     m = mj_loadXML(modelfile, nullptr, error, 1000);
-
+    if (!m) {
+        std::cerr << "MuJoCo XML load failed: " << error << std::endl;
+        return false;
+    }
     d = mj_makeData(m);
+    if (!d) {
+        std::cerr << "MuJoCo data creation failed." << std::endl;
+        mj_deleteModel(m);
+        m = nullptr;
+        return false;
+    }
 
     std::cout << "--------------------------" << std::endl;
     std::cout << "Model file: " << modelfile << std::endl;
@@ -93,6 +102,9 @@ bool MujocoInterface::Init(const char *modelfile, int width, int height)
     vis_.video_height = height;
 
     // create window
+    if (headless) {
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    }
     vis_.window = glfwCreateWindow(width, height, "Demo", NULL, NULL);
     if (!vis_.window)
     {
@@ -159,7 +171,7 @@ std::vector<int> MujocoInterface::GetActuatorIdsByName(const std::vector<std::st
 {
     std::vector<int> actuator_ids;
 
-    for (int i = 0; i < actuator_names.size(); i++)
+    for (size_t i = 0; i < actuator_names.size(); i++)
     {
         int actuator_id = mj_name2id(m, mjOBJ_ACTUATOR, actuator_names[i].c_str());
         if (actuator_id == -1)
@@ -177,7 +189,7 @@ std::vector<int> MujocoInterface::GetSensorIdsByName(const std::vector<std::stri
 {
     std::vector<int> sensor_ids;
 
-    for (int i = 0; i < sensor_names.size(); i++)
+    for (size_t i = 0; i < sensor_names.size(); i++)
     {
         int sensor_id = mj_name2id(m, mjOBJ_SENSOR, sensor_names[i].c_str());
         if (sensor_id == -1)
@@ -195,7 +207,7 @@ std::vector<int> MujocoInterface::GetJointIdsByName(const std::vector<std::strin
 {
     std::vector<int> joint_ids;
 
-    for (int i = 0; i < joint_names.size(); i++)
+    for (size_t i = 0; i < joint_names.size(); i++)
     {
         int joint_id = mj_name2id(m, mjOBJ_JOINT, joint_names[i].c_str());
         if (joint_id == -1)
@@ -212,7 +224,7 @@ std::vector<int> MujocoInterface::GetJointIdsByName(const std::vector<std::strin
 void MujocoInterface::set_1dof_joint_qpos(const Eigen::VectorXd &qpos, const std::vector<int> &joint_ids)
 {
     assert(joint_ids.size() == qpos.size());
-    for (int i = 0; i < joint_ids.size(); i++)
+    for (size_t i = 0; i < joint_ids.size(); i++)
     {
         int joint_id = joint_ids[i];
         assert(joint_id >= 0 && joint_id < m->njnt);
@@ -457,7 +469,8 @@ void MujocoInterface::Render()
 
 void MujocoInterface::UpdateControlInput(const Eigen::VectorXd &u, const std::vector<int> &actuator_ids)
 {
-    assert(u.size() == actuator_ids.size());
+    assert(u.size() == static_cast<Eigen::Index>(actuator_ids.size()));
+
 
     for (int i = 0; i < u.size(); i++)
     {
@@ -494,7 +507,7 @@ Eigen::VectorXd MujocoInterface::GetSensorDataByIds(const std::vector<int> &sens
 {
     std::vector<double> sensor_data;
 
-    for (int i = 0; i < sensor_ids.size(); i++)
+    for (size_t i = 0; i < sensor_ids.size(); i++)
     {
         std::vector<double> sensor_data_i = GetSensorDataById(sensor_ids[i]);
         sensor_data.insert(sensor_data.end(), sensor_data_i.begin(), sensor_data_i.end());
@@ -507,7 +520,7 @@ Eigen::VectorXd MujocoInterface::GetJointVelocitiesByIds(const std::vector<int> 
 {
     std::vector<double> joint_velocity;
 
-    for (int i = 0; i < joint_ids.size(); i++)
+    for (size_t i = 0; i < joint_ids.size(); i++)
     {
         int joint_id = joint_ids[i];
         assert(joint_id >= 0 && joint_id < m->njnt);
@@ -523,7 +536,7 @@ Eigen::VectorXd MujocoInterface::GetJointPositionsByIds(const std::vector<int> &
 {
     std::vector<double> joint_position;
 
-    for (int i = 0; i < joint_ids.size(); i++)
+    for (size_t i = 0; i < joint_ids.size(); i++)
     {
         int joint_id = joint_ids[i];
         assert(joint_id >= 0 && joint_id < m->njnt);

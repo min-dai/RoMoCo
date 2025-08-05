@@ -1,16 +1,19 @@
 #ifndef RADIO_SUBSCRIBER_HPP
 #define RADIO_SUBSCRIBER_HPP
 
-#include <ros/ros.h>
-#include <std_msgs/Float64MultiArray.h>
+#include "rclcpp/rclcpp.hpp"
+#include <std_msgs/msg/float64_multi_array.hpp>
 #include <Eigen/Dense>
 #include <mutex>
 
-class RadioSubscriber {
+class RadioSubscriber : public rclcpp::Node
+{
 public:
-    RadioSubscriber(ros::NodeHandle& nh, const std::string& topic)
+    RadioSubscriber(std::string node_name)
+    : Node(node_name)
     {
-        sub_ = nh.subscribe(topic, 1, &RadioSubscriber::callback, this);
+        sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
+            "radio_slider_values", 1, std::bind(&RadioSubscriber::callback, this, std::placeholders::_1));
     }
 
     Eigen::VectorXd fake_radio() {
@@ -29,11 +32,11 @@ public:
     }
 
 private:
-    ros::Subscriber sub_;
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr sub_;
     Eigen::VectorXd fake_radio_;
     std::mutex mutex_;
 
-    void callback(const std_msgs::Float64MultiArray::ConstPtr& msg) {
+    void callback(const std_msgs::msg::Float64MultiArray::ConstPtr& msg) {
         std::lock_guard<std::mutex> lock(mutex_);
         size_t size = msg->data.size();
         fake_radio_ = Eigen::VectorXd(size);

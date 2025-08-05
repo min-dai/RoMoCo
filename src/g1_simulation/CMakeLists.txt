@@ -1,15 +1,32 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5.0)
 project(g1_simulation)
 
-## Compile as C++17, supported in ROS Kinetic and newer
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-set(CATKIN_DEPS
-  roscpp
-  roslib
+# Humble Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+
+# Dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(Eigen3 3.4 REQUIRED)
+find_package(mujoco_interface REQUIRED)
+find_package(biped_core REQUIRED)
+find_package(torque_control REQUIRED)
+find_package(biped_control REQUIRED)
+find_package(biped_utils REQUIRED)
+find_package(biped_command REQUIRED)
+find_package(biped_state_machine REQUIRED)
+
+
+
+set(dependencies
+  rclcpp
   mujoco_interface
   biped_core
   torque_control
@@ -17,159 +34,84 @@ set(CATKIN_DEPS
   biped_utils
   biped_command
   biped_state_machine
-)
-find_package(catkin REQUIRED COMPONENTS
-  ${CATKIN_DEPS}
+  Eigen3
 )
 
-find_package(Eigen3 3.4 REQUIRED)
-
-find_package(pinocchio REQUIRED)
-
-find_package(Qt5Widgets REQUIRED)
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
- INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
- LIBRARIES ${PROJECT_NAME} 
- CATKIN_DEPENDS ${CATKIN_DEPS}
- DEPENDS Eigen3 pinocchio
-)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
-  ${PINOCCHIO_INCLUDE_DIRS}
-  ${Qt5Widgets_INCLUDE_DIRS}
-)
-
-
-# Declare a C++ library
+# Library target
 add_library(${PROJECT_NAME}
    src/g1_model_leg.cpp
    src/g1_model.cpp
    src/g1_sensor.cpp
    src/g1_mujoco_sim.cpp
 )
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${EIGEN3_INCLUDE_DIR}
+)
+ament_target_dependencies(${PROJECT_NAME} 
+  ${dependencies}
+)
 
-
-
-# Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  Eigen3::Eigen
-  pinocchio::pinocchio
+# Install headers and library
+ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+ament_export_dependencies(${dependencies})
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+install(
+  TARGETS ${PROJECT_NAME} 
+  EXPORT ${PROJECT_NAME}Targets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
 
 
-
-
-
-
+## Ros Node
 add_executable(g1_state_machine src/g1_main_state_machine.cpp)
 target_link_libraries(g1_state_machine
-${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
 )
 
-add_executable(g1_momentum src/g1_state_machine_momentum.cpp)
-target_link_libraries(g1_momentum
-${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+# add_executable(g1_momentum src/g1_state_machine_momentum.cpp)
+# target_link_libraries(g1_momentum
+#   ${PROJECT_NAME}
+# )
+
+install(
+  TARGETS g1_state_machine
+  DESTINATION lib/${PROJECT_NAME}
 )
 
+## config files
+install(DIRECTORY config_18dof/
+  DESTINATION share/${PROJECT_NAME}/config_18dof
+)
+install(DIRECTORY config_29dof/
+  DESTINATION share/${PROJECT_NAME}/config_29dof
+)
+install(DIRECTORY model_files/
+  DESTINATION share/${PROJECT_NAME}/model_files
+)
 
-# add_executable(test_node src/test_main.cpp)
+# # Tests
+# if(BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+#   ament_add_gtest(${PROJECT_NAME}_test 
+#     test/test_slider_gui.cpp
+#   )
+#   target_include_directories(${PROJECT_NAME}_test PRIVATE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+#   )
+#   target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
 
-# target_link_libraries(test_node
-# ${PROJECT_NAME}
-#   ${catkin_LIBRARIES}
-# )
-
-
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark libraries for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
-
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_mujoco_interface.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+#   # find_package(ament_lint_auto REQUIRED)
+#   # ament_lint_auto_find_test_dependencies()
 # endif()
 
-# Add folders to be run by python nosetests
-catkin_add_nosetests(test)
-catkin_add_gtest(${PROJECT_NAME}_test
-  test/test.cpp
 
-)
-# target_include_directories(${PROJECT_NAME}_test PRIVATE
-#   test/include
-# )
-target_link_libraries(${PROJECT_NAME}_test
-  gtest_main
-  ${PROJECT_NAME}
-
-)
-target_compile_options(${PROJECT_NAME}_test PRIVATE ${FLAGS})
+ament_package()

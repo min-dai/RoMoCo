@@ -6,7 +6,7 @@ mujoco_settings:
 
 
 video_settings:                  # Video recording settings
-  record_video: true             # Enable or disable video recording
+  record_video: no             # Enable or disable video recording
   video_width: 2500              # Video resolution width (pixels)
   video_height: 2000             # Video resolution height (pixels)
   video_fps: 50                  # Frames per second for video, 25 is real-time

@@ -4,7 +4,7 @@
 
 
 #include "torque_control/torque_solver_tscqp.hpp"
-#include "torque_control/torque_solver_tscqp_momentum.hpp"
+// #include "torque_control/torque_solver_tscqp_momentum.hpp"
 #include "torque_control/torque_solver_inv_dyn.hpp"
 #include "torque_control/torque_solver_vel_ik.hpp"
 #include "torque_control/torque_solver_pos_ik.hpp"
@@ -277,10 +277,10 @@ void BasicStateMachine::SelectControllers(
    {
       torque_solver = std::make_unique<TorqueSolverTSCQP>(config_file, robot_ptr, output);
    }
-   else if (torque_solver_type == "qpm")
-   {
-      torque_solver = std::make_unique<TorqueSolverTSCQPMomentum>(config_file, robot_ptr, output);
-   }
+   // else if (torque_solver_type == "qpm")
+   // {
+   //    torque_solver = std::make_unique<TorqueSolverTSCQPMomentum>(config_file, robot_ptr, output);
+   // }
    else if (torque_solver_type == "id")
    {
       torque_solver = std::make_unique<TorqueSolverInvDyn>(config_file, robot_ptr, output);
