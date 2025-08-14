@@ -14,6 +14,10 @@
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>
 
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+
 
   <depend>mujoco_interface</depend>
   <depend>biped_core</depend>

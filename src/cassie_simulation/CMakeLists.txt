@@ -126,7 +126,8 @@ install(DIRECTORY config/
 install(DIRECTORY model_files/
   DESTINATION share/${PROJECT_NAME}/model_files
 )
-
+install(DIRECTORY launch 
+  DESTINATION share/${PROJECT_NAME})
 # # Tests
 # if(BUILD_TESTING)
 #   find_package(ament_cmake_gtest REQUIRED)

@@ -97,6 +97,8 @@ install(DIRECTORY config_29dof/
 install(DIRECTORY model_files/
   DESTINATION share/${PROJECT_NAME}/model_files
 )
+install(DIRECTORY launch 
+  DESTINATION share/${PROJECT_NAME})
 
 # # Tests
 # if(BUILD_TESTING)

@@ -29,7 +29,7 @@ void WalkingOutputFp::Init(const std::string &config_file)
 {
    config.InitConfigBase(config_file, robot_->robot_type());
 
-   ROplanner = std::make_unique<HLIPPlanner>();
+   ROplanner = std::make_unique<DCMPlanner>();
 
    // update updated struct using config assuming radio is zero
    updateTargetWalkingRadio(VectorXd::Zero(10));

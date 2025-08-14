@@ -10,7 +10,7 @@ pose_command:
   vx_offset: 0.0
   vy_offset: 0.0
   TSS: 0.3
-  TDS: 0.0
+  TDS: 0.05
   znom: 0.75
   zsw_max: 0.2
   zsw_neg: -0.01 #-0.01

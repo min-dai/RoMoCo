@@ -48,7 +48,12 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
 
     //TODO:division by zero when Td=0
     params.a_DCM = exp(params.lambda * params.T);
-    params.b_DCM = -exp(params.lambda * params.Ts) * (exp(params.lambda * params.Td) - 1) / (params.lambda * params.Td);
+    if (params.Td != 0)
+    {
+        params.b_DCM = -exp(params.lambda * params.Ts) * (exp(params.lambda * params.Td) - 1) / (params.lambda * params.Td);
+    }else{
+        params.b_DCM = -exp(params.lambda * params.Ts);
+    }
     VectorXd klqr_DCM_vector = -solve_dlqr_gain(MatrixXd::Identity(1, 1) * params.a_DCM, MatrixXd::Identity(1, 1) * params.b_DCM, MatrixXd::Identity(1, 1), MatrixXd::Identity(1, 1), 0.00000001);
     klqr_DCM = klqr_DCM_vector(0);
 

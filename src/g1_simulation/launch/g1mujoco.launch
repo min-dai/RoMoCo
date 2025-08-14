@@ -1,7 +1,0 @@
-<!-- launch g1_sim_main_node -->
-<launch>
-  <!-- <node pkg="g1_simulation" type="g1_sim_main_node" name="g1_sim_main_node" output="screen"/> -->
-  <node pkg="g1_simulation" type="g1_state_machine" name="g1_state_machine" output="screen"/>
-  <!-- <node pkg="g1_simulation" type="g1_momentum" name="g1_momentum" output="screen"/> -->
-  <node pkg="biped_command" type="fake_radio_node" name="fake_radio_node" output="screen"/>
-</launch>
