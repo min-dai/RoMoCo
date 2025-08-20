@@ -29,13 +29,8 @@ void getAllJointStateFromSensorMujoco(const g1_sensor &sensor, Eigen::VectorXd &
 
     dqfloating6zyx << sensor.base_lin_vel, angularVel2EulerRate(euler, sensor.base_ang_vel);
 
-
-
     q << qfloating6zyx, sensor.encoders_pos_pinocchio_order;
     qdot << dqfloating6zyx, sensor.encoders_vel_pinocchio_order;
-
-
-
 }
 
 

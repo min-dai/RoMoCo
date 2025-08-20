@@ -3,7 +3,7 @@ project(g1_simulation)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -22,6 +22,22 @@ find_package(biped_control REQUIRED)
 find_package(biped_utils REQUIRED)
 find_package(biped_command REQUIRED)
 find_package(biped_state_machine REQUIRED)
+
+
+
+# Unitree SDK
+# Note: This only build properly with C++ 17
+include(FetchContent)
+
+FetchContent_Declare(
+    unitree_sdk
+    GIT_REPOSITORY https://github.com/unitreerobotics/unitree_sdk2.git
+    GIT_TAG 3a4680ae9b00df59e60f7e63cfb0fcc432a9d08d) # main # TODO: Fix the issue here
+
+set(UNITREE_SDK_BUILD_EXAMPLES OFF CACHE BOOL "Disable building examples")
+set(BUILD_EXAMPLES OFF CACHE BOOL "Disable building examples")
+
+FetchContent_MakeAvailable(unitree_sdk)
 
 
 
@@ -77,6 +93,16 @@ target_link_libraries(g1_state_machine
   ${PROJECT_NAME}
 )
 
+## Ros Node
+add_executable(g1_hardware_interface src/g1_hardware_interface.cpp)
+target_link_libraries(g1_hardware_interface
+  ${PROJECT_NAME}
+  unitree_sdk2
+)
+
+
+
+
 # add_executable(g1_momentum src/g1_state_machine_momentum.cpp)
 # target_link_libraries(g1_momentum
 #   ${PROJECT_NAME}
@@ -84,6 +110,11 @@ target_link_libraries(g1_state_machine
 
 install(
   TARGETS g1_state_machine
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  TARGETS g1_hardware_interface
   DESTINATION lib/${PROJECT_NAME}
 )
 
