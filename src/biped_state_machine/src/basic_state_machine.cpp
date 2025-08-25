@@ -17,6 +17,7 @@
 //enum classes
 #include "biped_command/radio_slider_map.hpp"
 #include "biped_types/biped_constants.hpp"
+#include "biped_types/biped_motor_commands.hpp"
 
 BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim)
     : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))
@@ -37,7 +38,6 @@ void BasicStateMachine::Close()
    {
       logFile_.close();
    }
-   sim_->Close();
 }
 
 
@@ -77,7 +77,7 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
       dq_locked_joints_des_ = VectorXd::Zero(n_locked_joints_);
       Kp_locked_joints = yaml_parser.get_VectorXd("Kp_locked_joints");
       Kd_locked_joints = yaml_parser.get_VectorXd("Kd_locked_joints");
-      locked_joints_pd_controller_.reconfigure(Kp_locked_joints, Kd_locked_joints);
+      locked_joints_pd_controller_.Reconfigure(Kp_locked_joints, Kd_locked_joints);
    }
    locked_input_ = VectorXd::Zero(n_locked_joints_);
 
@@ -196,14 +196,16 @@ double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_ra
 
             output->UpdateOutput(fake_radio, sim_->sim_time(), t_old_);
             t_old_ = sim_->sim_time();
-            VectorXd u_leg = torque_solver->Solve();
+
+            BipedMotorCommands motor_commands = torque_solver->Solve();
+            VectorXd u_leg = motor_commands.joint_torques;
 
             locomotion_input_ = u_leg;
 
 
             if (n_locked_joints_ > 0)
             {
-               locked_input_ = locked_joints_pd_controller_.compute(q_locked_joints_des_, dq_locked_joints_des_, q_upper, dq_upper);
+               locked_input_ = locked_joints_pd_controller_.Compute(q_locked_joints_des_, dq_locked_joints_des_, q_upper, dq_upper);
             }
             
             // Logging

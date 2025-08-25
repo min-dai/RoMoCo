@@ -31,6 +31,8 @@ void TorqueSolverTSCQP::Init(const std::string &config_file)
     settings_ = DefaultSettings<double>::default_settings();
     settings_.verbose = false;
 
+    motor_commands_.ResizeTorque(robot_->nv());
+
 }
 
 void TorqueSolverTSCQP::ResetSize()
@@ -63,7 +65,7 @@ void TorqueSolverTSCQP::ResetSize()
     u_sol_prev_ = VectorXd::Zero(output_->nu());
 }
 
-Eigen::VectorXd TorqueSolverTSCQP::Solve()
+BipedMotorCommands TorqueSolverTSCQP::Solve()
 {
     //x = [ddq^T; u^T; F_internal^T; F_external]^T
     if (nVar_ != robot_->nv() + output_->nu() + output_->nh()){
@@ -111,10 +113,11 @@ Eigen::VectorXd TorqueSolverTSCQP::Solve()
     cout << "u_qp =[ " <<u_full.transpose() << "];" << endl;
 
 
+    motor_commands_.joint_torques = u_full;
 
 
     // Implement the solver
-    return u_full;
+    return motor_commands_;
 }
 
 bool TorqueSolverTSCQP::ClarabelSolve()

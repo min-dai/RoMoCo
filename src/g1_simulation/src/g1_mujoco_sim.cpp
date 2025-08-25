@@ -130,7 +130,6 @@ void G1MujocoSim::GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::Ve
 
 void G1MujocoSim::Close()
 {
-   mujoco_.Close();
    std::cout << "G1 Mujoco simulation closed successfully." << std::endl;
 }
 

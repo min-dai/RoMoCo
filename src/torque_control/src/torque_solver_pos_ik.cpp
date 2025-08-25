@@ -43,22 +43,32 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
     JointKDing_ = JointKD_;
 
 
-    
+    motor_commands_.ResizeAll(robot_->nu());
+
 }
 
-Eigen::VectorXd TorqueSolverPOSIK::Solve()
+BipedMotorCommands TorqueSolverPOSIK::Solve()
 {
     SolveIk();
 
-    pd_controller_.reconfigure(JointKPing_(output_->actuated_u_idx), JointKDing_(output_->actuated_u_idx));
+    pd_controller_.Reconfigure(JointKPing_(output_->actuated_u_idx), JointKDing_(output_->actuated_u_idx));
 
-    VectorXd u_fb = pd_controller_.compute(output_->qDes_actuated, output_->dqDes_actuated, qm_actual_, dqm_actual_);
-    std::cout << "u_fb = " << u_fb.transpose() << std::endl;
+    VectorXd u_fb = pd_controller_.Compute(output_->qDes_actuated, output_->dqDes_actuated, qm_actual_, dqm_actual_);
+
 
     VectorXd u_ff = SolveGravityCompensation();
 
     Eigen::VectorXd u_full = MapU2FullIdx(u_fb+u_ff, output_->actuated_u_idx, robot_->nu());
-    return u_full;
+
+
+
+    motor_commands_.joint_torques = u_full;
+    motor_commands_.joint_positions = output_->qDes_actuated;
+    motor_commands_.joint_velocities = output_->dqDes_actuated;
+    motor_commands_.joint_kp = JointKPing_;
+    motor_commands_.joint_kd = JointKDing_;
+
+    return motor_commands_;
 }
 
 void TorqueSolverPOSIK::SolveIk()

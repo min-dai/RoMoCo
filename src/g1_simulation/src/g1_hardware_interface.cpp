@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
       //   t_sim = state_machine.Update(mode_command, fake_radio, robot_ptr, output, torque_solver, getLegModel, getUpper);
     }
 
-    state_machine.Close();
     rclcpp::shutdown();
     return 0;
 }

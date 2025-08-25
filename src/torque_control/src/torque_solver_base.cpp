@@ -1,5 +1,9 @@
 #include "torque_control/torque_solver_base.hpp"
 
+TorqueSolverBase::TorqueSolverBase(std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
+    : robot_(robot), output_(output) {
+      }
+
 Eigen::VectorXd TorqueSolverBase::SolveGravityCompensation()
 {
    // Inverse Dynamics Control of Floating Base Systems using Orthogonal projection
@@ -15,9 +19,5 @@ Eigen::VectorXd TorqueSolverBase::SolveGravityCompensation()
 
    Eigen::VectorXd u_sol = (Su * Q.transpose() * B).completeOrthogonalDecomposition().solve(Su) * Q.transpose() * robot_->G();
 
-
-   // std::cout << "u_ff = " << u_sol.transpose() << std::endl;
-
    return u_sol;
 }
-

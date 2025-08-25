@@ -11,16 +11,17 @@ public:
 
     void Init(const std::string &config_file) override;
 
-    Eigen::VectorXd Solve() override;
+    BipedMotorCommands Solve() override;
 
 private:
     PDController pd_controller_;
     Eigen::VectorXd JointKP_, JointKD_;
     Eigen::VectorXd JointKPing_, JointKDing_;
     Eigen::VectorXd ik_gain_;
+    VectorXd qm_actual_, dqm_actual_;
 
     void SolveIk();
-    Eigen::VectorXd SolveTorqueFeedback();
+
 };
 
 #endif // TORQUE_SOLVER_VELIK_HPP

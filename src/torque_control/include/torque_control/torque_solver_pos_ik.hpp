@@ -11,7 +11,7 @@ public:
 
    void Init(const std::string &config_file) override;
 
-   Eigen::VectorXd Solve() override;
+   BipedMotorCommands Solve() override;
 
 
 

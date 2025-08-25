@@ -10,10 +10,10 @@ PDController::PDController(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd)
     {
         throw std::invalid_argument("Kp and Kd must be the same size");
     }
-    reconfigure(Kp, Kd);
+    Reconfigure(Kp, Kd);
 }
 
-void PDController::reconfigure(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd)
+void PDController::Reconfigure(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd)
 {
     // check that Kp and Kd are the same size using standard library assert
     if (Kp.size() != Kd.size())
@@ -26,12 +26,12 @@ void PDController::reconfigure(const Eigen::VectorXd &Kp, const Eigen::VectorXd 
     is_initialized_ = true;
 }
 
-Eigen::VectorXd PDController::compute(const Eigen::VectorXd &q_desired, const Eigen::VectorXd &dq_desired, const Eigen::VectorXd &q_actual, const Eigen::VectorXd &dq_actual) const
+Eigen::VectorXd PDController::Compute(const Eigen::VectorXd &q_desired, const Eigen::VectorXd &dq_desired, const Eigen::VectorXd &q_actual, const Eigen::VectorXd &dq_actual) const
 {
     // Cannot run if not initialized
     if (!is_initialized_)
     {
-        throw std::runtime_error("PDController is not initialized. Call reconfigure() first.");
+        throw std::runtime_error("PDController is not initialized. Call Reconfigure() first.");
     }
 
     if (q_desired.size() != Kd_.size() || dq_desired.size() != Kd_.size() ||

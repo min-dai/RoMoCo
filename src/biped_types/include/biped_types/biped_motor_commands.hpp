@@ -3,9 +3,9 @@
 
 #include <Eigen/Dense>
 
-class BipedMotorCommands
+struct BipedMotorCommands
 {
-public:
+
    Eigen::VectorXd joint_positions;
    Eigen::VectorXd joint_velocities;
    Eigen::VectorXd joint_kp;
@@ -14,12 +14,26 @@ public:
 
    BipedMotorCommands() = default;
 
-   explicit BipedMotorCommands(std::size_t dof)
+   explicit BipedMotorCommands(int dof)
        : joint_positions(Eigen::VectorXd::Zero(dof)),
          joint_velocities(Eigen::VectorXd::Zero(dof)),
          joint_kp(Eigen::VectorXd::Zero(dof)),
          joint_kd(Eigen::VectorXd::Zero(dof)),
          joint_torques(Eigen::VectorXd::Zero(dof)) {};
+
+   void ResizeAll(int dof)
+   {
+      joint_positions.resize(dof);
+      joint_velocities.resize(dof);
+      joint_kp.resize(dof);
+      joint_kd.resize(dof);
+      joint_torques.resize(dof);
+   }
+   void ResizeTorque(int dof)
+   {
+      joint_torques.resize(dof);
+   }
+
    // Export to std::vector (handy for IPC/ROS messages).
    static std::vector<double> ToStdVector(const Eigen::VectorXd &v)
    {

@@ -23,9 +23,11 @@ void TorqueSolverInvDyn::Init(const std::string &config_file)
     // OutputKPing_
     OutputKPing_ = OutputKP_;
     OutputKDing_ = OutputKD_;
+
+    motor_commands_.ResizeTorque(robot_->nv());
 }
 
-Eigen::VectorXd TorqueSolverInvDyn::Solve()
+BipedMotorCommands TorqueSolverInvDyn::Solve()
 {
     VectorXd u_sol;
     if (robot_->nv() == (output_->ny() + output_->nh()))
@@ -97,6 +99,8 @@ Eigen::VectorXd TorqueSolverInvDyn::Solve()
 
     std::cout << "u_id =[ " << u_full.transpose() << "];" << std::endl;
 
+    motor_commands_.joint_torques = u_full;
+
     // Implement the solver
-    return u_full;
+    return motor_commands_;
 }
