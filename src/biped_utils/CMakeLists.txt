@@ -13,12 +13,10 @@ endif()
 
 # Dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 
 set(dependencies
-  rclcpp
   yaml_cpp_vendor
   Eigen3
 )

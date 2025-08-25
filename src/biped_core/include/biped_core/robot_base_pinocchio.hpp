@@ -23,8 +23,8 @@
 #include <pinocchio/algorithm/rnea.hpp>
 
 #include "biped_utils/kinematics.hpp"
-#include "biped_core/biped_constants.hpp"
-#include "biped_core/friction_params.hpp"
+#include "biped_types/biped_constants.hpp"
+#include "biped_types/friction_params.hpp"
 
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;

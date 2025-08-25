@@ -12,7 +12,6 @@ endif()
 
 # Dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 
 
@@ -22,7 +21,6 @@ set(GLFW_INCLUDE_DIR /usr/include)
 set(GLFW_LIBRARY /usr/lib/x86_64-linux-gnu/libglfw.so)
 
 set(dependencies 
-  rclcpp
   Eigen3
 )
 

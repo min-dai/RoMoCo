@@ -16,7 +16,7 @@
 
 //enum classes
 #include "biped_command/radio_slider_map.hpp"
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 
 BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim)
     : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))

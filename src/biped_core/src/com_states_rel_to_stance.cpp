@@ -1,5 +1,5 @@
 #include "biped_core/com_states_rel_to_stance.hpp"
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 void ComStatesRelToStance::compute(
     const Eigen::Vector3d& com_pos_world,
     const Eigen::Vector3d& com_vel_world,

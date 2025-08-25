@@ -8,9 +8,9 @@
   <author email="mdai@caltech.edu">Min Dai</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>rclcpp</depend>
+  
   <depend>biped_utils</depend>
-  <depend>biped_core</depend>
+  <depend>biped_types</depend>
   
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>

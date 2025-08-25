@@ -1,7 +1,7 @@
 #pragma once
 #include "biped_core/output_base.hpp"
 #include "biped_utils/filters.hpp"
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 #include "biped_utils/yaml_parser.hpp"
 #include "biped_planner/planner_types.hpp"
 class WalkingOutputBase : public OutputBase

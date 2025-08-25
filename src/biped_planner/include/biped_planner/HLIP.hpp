@@ -1,7 +1,7 @@
 #ifndef HLIP_HPP
 #define HLIP_HPP
 
-#include <biped_core/biped_constants.hpp>
+#include <biped_types/biped_constants.hpp>
 #include <Eigen/Dense>
 
 #include <unsupported/Eigen/MatrixFunctions>

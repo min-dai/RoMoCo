@@ -1,6 +1,6 @@
 #pragma once
 #include <Eigen/Dense>
-#include "biped_core/biped_constants.hpp"
+
 #include "biped_planner/planner_types.hpp"
 class FlatFootFPPlanner
 {

@@ -1,6 +1,6 @@
 #include "h1_sensor.hpp"
 #include <iostream>
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 #include "biped_utils/geometry.hpp"
 
 

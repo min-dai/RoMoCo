@@ -8,7 +8,6 @@
   <author email="mdai@caltech.edu">Min Dai</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>rclcpp</depend>
   
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>

@@ -2,7 +2,7 @@
 #define PLANNER_TYPES_HPP
 
 #include <Eigen/Dense>
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 
 struct PlannerInput
 {

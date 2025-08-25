@@ -1,7 +1,7 @@
 #ifndef MLIP_HPP
 #define MLIP_HPP
 
-#include <biped_core/biped_constants.hpp>
+#include <biped_types/biped_constants.hpp>
 #include <Eigen/Dense>
 
 

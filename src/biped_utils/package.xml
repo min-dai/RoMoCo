@@ -9,7 +9,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
 
   <build_export_depend>eigen</build_export_depend>

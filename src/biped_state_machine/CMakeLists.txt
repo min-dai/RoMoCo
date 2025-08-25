@@ -12,7 +12,6 @@ endif()
 
 # Dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(biped_core REQUIRED)
 find_package(biped_command REQUIRED)
@@ -20,7 +19,6 @@ find_package(biped_control REQUIRED)
 find_package(torque_control REQUIRED)
 
 set(dependencies
-  rclcpp
   Eigen3
   biped_core
   biped_command

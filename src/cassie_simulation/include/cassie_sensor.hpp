@@ -2,7 +2,7 @@
 
 
 #include <Eigen/Dense>
-#include "biped_core/biped_constants.hpp"
+#include "biped_types/biped_constants.hpp"
 #include "biped_utils/geometry.hpp"
 #include "cassie_interface/cassie_out_t.h"
 struct cassie_sensor
