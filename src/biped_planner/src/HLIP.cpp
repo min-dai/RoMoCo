@@ -22,7 +22,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
     params.lambda = sqrt(params.grav / params.z0);
 
     // S2S dynamics
-    MatrixXd Busw(2, 1);
+    Eigen::MatrixXd Busw(2, 1);
 
     if (useMomentum_)
     {
@@ -44,7 +44,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
 
     Kdeadbeat = solve_deadbeat_gain(params.A_S2S, params.B_S2S);
 
-    Klqr = -solve_dlqr_gain(params.A_S2S, params.B_S2S, MatrixXd::Identity(2, 2), MatrixXd::Identity(1, 1) * 20, 0.00000001);
+    Klqr = -solve_dlqr_gain(params.A_S2S, params.B_S2S, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * 20, 0.00000001);
 
     //TODO:division by zero when Td=0
     params.a_DCM = exp(params.lambda * params.T);
@@ -54,7 +54,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
     }else{
         params.b_DCM = -exp(params.lambda * params.Ts);
     }
-    VectorXd klqr_DCM_vector = -solve_dlqr_gain(MatrixXd::Identity(1, 1) * params.a_DCM, MatrixXd::Identity(1, 1) * params.b_DCM, MatrixXd::Identity(1, 1), MatrixXd::Identity(1, 1), 0.00000001);
+    Eigen::VectorXd klqr_DCM_vector = -solve_dlqr_gain(Eigen::MatrixXd::Identity(1, 1) * params.a_DCM, Eigen::MatrixXd::Identity(1, 1) * params.b_DCM, Eigen::MatrixXd::Identity(1, 1), Eigen::MatrixXd::Identity(1, 1), 0.00000001);
     klqr_DCM = klqr_DCM_vector(0);
 
     // p1.K = Kdeadbeat;
@@ -79,7 +79,7 @@ void HLIP::updateDesiredWalking(double vel, double stepWidth)
     case P1orbit:
         // cout << "params.velDes = " <<params.velDes <<endl;
         p1.Udes = params.velDes * params.T;
-        p1.Xdes = (MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p1.Udes;
+        p1.Xdes = (Eigen::MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p1.Udes;
         p1.DCM_des = 1. / (1. - params.a_DCM) * (params.b_DCM) * p1.Udes;
         // cout << "p1.DCM_des  " << p1.DCM_des <<endl;
         break;
@@ -90,15 +90,15 @@ void HLIP::updateDesiredWalking(double vel, double stepWidth)
             // P1 orbit is trivially P2 orbit
             p2.UleftDes = vel * params.T;
             p2.UrightDes = vel * params.T;
-            p2.XleftDes = (MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p2.UleftDes;
-            p2.XrightDes = (MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p2.UrightDes;
+            p2.XleftDes = (Eigen::MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p2.UleftDes;
+            p2.XrightDes = (Eigen::MatrixXd::Identity(2, 2) - params.A_S2S).inverse() * params.B_S2S * p2.UrightDes;
         }
         else
         {
             p2.UleftDes = -stepWidth;
             p2.UrightDes = 2 * params.velDes * params.T - p2.UleftDes;
-            p2.XleftDes = (MatrixXd::Identity(2, 2) - params.A_S2S * params.A_S2S).inverse() * (params.A_S2S * params.B_S2S * p2.UleftDes + params.B_S2S * p2.UrightDes);
-            p2.XrightDes = (MatrixXd::Identity(2, 2) - params.A_S2S * params.A_S2S).inverse() * (params.A_S2S * params.B_S2S * p2.UrightDes + params.B_S2S * p2.UleftDes);
+            p2.XleftDes = (Eigen::MatrixXd::Identity(2, 2) - params.A_S2S * params.A_S2S).inverse() * (params.A_S2S * params.B_S2S * p2.UleftDes + params.B_S2S * p2.UrightDes);
+            p2.XrightDes = (Eigen::MatrixXd::Identity(2, 2) - params.A_S2S * params.A_S2S).inverse() * (params.A_S2S * params.B_S2S * p2.UrightDes + params.B_S2S * p2.UleftDes);
 
             p2.DCM_leftDes = 1. / (1. - params.a_DCM * params.a_DCM) * (params.a_DCM * params.b_DCM * p2.UleftDes + params.b_DCM * p2.UrightDes);
             p2.DCM_rightDes = 1. / (1. - params.a_DCM * params.a_DCM) * (params.a_DCM * params.b_DCM * p2.UrightDes + params.b_DCM * p2.UleftDes);
@@ -112,9 +112,9 @@ void HLIP::updateDesiredWalking(double vel, double stepWidth)
     }
 }
 
-Vector2d HLIP::getDesiredStepSizeDeadbeat(double p, double v, StanceStatus stanceLeg)
+Eigen::Vector2d HLIP::getDesiredStepSizeDeadbeat(double p, double v, StanceStatus stanceLeg)
 {
-    Vector2d out;
+    Eigen::Vector2d out;
 
     if (useDCM_)
     {
@@ -128,9 +128,9 @@ Vector2d HLIP::getDesiredStepSizeDeadbeat(double p, double v, StanceStatus stanc
     return out;
 };
 
-Vector2d HLIP::P1::getDeadbeatStepSize(double p, double v, double lambda)
+Eigen::Vector2d HLIP::P1::getDeadbeatStepSize(double p, double v, double lambda)
 {
-    Vector2d Xnow, dXnow;
+    Eigen::Vector2d Xnow, dXnow;
     Xnow << p, v;
 
     dXnow << v, pow(lambda, 2) * p;
@@ -149,10 +149,10 @@ Vector2d HLIP::P1::getDeadbeatStepSize(double p, double v, double lambda)
     return StepX;
 }
 
-Vector2d HLIP::P2::getDeadbeatStepSize(double p, double v, double lambda, StanceStatus stanceLeg)
+Eigen::Vector2d HLIP::P2::getDeadbeatStepSize(double p, double v, double lambda, StanceStatus stanceLeg)
 {
 
-    Vector2d Xnow, dXnow;
+    Eigen::Vector2d Xnow, dXnow;
     Xnow << p, v;
 
     dXnow << v, pow(lambda, 2) * p;
@@ -173,7 +173,7 @@ Vector2d HLIP::P2::getDeadbeatStepSize(double p, double v, double lambda, Stance
     return StepX;
 }
 
-Vector2d HLIP::P1::getDeadbeatStepSize_DCM(double p, double v, double lambda, double z0)
+Eigen::Vector2d HLIP::P1::getDeadbeatStepSize_DCM(double p, double v, double lambda, double z0)
 {
 
     double DCM_now = p + v / lambda / z0;
@@ -193,7 +193,7 @@ Vector2d HLIP::P1::getDeadbeatStepSize_DCM(double p, double v, double lambda, do
     return StepX;
 }
 
-Vector2d HLIP::P2::getDeadbeatStepSize_DCM(double p, double v, double lambda, double z0, StanceStatus stanceLeg)
+Eigen::Vector2d HLIP::P2::getDeadbeatStepSize_DCM(double p, double v, double lambda, double z0, StanceStatus stanceLeg)
 {
 
     double DCM_now = p + v / lambda / z0;
@@ -210,10 +210,10 @@ Vector2d HLIP::P2::getDeadbeatStepSize_DCM(double p, double v, double lambda, do
     return StepX;
 }
 
-Vector2d HLIP::get_LIPsol(double t, Vector2d X0)
+Eigen::Vector2d HLIP::get_LIPsol(double t, Eigen::Vector2d X0)
 {
     // given X(0), solve for X(t)
-    Vector2d sol;
+    Eigen::Vector2d sol;
     sol = (t * params.ASS).exp() * X0;
     return sol;
 }
@@ -226,17 +226,17 @@ double HLIP::getOrbitalEnergy(double p, double Ly)
                                         params.z0 * pow(p, 2);
 }
 
-Vector2d HLIP::solve_deadbeat_gain(Matrix2d A, Vector2d B)
+Eigen::Vector2d HLIP::solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B)
 {
     // explict solution for 2-by-2 matrix only
-    Matrix2d Atmp;
+    Eigen::Matrix2d Atmp;
     Atmp << -B(0), -B(1),
         A(1, 1) * B(0) - A(0, 1) * B(1), A(0, 0) * B(1) - A(1, 0) * B(0);
-    MatrixXd Btmp(2, 1);
+    Eigen::MatrixXd Btmp(2, 1);
     Btmp << A(0, 0) + A(1, 1),
         A(0, 1) * A(1, 0) - A(0, 0) * A(1, 1);
 
-    MatrixXd Ktmp = Atmp.inverse() * Btmp;
-    Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
+    Eigen::MatrixXd Ktmp = Atmp.inverse() * Btmp;
+    Eigen::Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
     return Kdeadbeat;
 };

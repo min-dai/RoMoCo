@@ -1,8 +1,8 @@
-#include "mujoco_interface/mujoco_interface.hpp"
+#include "mujoco_sim/mujoco_sim.hpp"
 
 #include "mujoco/mjvisualize.h"
 #include <cctype> // for toupper
-const char MujocoInterface::help_content_[] =
+const char MujocoSim::help_content_[] =
     "Alt mouse button\n"
     "UI right hold\n"
     "UI title double-click\n"
@@ -22,7 +22,7 @@ const char MujocoInterface::help_content_[] =
     "Ctrl [Shift] drag\n"
     "Ctrl [Shift] right drag";
 
-const char MujocoInterface::help_title_[] =
+const char MujocoSim::help_title_[] =
     "Swap left-right\n"
     "Show UI shortcuts\n"
     "Expand/collapse all  \n"
@@ -42,31 +42,31 @@ const char MujocoInterface::help_title_[] =
     "Object rotate\n"
     "Object translate";
 
-MujocoInterface *MujocoInterface::instance_ = nullptr;
+MujocoSim *MujocoSim::instance_ = nullptr;
 
-MujocoInterface::MujocoInterface()
+MujocoSim::MujocoSim()
     : m(nullptr), d(nullptr)
 {
     instance_ = this;
 }
 
-MujocoInterface::~MujocoInterface()
+MujocoSim::~MujocoSim()
 {
     Close();
     instance_ = nullptr;
 }
 
-void MujocoInterface::Sim1StepForward()
+void MujocoSim::Sim1StepForward()
 {
     mj_step(m, d);
 }
 
-bool MujocoInterface::IsWindowOpen() const
+bool MujocoSim::IsWindowOpen() const
 {
     return vis_.window && !glfwWindowShouldClose(vis_.window);
 }
 
-bool MujocoInterface::Init(const char *modelfile, int width, int height, bool headless)
+bool MujocoSim::Init(const char *modelfile, int width, int height, bool headless)
 {
     char error[1000] = "Could not load binary model";
     m = mj_loadXML(modelfile, nullptr, error, 1000);
@@ -133,7 +133,7 @@ bool MujocoInterface::Init(const char *modelfile, int width, int height, bool he
     return true;
 }
 
-void MujocoInterface::Close()
+void MujocoSim::Close()
 {
     if (vis_.pipe_video_out)
     {
@@ -167,7 +167,7 @@ void MujocoInterface::Close()
     std::cout << "Mujoco simulation closed successfully." << std::endl;
 }
 
-std::vector<int> MujocoInterface::GetActuatorIdsByName(const std::vector<std::string> &actuator_names)
+std::vector<int> MujocoSim::GetActuatorIdsByName(const std::vector<std::string> &actuator_names)
 {
     std::vector<int> actuator_ids;
 
@@ -185,7 +185,7 @@ std::vector<int> MujocoInterface::GetActuatorIdsByName(const std::vector<std::st
     return actuator_ids;
 }
 
-std::vector<int> MujocoInterface::GetSensorIdsByName(const std::vector<std::string> &sensor_names)
+std::vector<int> MujocoSim::GetSensorIdsByName(const std::vector<std::string> &sensor_names)
 {
     std::vector<int> sensor_ids;
 
@@ -203,7 +203,7 @@ std::vector<int> MujocoInterface::GetSensorIdsByName(const std::vector<std::stri
     return sensor_ids;
 }
 
-std::vector<int> MujocoInterface::GetJointIdsByName(const std::vector<std::string> &joint_names)
+std::vector<int> MujocoSim::GetJointIdsByName(const std::vector<std::string> &joint_names)
 {
     std::vector<int> joint_ids;
 
@@ -221,7 +221,7 @@ std::vector<int> MujocoInterface::GetJointIdsByName(const std::vector<std::strin
     return joint_ids;
 }
 
-void MujocoInterface::set_1dof_joint_qpos(const Eigen::VectorXd &qpos, const std::vector<int> &joint_ids)
+void MujocoSim::set_1dof_joint_qpos(const Eigen::VectorXd &qpos, const std::vector<int> &joint_ids)
 {
     assert(joint_ids.size() == qpos.size());
     for (size_t i = 0; i < joint_ids.size(); i++)
@@ -237,7 +237,7 @@ void MujocoInterface::set_1dof_joint_qpos(const Eigen::VectorXd &qpos, const std
     }
 }
 
-void MujocoInterface::set_base_quaternion(const Eigen::Vector4d &quat)
+void MujocoSim::set_base_quaternion(const Eigen::Vector4d &quat)
 {
     // w,x,y,z
     d->qpos[3] = quat[0];
@@ -246,14 +246,14 @@ void MujocoInterface::set_base_quaternion(const Eigen::Vector4d &quat)
     d->qpos[6] = quat[3];
 }
 
-void MujocoInterface::set_base_pos(const Eigen::Vector3d &pos)
+void MujocoSim::set_base_pos(const Eigen::Vector3d &pos)
 {
     d->qpos[0] = pos[0];
     d->qpos[1] = pos[1];
     d->qpos[2] = pos[2];
 }
 
-void MujocoInterface::set_qpos(const Eigen::VectorXd &qpos)
+void MujocoSim::set_qpos(const Eigen::VectorXd &qpos)
 {
     assert(qpos.size() == m->nq);
     for (int i = 0; i < qpos.size(); i++)
@@ -262,7 +262,7 @@ void MujocoInterface::set_qpos(const Eigen::VectorXd &qpos)
     }
 }
 
-void MujocoInterface::set_zero_qvel()
+void MujocoSim::set_zero_qvel()
 {
     for (int i = 0; i < m->nv; i++)
     {
@@ -270,7 +270,7 @@ void MujocoInterface::set_zero_qvel()
     }
 }
 
-void MujocoInterface::set_zero_qacc()
+void MujocoSim::set_zero_qacc()
 {
     for (int i = 0; i < m->nv; i++)
     {
@@ -278,7 +278,7 @@ void MujocoInterface::set_zero_qacc()
     }
 }
 
-void MujocoInterface::keyboard(GLFWwindow *window, int key, int scancode, int act, int mods)
+void MujocoSim::keyboard(GLFWwindow *window, int key, int scancode, int act, int mods)
 {
     if (act == GLFW_PRESS)
     {
@@ -375,7 +375,7 @@ void MujocoInterface::keyboard(GLFWwindow *window, int key, int scancode, int ac
     }
 }
 
-void MujocoInterface::mouse_button(GLFWwindow *window, int button, int act, int mods)
+void MujocoSim::mouse_button(GLFWwindow *window, int button, int act, int mods)
 {
     instance_->vis_.button_left = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
     instance_->vis_.button_middle = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS);
@@ -384,7 +384,7 @@ void MujocoInterface::mouse_button(GLFWwindow *window, int button, int act, int 
     glfwGetCursorPos(window, &instance_->vis_.lastx, &instance_->vis_.lasty);
 }
 
-void MujocoInterface::mouse_move(GLFWwindow *window, double xpos, double ypos)
+void MujocoSim::mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
     if (!instance_->vis_.button_left && !instance_->vis_.button_middle && !instance_->vis_.button_right)
         return;
@@ -411,12 +411,12 @@ void MujocoInterface::mouse_move(GLFWwindow *window, double xpos, double ypos)
     mjv_moveCamera(instance_->m, action, dx / height, dy / height, &instance_->scn, &instance_->cam);
 }
 
-void MujocoInterface::scroll(GLFWwindow *window, double xoffset, double yoffset)
+void MujocoSim::scroll(GLFWwindow *window, double xoffset, double yoffset)
 {
     mjv_moveCamera(instance_->m, mjMOUSE_ZOOM, 0, -0.05 * yoffset, &instance_->scn, &instance_->cam);
 }
 
-void MujocoInterface::Render()
+void MujocoSim::Render()
 {
     vis_.window = glfwGetCurrentContext();
 
@@ -467,7 +467,7 @@ void MujocoInterface::Render()
     glfwPollEvents();
 }
 
-void MujocoInterface::UpdateControlInput(const Eigen::VectorXd &u, const std::vector<int> &actuator_ids)
+void MujocoSim::UpdateControlInput(const Eigen::VectorXd &u, const std::vector<int> &actuator_ids)
 {
     assert(u.size() == static_cast<Eigen::Index>(actuator_ids.size()));
 
@@ -485,7 +485,7 @@ void MujocoInterface::UpdateControlInput(const Eigen::VectorXd &u, const std::ve
     }
 }
 
-std::vector<double> MujocoInterface::GetSensorDataById(int sensor_id)
+std::vector<double> MujocoSim::GetSensorDataById(int sensor_id)
 {
     assert(sensor_id >= 0 && sensor_id < m->nsensor);
     // Get the address of the sensor data
@@ -503,7 +503,7 @@ std::vector<double> MujocoInterface::GetSensorDataById(int sensor_id)
     return sensor_data;
 }
 
-Eigen::VectorXd MujocoInterface::GetSensorDataByIds(const std::vector<int> &sensor_ids)
+Eigen::VectorXd MujocoSim::GetSensorDataByIds(const std::vector<int> &sensor_ids)
 {
     std::vector<double> sensor_data;
 
@@ -516,7 +516,7 @@ Eigen::VectorXd MujocoInterface::GetSensorDataByIds(const std::vector<int> &sens
     return Eigen::Map<Eigen::VectorXd>(sensor_data.data(), sensor_data.size());
 }
 
-Eigen::VectorXd MujocoInterface::GetJointVelocitiesByIds(const std::vector<int> &joint_ids)
+Eigen::VectorXd MujocoSim::GetJointVelocitiesByIds(const std::vector<int> &joint_ids)
 {
     std::vector<double> joint_velocity;
 
@@ -532,7 +532,7 @@ Eigen::VectorXd MujocoInterface::GetJointVelocitiesByIds(const std::vector<int> 
     return Eigen::Map<Eigen::VectorXd>(joint_velocity.data(), joint_velocity.size());
 }
 
-Eigen::VectorXd MujocoInterface::GetJointPositionsByIds(const std::vector<int> &joint_ids)
+Eigen::VectorXd MujocoSim::GetJointPositionsByIds(const std::vector<int> &joint_ids)
 {
     std::vector<double> joint_position;
 
@@ -548,7 +548,7 @@ Eigen::VectorXd MujocoInterface::GetJointPositionsByIds(const std::vector<int> &
     return Eigen::Map<Eigen::VectorXd>(joint_position.data(), joint_position.size());
 }
 
-void MujocoInterface::StartVideoRecording(const char *filename, int fps)
+void MujocoSim::StartVideoRecording(const char *filename, int fps)
 {
 
     char ffmpeg_cmd[1000] = "ffmpeg -hide_banner -loglevel error -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -s ";
@@ -574,7 +574,7 @@ void MujocoInterface::StartVideoRecording(const char *filename, int fps)
     vis_.pipe_video_out = popen(ffmpeg_cmd, "w");
 }
 
-void MujocoInterface::RecordVideoFrame()
+void MujocoSim::RecordVideoFrame()
 {
     mjrRect viewport = {0, 0, 0, 0};
 
@@ -585,7 +585,7 @@ void MujocoInterface::RecordVideoFrame()
     fwrite(vis_.frame, 1, vis_.video_width * vis_.video_height * 3, vis_.pipe_video_out);
 }
 
-void MujocoInterface::StopVideoRecording()
+void MujocoSim::StopVideoRecording()
 {
     if (vis_.pipe_video_out != NULL)
     {
@@ -596,7 +596,7 @@ void MujocoInterface::StopVideoRecording()
     }
 }
 
-void MujocoInterface::SimHoldPelvis()
+void MujocoSim::SimHoldPelvis()
 {
     // Hold translational DOFs (index 0–2)
     for (int i = 0; i < 3; ++i)
@@ -618,7 +618,7 @@ void MujocoInterface::SimHoldPelvis()
     }
 }
 
-void MujocoInterface::SimReleasePelvis()
+void MujocoSim::SimReleasePelvis()
 {
     // Release translational DOFs
     for (int i = 0; i < 3; ++i)

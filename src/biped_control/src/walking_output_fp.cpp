@@ -254,19 +254,19 @@ void WalkingOutputFp::ComputeDesired()
    }
 }
 
-Vector2d WalkingOutputFp::computeFPwithROmodel()
+Eigen::Vector2d WalkingOutputFp::computeFPwithROmodel()
 {
 
    // swing x and y
-   Vector4d x_now;
+   Eigen::Vector4d x_now;
    x_now << com_rel_to_below_ankle.states.pCOM.x(), com_rel_to_below_ankle.states.Lpivot.y(), com_rel_to_below_ankle.states.pCOM.y(), com_rel_to_below_ankle.states.Lpivot.x();
    double T2imp = (updated.PhaseRange(1) - phase.pActual);
    planner_input_.UpdateInputLIP(x_now, domain.stance, T2imp);
    planner_output_ = ROplanner->UpdatePlan(planner_input_);
-   Vector2d stepSize = planner_output_.footstep;
+   Eigen::Vector2d stepSize = planner_output_.footstep;
    double ang = updated.target_yaw - robot_->q()(BaseRotZ); // convert from target yaw frame to local frame
-   MatrixXd mat = AngleAxis<double>(ang, Vector3d(0, 0, 1)).toRotationMatrix();
-   Vector3d StepLocal(stepSize(0), stepSize(1), 0);
+   Eigen::MatrixXd mat = Eigen::AngleAxis<double>(ang, Eigen::Vector3d(0, 0, 1)).toRotationMatrix();
+   Eigen::Vector3d StepLocal(stepSize(0), stepSize(1), 0);
    StepLocal = mat * StepLocal;
 
    StepLocal.y() = (domain.isLeftStance()) ? std::clamp(StepLocal(1), -0.6, -0.1) : std::clamp(StepLocal(1), 0.1, 0.6);
@@ -276,7 +276,7 @@ Vector2d WalkingOutputFp::computeFPwithROmodel()
 
 void WalkingOutputFp::ComputeActual()
 {
-   Matrix3d Rbase = robot_->GetBaseR_yaw();
+   Eigen::Matrix3d Rbase = robot_->GetBaseR_yaw();
    // TODO: changed COM to base
    if (domain.isLeftStance())
    {
@@ -340,21 +340,21 @@ void WalkingOutputFp::ComputeActual()
 void WalkingOutputFp::updateCOMstates() // in target yaw frame
 {
    Kinematics3D p_stance = (domain.isLeftStance()) ? robot_->left_below_ankle_kinematics() : robot_->right_below_ankle_kinematics();
-   Vector3d Lcom = robot_->ComputeCentroidalAngularMomentum() / robot_->mass();
+   Eigen::Vector3d Lcom = robot_->ComputeCentroidalAngularMomentum() / robot_->mass();
 
    com_rel_to_below_ankle.compute(robot_->com_kinematics().position, robot_->com_kinematics().velocity, p_stance.position, Lcom, updated.target_yaw, updated.dt);
 }
 
-std::vector<VectorXd> WalkingOutputFp::CollectLog() const
+std::vector<Eigen::VectorXd> WalkingOutputFp::CollectLog() const
 {
-   std::vector<VectorXd> log;
+   std::vector<Eigen::VectorXd> log;
 
    log = {com_rel_to_below_ankle.states.pCOM,
           com_rel_to_below_ankle.states.vCOM,
           com_rel_to_below_ankle.states.Lcom,
           com_rel_to_below_ankle.states.Lpivot,
-          VectorXd::Constant(1, updated.desiredVx),
-          VectorXd::Constant(1, updated.desiredVy)};
+          Eigen::VectorXd::Constant(1, updated.desiredVx),
+          Eigen::VectorXd::Constant(1, updated.desiredVy)};
 
    return log;
 }

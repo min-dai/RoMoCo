@@ -55,9 +55,9 @@ void MLIP::updateMLIP(double z0, double TOA, double TFA, double TUA)
 
     double eps = 0.00000001;
 
-    Klqr_h2t = -solve_dlqr_gain(params.A2_S2S_h2t, params.B2_S2S_h2t, MatrixXd::Identity(2, 2), MatrixXd::Identity(1, 1) * r, eps);
-    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, MatrixXd::Identity(2, 2), MatrixXd::Identity(1, 1) * r, eps);
-    Klqr_t2h = -solve_dlqr_gain(params.A2_S2S_t2h, params.B2_S2S_t2h, MatrixXd::Identity(2, 2), MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_h2t = -solve_dlqr_gain(params.A2_S2S_h2t, params.B2_S2S_h2t, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_t2h = -solve_dlqr_gain(params.A2_S2S_t2h, params.B2_S2S_t2h, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
 
     // p1.K = Kdeadbeat;
     // p2.K = Kdeadbeat;
@@ -68,14 +68,14 @@ void MLIP::updateMLIP(double z0, double TOA, double TFA, double TUA)
     p1.K_t2h = Klqr_t2h;
     r = 1;
 
-    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, MatrixXd::Identity(2, 2), MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
 
     p2.K = Klqr_flat;
 }
 
-Matrix3d MLIP::Params::getAconvT(double T)
+Eigen::Matrix3d MLIP::Params::getAconvT(double T)
 {
-    MatrixXd Aconv = MatrixXd::Zero(3, 3);
+    Eigen::MatrixXd Aconv = Eigen::MatrixXd::Zero(3, 3);
     if (useMomentum)
     {
         Aconv << sinh(T * lambda) / lambda, (2 * pow(sinh((T * lambda) / 2), 2)) / (pow(lambda, 2) * z0), T - sinh(T * lambda) / lambda,
@@ -91,32 +91,32 @@ Matrix3d MLIP::Params::getAconvT(double T)
     return Aconv;
 }
 
-void MLIP::Params::getABC_S2S(double l, MatrixXd &As2s, MatrixXd &Bs2s, MatrixXd &Cs2s)
+void MLIP::Params::getABC_S2S(double l, Eigen::MatrixXd &As2s, Eigen::MatrixXd &Bs2s, Eigen::MatrixXd &Cs2s)
 {
     double Teps = .01;
 
-    MatrixXd Abar_OA = (TOA * A).exp();
-    MatrixXd BOA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_OA = (TOA * A).exp();
+    Eigen::MatrixXd BOA = Eigen::MatrixXd::Zero(3, 1);
     BOA(2) = (TOA > Teps) ? 1 / TOA : 0.;
-    MatrixXd Aconv_OA = getAconvT(TOA);
-    MatrixXd Bbar_OA = Aconv_OA * BOA;
+    Eigen::MatrixXd Aconv_OA = getAconvT(TOA);
+    Eigen::MatrixXd Bbar_OA = Aconv_OA * BOA;
 
-    MatrixXd Bdelta(3, 1), Cdelta(3, 1);
+    Eigen::MatrixXd Bdelta(3, 1), Cdelta(3, 1);
     Bdelta << -1, 0, -1;
     Bdelta(2) = (TOA > Teps) ? Bdelta(2) : 0.;
     Cdelta << -l, 0, -l;
 
-    MatrixXd Abar_FA = (TFA * A).exp();
-    MatrixXd BFA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_FA = (TFA * A).exp();
+    Eigen::MatrixXd BFA = Eigen::MatrixXd::Zero(3, 1);
     BFA(2) = (TFA > Teps) ? 1 / TFA : 0.;
-    MatrixXd Aconv_FA = getAconvT(TFA);
-    MatrixXd Cbar_FA = Aconv_FA * BFA * l;
+    Eigen::MatrixXd Aconv_FA = getAconvT(TFA);
+    Eigen::MatrixXd Cbar_FA = Aconv_FA * BFA * l;
 
-    MatrixXd Abar_UA = (TUA * A).exp();
+    Eigen::MatrixXd Abar_UA = (TUA * A).exp();
 
-    MatrixXd A3s2s = Abar_UA * Abar_FA * Abar_OA;
-    MatrixXd B3s2s = Abar_UA * Abar_FA * (Bbar_OA + Bdelta);
-    MatrixXd C3s2s = Abar_UA * Abar_FA * Cdelta + Abar_UA * Cbar_FA;
+    Eigen::MatrixXd A3s2s = Abar_UA * Abar_FA * Abar_OA;
+    Eigen::MatrixXd B3s2s = Abar_UA * Abar_FA * (Bbar_OA + Bdelta);
+    Eigen::MatrixXd C3s2s = Abar_UA * Abar_FA * Cdelta + Abar_UA * Cbar_FA;
 
     As2s = A3s2s.block(0, 0, 2, 2);
     Bs2s = B3s2s.block(0, 0, 2, 1);
@@ -132,15 +132,15 @@ void MLIP::updateDesiredWalking(double vel, double stepWidth)
     {
     case P1orbit:
         p1.Udes_h2t = params.velDes * params.T - params.l_heel2toe;
-        p1.Xdes_h2t = (MatrixXd::Identity(2, 2) - params.A2_S2S_h2t).inverse() * (params.B2_S2S_h2t * p1.Udes_h2t + params.C2_S2S_h2t);
+        p1.Xdes_h2t = (Eigen::MatrixXd::Identity(2, 2) - params.A2_S2S_h2t).inverse() * (params.B2_S2S_h2t * p1.Udes_h2t + params.C2_S2S_h2t);
         solveXdesFAminus_XdesFAplus(params.l_heel2toe, p1.Xdes_h2t, p1.Udes_h2t, p1.XdesFAminus_h2t, p1.XdesFAplus_h2t);
 
         p1.Udes_flat = params.velDes * params.T - params.l_flat;
-        p1.Xdes_flat = (MatrixXd::Identity(2, 2) - params.A2_S2S_flat).inverse() * (params.B2_S2S_flat * p1.Udes_flat + params.C2_S2S_flat);
+        p1.Xdes_flat = (Eigen::MatrixXd::Identity(2, 2) - params.A2_S2S_flat).inverse() * (params.B2_S2S_flat * p1.Udes_flat + params.C2_S2S_flat);
         solveXdesFAminus_XdesFAplus(params.l_flat, p1.Xdes_flat, p1.Udes_flat, p1.XdesFAminus_flat, p1.XdesFAplus_flat);
 
         p1.Udes_t2h = params.velDes * params.T - params.l_toe2heel;
-        p1.Xdes_t2h = (MatrixXd::Identity(2, 2) - params.A2_S2S_t2h).inverse() * (params.B2_S2S_t2h * p1.Udes_t2h + params.C2_S2S_t2h);
+        p1.Xdes_t2h = (Eigen::MatrixXd::Identity(2, 2) - params.A2_S2S_t2h).inverse() * (params.B2_S2S_t2h * p1.Udes_t2h + params.C2_S2S_t2h);
         solveXdesFAminus_XdesFAplus(params.l_toe2heel, p1.Xdes_t2h, p1.Udes_t2h, p1.XdesFAminus_t2h, p1.XdesFAplus_t2h);
 
         break;
@@ -156,8 +156,8 @@ void MLIP::updateDesiredWalking(double vel, double stepWidth)
             {
                 p2.UleftDes = -stepWidth;
                 p2.UrightDes = 2 * params.velDes * params.T - p2.UleftDes;
-                p2.XleftDes = (MatrixXd::Identity(2, 2) - params.A2_S2S_flat * params.A2_S2S_flat).inverse() * (params.A2_S2S_flat * params.B2_S2S_flat * p2.UleftDes + params.B2_S2S_flat * p2.UrightDes + params.A2_S2S_flat * params.C2_S2S_flat + params.C2_S2S_flat);
-                p2.XrightDes = (MatrixXd::Identity(2, 2) - params.A2_S2S_flat * params.A2_S2S_flat).inverse() * (params.A2_S2S_flat * params.B2_S2S_flat * p2.UrightDes + params.B2_S2S_flat * p2.UleftDes + params.A2_S2S_flat * params.C2_S2S_flat + params.C2_S2S_flat);
+                p2.XleftDes = (Eigen::MatrixXd::Identity(2, 2) - params.A2_S2S_flat * params.A2_S2S_flat).inverse() * (params.A2_S2S_flat * params.B2_S2S_flat * p2.UleftDes + params.B2_S2S_flat * p2.UrightDes + params.A2_S2S_flat * params.C2_S2S_flat + params.C2_S2S_flat);
+                p2.XrightDes = (Eigen::MatrixXd::Identity(2, 2) - params.A2_S2S_flat * params.A2_S2S_flat).inverse() * (params.A2_S2S_flat * params.B2_S2S_flat * p2.UrightDes + params.B2_S2S_flat * p2.UleftDes + params.A2_S2S_flat * params.C2_S2S_flat + params.C2_S2S_flat);
 
                 solveXdesUAminus_XdesUAplus(0, p2.XrightDes, p2.UrightDes, p2.XdesFAminus_left, p2.XdesFAplus_left);
                 solveXdesUAminus_XdesUAplus(0, p2.XleftDes, p2.UleftDes, p2.XdesFAminus_right, p2.XdesFAplus_right);
@@ -172,7 +172,7 @@ void MLIP::updateDesiredWalking(double vel, double stepWidth)
     }
 }
 
-void MLIP::solveXdesFAminus_XdesFAplus(double l, Vector2d Xdes, double Udes, Vector2d &XdesFAminus, Vector2d &XdesFAplus)
+void MLIP::solveXdesFAminus_XdesFAplus(double l, Eigen::Vector2d Xdes, double Udes, Eigen::Vector2d &XdesFAminus, Eigen::Vector2d &XdesFAplus)
 {
     double Teps = .01;
 
@@ -180,26 +180,26 @@ void MLIP::solveXdesFAminus_XdesFAplus(double l, Vector2d Xdes, double Udes, Vec
     double TFA = params.TFA;
     double TUA = params.TUA;
 
-    MatrixXd Abar_OA = (TOA * params.A).exp();
-    MatrixXd BOA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_OA = (TOA * params.A).exp();
+    Eigen::MatrixXd BOA = Eigen::MatrixXd::Zero(3, 1);
     BOA(2) = (TOA > Teps) ? 1 / TOA : 0.;
-    MatrixXd Aconv_OA = params.getAconvT(TOA);
-    MatrixXd Bbar_OA = Aconv_OA * BOA;
+    Eigen::MatrixXd Aconv_OA = params.getAconvT(TOA);
+    Eigen::MatrixXd Bbar_OA = Aconv_OA * BOA;
 
-    MatrixXd Bdelta(3, 1), Cdelta(3, 1);
+    Eigen::MatrixXd Bdelta(3, 1), Cdelta(3, 1);
     Bdelta << -1, 0, -1;
     Bdelta(2) = (TOA > Teps) ? Bdelta(2) : 0.;
     Cdelta << -l, 0, -l;
 
-    MatrixXd Abar_FA = (TFA * params.A).exp();
-    MatrixXd BFA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_FA = (TFA * params.A).exp();
+    Eigen::MatrixXd BFA = Eigen::MatrixXd::Zero(3, 1);
     BFA(2) = (TFA > Teps) ? 1 / TFA : 0.;
-    MatrixXd Aconv_FA = params.getAconvT(TFA);
-    MatrixXd Cbar_FA = Aconv_FA * BFA * l;
+    Eigen::MatrixXd Aconv_FA = params.getAconvT(TFA);
+    Eigen::MatrixXd Cbar_FA = Aconv_FA * BFA * l;
 
-    MatrixXd Abar_UA = (TUA * params.A).exp();
+    Eigen::MatrixXd Abar_UA = (TUA * params.A).exp();
 
-    Vector3d Xdes3, XdesFAminus3, XdesFAplus3;
+    Eigen::Vector3d Xdes3, XdesFAminus3, XdesFAplus3;
 
     Xdes3 << Xdes, 0;
     XdesFAminus3 = Abar_UA.inverse() * Xdes3;
@@ -217,7 +217,7 @@ void MLIP::solveXdesFAminus_XdesFAplus(double l, Vector2d Xdes, double Udes, Vec
     // cout <<  "XdesFAplus= " << XdesFAplus.transpose() << endl;
 }
 
-void MLIP::solveXdesUAminus_XdesUAplus(double l, Vector2d Xdes, double Udes, Vector2d &XdesFAminus, Vector2d &XdesFAplus)
+void MLIP::solveXdesUAminus_XdesUAplus(double l, Eigen::Vector2d Xdes, double Udes, Eigen::Vector2d &XdesFAminus, Eigen::Vector2d &XdesFAplus)
 {
     double Teps = .01;
 
@@ -225,26 +225,26 @@ void MLIP::solveXdesUAminus_XdesUAplus(double l, Vector2d Xdes, double Udes, Vec
     double TFA = params.TFA;
     double TUA = params.TUA;
 
-    MatrixXd Abar_OA = (TOA * params.A).exp();
-    MatrixXd BOA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_OA = (TOA * params.A).exp();
+    Eigen::MatrixXd BOA = Eigen::MatrixXd::Zero(3, 1);
     BOA(2) = (TOA > Teps) ? 1 / TOA : 0.;
-    MatrixXd Aconv_OA = params.getAconvT(TOA);
-    MatrixXd Bbar_OA = Aconv_OA * BOA;
+    Eigen::MatrixXd Aconv_OA = params.getAconvT(TOA);
+    Eigen::MatrixXd Bbar_OA = Aconv_OA * BOA;
 
-    MatrixXd Bdelta(3, 1), Cdelta(3, 1);
+    Eigen::MatrixXd Bdelta(3, 1), Cdelta(3, 1);
     Bdelta << -1, 0, -1;
     Bdelta(2) = (TOA > Teps) ? Bdelta(2) : 0.;
     Cdelta << -l, 0, -l;
 
-    MatrixXd Abar_FA = (TFA * params.A).exp();
-    MatrixXd BFA = MatrixXd::Zero(3, 1);
+    Eigen::MatrixXd Abar_FA = (TFA * params.A).exp();
+    Eigen::MatrixXd BFA = Eigen::MatrixXd::Zero(3, 1);
     BFA(2) = (TFA > Teps) ? 1 / TFA : 0.;
-    MatrixXd Aconv_FA = params.getAconvT(TFA);
-    MatrixXd Cbar_FA = Aconv_FA * BFA * l;
+    Eigen::MatrixXd Aconv_FA = params.getAconvT(TFA);
+    Eigen::MatrixXd Cbar_FA = Aconv_FA * BFA * l;
 
-    MatrixXd Abar_UA = (TUA * params.A).exp();
+    Eigen::MatrixXd Abar_UA = (TUA * params.A).exp();
 
-    Vector3d Xdes3, XdesUAminus3, XdesUAplus3;
+    Eigen::Vector3d Xdes3, XdesUAminus3, XdesUAplus3;
 
     Xdes3 << Xdes, 0;
     // XdesFAminus3 = Abar_UA.inverse()*Xdes3;
@@ -262,7 +262,7 @@ void MLIP::solveXdesUAminus_XdesUAplus(double l, Vector2d Xdes, double Udes, Vec
     // cout <<  "XdesFAplus= " << XdesFAplus.transpose() << endl;
 }
 
-double MLIP::getStepSize_P1_varimode(Vector2d Xtoe, Vector2d Xheel, Vector2d Xmid, int &mode)
+double MLIP::getStepSize_P1_varimode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int &mode)
 {
     //     // cout << "*****************" <<endl;
     //     //get initial mode from desired velocity, steplength= u(k=0)
@@ -335,7 +335,7 @@ double MLIP::getStepSize_P1_varimode(Vector2d Xtoe, Vector2d Xheel, Vector2d Xmi
     return stepLength;
 }
 
-double MLIP::getStepSize_P1_fixedmode(Vector2d Xtoe, Vector2d Xheel, Vector2d Xmid, int mode, double deltau_prev)
+double MLIP::getStepSize_P1_fixedmode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int mode, double deltau_prev)
 {
     double stepLength;
     if (mode == mode_heel2toe)
@@ -370,7 +370,7 @@ double MLIP::getStepSize_P1_fixedmode(Vector2d Xtoe, Vector2d Xheel, Vector2d Xm
     return stepLength;
 }
 
-double MLIP::getStepSize_P2(Vector2d X, StanceStatus stanceLegIdx, double deltau_prev)
+double MLIP::getStepSize_P2(Eigen::Vector2d X, StanceStatus stanceLegIdx, double deltau_prev)
 {
 
     // Vector2d Xnow, dXnow;
@@ -409,12 +409,12 @@ double MLIP::solve_Ts()
     return Ts;
 }
 
-Vector3d MLIP::get_MLIPsol3(double t, Vector3d X0, double dpzmp)
+Eigen::Vector3d MLIP::get_MLIPsol3(double t, Eigen::Vector3d X0, double dpzmp)
 {
     // given X(0), solve for X(t)
-    Vector3d sol3;
-    MatrixXd Aconv = params.getAconvT(t);
-    VectorXd B(3);
+    Eigen::Vector3d sol3;
+    Eigen::MatrixXd Aconv = params.getAconvT(t);
+    Eigen::VectorXd B(3);
     B << 0, 0, 1;
     sol3 = (t * params.A).exp() * X0 + Aconv * B * dpzmp;
 
@@ -424,15 +424,15 @@ Vector3d MLIP::get_MLIPsol3(double t, Vector3d X0, double dpzmp)
     return sol3;
 }
 
-Vector2d MLIP::get_MLIPsol2(double t, Vector3d X0, double dpzmp)
+Eigen::Vector2d MLIP::get_MLIPsol2(double t, Eigen::Vector3d X0, double dpzmp)
 {
     // given X(0), solve for X(t)
-    Vector3d sol3;
-    MatrixXd Aconv = params.getAconvT(t);
-    VectorXd B(3);
+    Eigen::Vector3d sol3;
+    Eigen::MatrixXd Aconv = params.getAconvT(t);
+    Eigen::VectorXd B(3);
     B << 0, 0, 1;
     sol3 = (t * params.A).exp() * X0 + Aconv * B * dpzmp;
-    Vector2d sol2 = sol3.segment(0, 2);
+    Eigen::Vector2d sol2 = sol3.segment(0, 2);
 
     return sol2;
 }
@@ -444,17 +444,17 @@ double MLIP::getOrbitalEnergy(double p, double Ly)
     return pow(Ly / params.z0, 2) - params.grav / params.z0 * pow(p, 2);
 }
 
-Vector2d MLIP::solve_deadbeat_gain(Matrix2d A, Vector2d B)
+Eigen::Vector2d MLIP::solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B)
 {
     // explict solution for 2-by-2 matrix only
-    Matrix2d Atmp;
+    Eigen::Matrix2d Atmp;
     Atmp << -B(0), -B(1),
         A(1, 1) * B(0) - A(0, 1) * B(1), A(0, 0) * B(1) - A(1, 0) * B(0);
-    MatrixXd Btmp(2, 1);
+    Eigen::MatrixXd Btmp(2, 1);
     Btmp << A(0, 0) + A(1, 1),
         A(0, 1) * A(1, 0) - A(0, 0) * A(1, 1);
 
-    MatrixXd Ktmp = Atmp.inverse() * Btmp;
-    Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
+    Eigen::MatrixXd Ktmp = Atmp.inverse() * Btmp;
+    Eigen::Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
     return Kdeadbeat;
 };

@@ -6,7 +6,7 @@
 #include "biped_core/com_states_rel_to_stance.hpp"
 #include "biped_planner/flatfoot_fp_planner.hpp"
 
-using namespace Eigen;
+
 using std::cout;
 using std::endl;
 

@@ -1,4 +1,4 @@
-#include "biped_state_machine/basic_state_machine.hpp"
+#include "biped_state_machine/basic_controller_state_machine.hpp"
 
 #include <filesystem> //for create_directories
 
@@ -15,24 +15,23 @@
 #include "biped_control/inair_output.hpp"
 
 //enum classes
-#include "screen_radio/radio_slider_map.hpp"
 #include "biped_types/biped_constants.hpp"
-#include "biped_types/biped_motor_commands.hpp"
 
-BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim)
-    : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))
+
+BasicControllerStateMachine::BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
+    : config_folder_(config_folder), log_path_(log_path)
 {
    Init(config_folder, log_path, robot_ptr);
 }
 
 
 //destructor
-BasicStateMachine::~BasicStateMachine()
+BasicControllerStateMachine::~BasicControllerStateMachine()
 {
    Close();
 }
 
-void BasicStateMachine::Close()
+void BasicControllerStateMachine::Close()
 {
    if (logFile_.is_open())
    {
@@ -43,7 +42,7 @@ void BasicStateMachine::Close()
 
 
 
-void BasicStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
+void BasicControllerStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
 {
    //  Initialize the robot config folder and log path
    std::string mujoco_config_file = config_folder + "/mujoco_config.yaml";
@@ -67,33 +66,33 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
    std::vector<std::string> locked_joints_names = yaml_parser.get_string_vector("locked_joints_names");
    n_locked_joints_ = locked_joints_names.size();
 
-   Eigen::VectorXd Kp_locked_joints, Kd_locked_joints;
+   VectorXd Kp_locked_joints, Kd_locked_joints;
 
    if (n_locked_joints_ > 0)
    {
-      q_locked_joints_des_ = Eigen::VectorXd::Zero(n_locked_joints_);
+      q_locked_joints_des_ = VectorXd::Zero(n_locked_joints_);
 
       q_locked_joints_des_ = yaml_parser.get_VectorXd("qdes_locked_joints");
-      dq_locked_joints_des_ = Eigen::VectorXd::Zero(n_locked_joints_);
+      dq_locked_joints_des_ = VectorXd::Zero(n_locked_joints_);
       Kp_locked_joints = yaml_parser.get_VectorXd("Kp_locked_joints");
       Kd_locked_joints = yaml_parser.get_VectorXd("Kd_locked_joints");
       locked_joints_pd_controller_.Reconfigure(Kp_locked_joints, Kd_locked_joints);
    }
-   locked_input_ = Eigen::VectorXd::Zero(n_locked_joints_);
+   locked_input_ = VectorXd::Zero(n_locked_joints_);
 
-   t_old_ = 0;
 
-   qfull_ = Eigen::VectorXd::Zero(robot_ptr->nq() + n_locked_joints_);
-   dqfull_ = Eigen::VectorXd::Zero(robot_ptr->nv() + n_locked_joints_);
-   locomotion_input_ = Eigen::VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
+   timer_.Reset();
+
+   qfull_ = VectorXd::Zero(robot_ptr->nq() + n_locked_joints_);
+   dqfull_ = VectorXd::Zero(robot_ptr->nv() + n_locked_joints_);
+   locomotion_input_ = VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
 }
 
-double BasicStateMachine::Update(const DesiredCommand &command,
+BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredCommand &command,
                                std::shared_ptr<RobotBasePinocchio> robot_ptr,
                                std::shared_ptr<OutputBase> &output,
                                std::unique_ptr<TorqueSolverBase> &torque_solver,
-                               std::function<Eigen::VectorXd(const Eigen::VectorXd&)> getLegModel,
-                              std::function<Eigen::VectorXd(const Eigen::VectorXd&)> getUpper)
+                               Eigen::VectorXd& q_loco, Eigen::VectorXd& dq_loco)
 {
    // to be called after spinOnce inside ros::ok() loop
    //  Determine config file based on mode
@@ -107,7 +106,6 @@ double BasicStateMachine::Update(const DesiredCommand &command,
    {
       config_file = config_folder_ + "/inair_config.yaml";
       logFilePath_ = log_path_ + "/logInAir.bin";
-      sim_->SimHoldPelvis();
    }
    else if (command.mode == Mode::Walking)
    {
@@ -122,7 +120,7 @@ double BasicStateMachine::Update(const DesiredCommand &command,
       std::cerr << "Invalid mode command: " << std::endl;
       std::cerr << "Did you forget to launch screen_radio?" << std::endl;
       //skip the rest of the update
-      return sim_->sim_time();
+      return motor_commands_;
    }
 
    if (cur_mode_ != command.mode)
@@ -168,65 +166,47 @@ double BasicStateMachine::Update(const DesiredCommand &command,
       }
    }
 
-   // Update the simulation, sensor info in simulation is also updated
-   sim_->Step(locomotion_input_, locked_input_);
-
-   if (!sim_->paused())
-   {
-      control_counter_++;
-      if (control_counter_ >= control_counter_threshold_)
-      {
-         control_counter_ = 0;
-
-         sim_->GetAllJointStateFromSensorMujoco(qfull_, dqfull_);
-
-         cout << "qfull_: " << qfull_.transpose() << endl;
-         cout << "dqfull_: " << dqfull_.transpose() << endl;
-
-         Eigen::VectorXd q_leg = getLegModel(qfull_);
-         Eigen::VectorXd dq_leg = getLegModel(dqfull_);
-         Eigen::VectorXd q_upper = getUpper(qfull_);
-         Eigen::VectorXd dq_upper = getUpper(dqfull_);
-
-         robot_ptr->UpdateAll(q_leg, dq_leg);
-
+         timer_.Tick();
 
          if (output && torque_solver)
          {
-
-            output->UpdateOutput(command, sim_->sim_time(), t_old_);
-            t_old_ = sim_->sim_time();
-
-            BipedMotorCommands motor_commands = torque_solver->Solve();
-            Eigen::VectorXd u_leg = motor_commands.joint_torques;
-
-            locomotion_input_ = u_leg;
+            robot_ptr->UpdateAll(q_loco, dq_loco);
+            output->UpdateOutput(command, timer_.t_now(), timer_.t_old());
 
 
-            if (n_locked_joints_ > 0)
-            {
-               locked_input_ = locked_joints_pd_controller_.Compute(q_locked_joints_des_, dq_locked_joints_des_, q_upper, dq_upper);
+            motor_commands_ = torque_solver->Solve();
+            Eigen::VectorXd u_loco = motor_commands_.joint_torques;
+            if (motor_commands_.joint_kp.size()>0){
+               Eigen::VectorXd kp = motor_commands_.joint_kp;
+               Eigen::VectorXd kd = motor_commands_.joint_kd;
+               Eigen::VectorXd q_des = motor_commands_.joint_positions;
+               Eigen::VectorXd dq_des = motor_commands_.joint_velocities;
+
+               locomotion_input_ = -kp.cwiseProduct(q_loco-q_des)-kd.cwiseProduct(dq_loco-dq_des)+u_loco;
+            }else{
+               locomotion_input_ = u_loco;
             }
-            
+
+
             // Logging
             Eigen::VectorXf LogData;
-            
-            std::vector<Eigen::VectorXd> log_vectors = {qfull_, dqfull_, locomotion_input_, locked_input_, output->ya, output->dya, output->yd, output->dyd, output->d2yd};
+
+            std::vector<Eigen::VectorXd> log_vectors = {q_loco, dq_loco, locomotion_input_, output->ya, output->dya, output->yd, output->dyd, output->d2yd};
             std::vector<Eigen::VectorXd> logOutput = output->CollectLog();
             log_vectors.insert(log_vectors.end(), logOutput.begin(), logOutput.end());
-            LogData = CollectLog(sim_->sim_time(), log_vectors);
+            LogData = CollectLog(timer_.t_now(), log_vectors);
 
             if (logFile_.is_open())
             {
                logFile_.write(reinterpret_cast<char *>(LogData.data()), LogData.size() * sizeof(float));
             }
          }
-      }
-   }
-   return sim_->sim_time();
+      
+   
+   return motor_commands_;
 }
 
-Eigen::VectorXf BasicStateMachine::CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors)
+Eigen::VectorXf BasicControllerStateMachine::CollectLog(const double t, const std::vector<VectorXd> &vectors)
 {
    int logsize = 1; // Start with 1 for the time
    for (const auto &vec : vectors)
@@ -245,7 +225,7 @@ Eigen::VectorXf BasicStateMachine::CollectLog(const double t, const std::vector<
    return log;
 }
 
-void BasicStateMachine::SelectControllers(
+void BasicControllerStateMachine::SelectControllers(
     Mode mode,
     const std::string &config_file,
     std::shared_ptr<RobotBasePinocchio> robot_ptr,

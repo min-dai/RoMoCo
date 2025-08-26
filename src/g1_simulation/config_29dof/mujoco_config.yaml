@@ -21,6 +21,7 @@ Kd_locked_joints: [ 15,  15,  15,  15,  15,  15]
 qdes_locked_joints: [0, 0, 0, 0 , 0, 0]
 #urdf_path within ros package
 urdf_name: "g1_29_withsensor.urdf"
+#gather sensor data from mujoco in same order as pinocchio
 pinocchio_joints_names:
   - left_hip_pitch_joint
   - left_hip_roll_joint

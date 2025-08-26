@@ -27,11 +27,11 @@ PlannerOutput HLIPPlanner::UpdatePlan(const PlannerInput& input)
 {
    PlannerOutput output;
 
-   Vector2d x_sag = HLIP_sag.get_LIPsol(input.T2imp, input.x_now.head(2));
-   Vector2d x_lat = HLIP_lat.get_LIPsol(input.T2imp, input.x_now.tail(2));
+   Eigen::Vector2d x_sag = HLIP_sag.get_LIPsol(input.T2imp, input.x_now.head(2));
+   Eigen::Vector2d x_lat = HLIP_lat.get_LIPsol(input.T2imp, input.x_now.tail(2));
 
-   Vector2d xsw = HLIP_sag.getDesiredStepSizeDeadbeat(x_sag(0), x_sag(1), input.stanceleg);
-   Vector2d ysw = HLIP_lat.getDesiredStepSizeDeadbeat(x_lat(0), x_lat(1), input.stanceleg);
+   Eigen::Vector2d xsw = HLIP_sag.getDesiredStepSizeDeadbeat(x_sag(0), x_sag(1), input.stanceleg);
+   Eigen::Vector2d ysw = HLIP_lat.getDesiredStepSizeDeadbeat(x_lat(0), x_lat(1), input.stanceleg);
 
    output.footstep << xsw(0), ysw(0);
 

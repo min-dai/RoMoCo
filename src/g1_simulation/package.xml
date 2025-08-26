@@ -19,7 +19,7 @@
 
 
 
-  <depend>mujoco_interface</depend>
+  <depend>mujoco_sim</depend>
   <depend>biped_core</depend>
   <depend>torque_control</depend>
   <depend>biped_control</depend>

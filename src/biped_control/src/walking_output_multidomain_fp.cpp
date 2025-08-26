@@ -31,7 +31,7 @@ void WalkingOutputMultiDomainFP::Init(const std::string &config_file)
    ROplanner = std::make_unique<HLIPPlanner>();
 
    // update updated struct using config assuming radio is zero
-   updateTargetWalkingRadio(VectorXd::Zero(10));
+   updateTargetWalkingRadio(Eigen::VectorXd::Zero(10));
 
    ROplanner->Init(updated.zCOMdes, updated.TSS, updated.TDS, 0., 0., updated.stepWidth);
 

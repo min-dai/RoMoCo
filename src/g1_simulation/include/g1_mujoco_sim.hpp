@@ -1,7 +1,7 @@
 #ifndef G1_MUJOCO_SIM_HPP
 #define G1_MUJOCO_SIM_HPP
 
-#include "mujoco_interface/mujoco_interface.hpp"
+#include "mujoco_sim/mujoco_sim.hpp"
 #include "biped_core/mujoco_sim_base.hpp"
 #include "g1_sensor.hpp"
 
@@ -24,7 +24,7 @@ public:
    double sim_time() override { return mujoco_.time(); }
 
 private:
-   MujocoInterface mujoco_;
+   MujocoSim mujoco_;
 
    g1_sensor sensor_;
 

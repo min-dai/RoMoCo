@@ -14,7 +14,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(mujoco_interface REQUIRED)
+find_package(mujoco_sim REQUIRED)
 find_package(biped_core REQUIRED)
 find_package(torque_control REQUIRED)
 find_package(biped_control REQUIRED)
@@ -25,7 +25,7 @@ find_package(biped_state_machine REQUIRED)
 
 set(dependencies
   rclcpp
-  mujoco_interface
+  mujoco_sim
   biped_core
   torque_control
   biped_control

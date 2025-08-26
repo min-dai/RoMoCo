@@ -1,5 +1,5 @@
 #include "torque_control/torque_solver_vel_ik.hpp"
-using namespace Eigen;
+
 TorqueSolverVELIK::TorqueSolverVELIK(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
 {
@@ -84,8 +84,8 @@ void TorqueSolverVELIK::SolveIk()
     VectorXd delta_q_output = VectorXd::Zero(robot_->nv());
     VectorXd dq_output = VectorXd::Zero(robot_->nv());
 
-    delta_q_output = (output_->Jya(output_->active_y_idx, all) * Nhol).completeOrthogonalDecomposition().solve(ik_gain_(output_->active_y_idx).cwiseProduct(output_->yd(output_->active_y_idx) - output_->ya(output_->active_y_idx)));
-    dq_output = (output_->Jya(output_->active_y_idx, all) * Nhol).completeOrthogonalDecomposition().solve(ik_gain_(output_->active_y_idx).cwiseProduct(output_->dyd(output_->active_y_idx)));
+    delta_q_output = (output_->Jya(output_->active_y_idx, Eigen::all) * Nhol).completeOrthogonalDecomposition().solve(ik_gain_(output_->active_y_idx).cwiseProduct(output_->yd(output_->active_y_idx) - output_->ya(output_->active_y_idx)));
+    dq_output = (output_->Jya(output_->active_y_idx, Eigen::all) * Nhol).completeOrthogonalDecomposition().solve(ik_gain_(output_->active_y_idx).cwiseProduct(output_->dyd(output_->active_y_idx)));
 
     output_->qDes_actuated += delta_q_output(output_->actuated_q_idx);
     output_->dqDes_actuated = dq_output(output_->actuated_q_idx);

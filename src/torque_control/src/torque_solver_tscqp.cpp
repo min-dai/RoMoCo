@@ -4,7 +4,6 @@
 using std::cout;
 using std::endl;
 using namespace clarabel;
-using namespace Eigen;
 
 TorqueSolverTSCQP::TorqueSolverTSCQP(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
@@ -75,7 +74,7 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     //cost: ||Jya*ddq + dJyadq - ddy*||^2 
     A_y_ = MatrixXd::Zero(output_->ny(), nVar_);
     b_y_ = VectorXd::Zero(output_->ny());
-    A_y_.block(0, 0, output_->ny(), robot_->nv())  << output_->Jya(output_->active_y_idx, all);
+    A_y_.block(0, 0, output_->ny(), robot_->nv())  << output_->Jya(output_->active_y_idx, Eigen::all);
     b_y_ << output_->dJyadq(output_->active_y_idx) 
          - output_->d2yd(output_->active_y_idx) 
          + OutputKPing_(output_->active_y_idx).cwiseProduct(output_->ya(output_->active_y_idx) - output_->yd(output_->active_y_idx)) 
@@ -94,7 +93,7 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     // [D  -B -Jh^T] [ddq] = [-H]
     // [Jh  0     0] [u  ]   [-dJhdq]
     //               [F  ]   
-    Aeq_.topRows(robot_->nv()) << robot_->D(), -robot_->B()(all, output_->actuated_u_idx), -output_->Jh.transpose();
+    Aeq_.topRows(robot_->nv()) << robot_->D(), -robot_->B()(Eigen::all, output_->actuated_u_idx), -output_->Jh.transpose();
     Aeq_.block(Aeq_.rows()-output_->nh(), 0, output_->nh(), robot_->nv()) << output_->Jh;                                      
     beq_.topRows(robot_->nv()) << -robot_->H();
     beq_.bottomRows(output_->nh()) << -output_->dJhdq;
@@ -126,16 +125,16 @@ bool TorqueSolverTSCQP::ClarabelSolve()
     P.makeCompressed();
 
 
-    MatrixXd Alarge(beq_.size() + bub_fric_.size() + output_->nu() * 2, nVar_);
+    Eigen::MatrixXd Alarge(beq_.size() + bub_fric_.size() + output_->nu() * 2, nVar_);
     Alarge << Aeq_, //output nv+nh
         Aub_fric_,  //output nfric
         Aub_u_,     //output nu
         -Aub_u_;    //output nu
 
-    SparseMatrix<double> AlargeSparse = Alarge.sparseView();
+    Eigen::SparseMatrix<double> AlargeSparse = Alarge.sparseView();
     AlargeSparse.makeCompressed();
 
-    VectorXd bLarge(beq_.size() + bub_fric_.size() + output_->nu() * 2);
+    Eigen::VectorXd bLarge(beq_.size() + bub_fric_.size() + output_->nu() * 2);
     bLarge << beq_,
         bub_fric_,
         robot_->u_ub()(output_->actuated_u_idx),
@@ -205,9 +204,9 @@ bool TorqueSolverTSCQP::ClarabelSolve()
         std::cout << "THE QP in locomotion FAILED!" << std::endl;
 
         // check rank of [Jy; Jh]
-        MatrixXd JyJh = MatrixXd::Zero(output_->ny() + output_->nh(), robot_->nv());
-        JyJh << output_->Jya(output_->active_y_idx,all), output_->Jh;
-        Eigen::FullPivLU<MatrixXd> lu(JyJh);
+        Eigen::MatrixXd JyJh = Eigen::MatrixXd::Zero(output_->ny() + output_->nh(), robot_->nv());
+        JyJh << output_->Jya(output_->active_y_idx,Eigen::all), output_->Jh;
+        Eigen::FullPivLU<Eigen::MatrixXd> lu(JyJh);
         int rank = lu.rank();
         std::cout << "JyJh rank = " << rank << ", rows = " << JyJh.rows() << std::endl;
         std::cout << "ya = " << output_->ya.transpose() << std::endl;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(mujoco_interface)
+project(mujoco_sim)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -32,7 +32,7 @@ set(include_dirs
 
 # Library target
 add_library(${PROJECT_NAME}
-   src/mujoco_interface.cpp
+   src/mujoco_sim.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -76,7 +76,7 @@ install(
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(${PROJECT_NAME}_test 
-    test/test_mujoco_interface.cpp
+    test/test_mujoco_sim.cpp
   )
   target_include_directories(${PROJECT_NAME}_test PRIVATE
     ${include_dirs}

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "mujoco_interface/mujoco_interface.hpp"
+#include "mujoco_sim/mujoco_sim.hpp"
 #include <iostream>
 class MujocoInterfaceTest : public ::testing::Test {
  protected:
@@ -17,7 +17,7 @@ class MujocoInterfaceTest : public ::testing::Test {
     mj_interface.Close();
   }
 
-  MujocoInterface mj_interface;
+  MujocoSim mj_interface;
 };
 
 TEST_F(MujocoInterfaceTest, GetActuatorIdsByName) {

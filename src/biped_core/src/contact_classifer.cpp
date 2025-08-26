@@ -3,7 +3,7 @@
 
 
 using namespace std;
-using namespace Eigen;
+
 
 ContactClassifier::ContactClassifier(std::shared_ptr<RobotBasePinocchio> robot, double dt)
     : LowPassLeft(dt, 1 / 300), LowPassRight(dt, 1 / 300)
@@ -19,9 +19,6 @@ ContactClassifier::ContactClassifier(std::shared_ptr<RobotBasePinocchio> robot, 
     this->grf.resize(6);
 }
 
-double sigmoid(double s, double A, double B, double power) {
-    return 1.0 / (1.0 + exp(-A * pow((s - B), power)));
-}
 
 void ContactClassifier::Config::init() {
     this->dt = 0.0005;
@@ -49,7 +46,8 @@ void ContactClassifier::update() {
 
     this->robot->kinematics.computeConstrainedToeJacobian(this->robot->q, Jleft, Jright);
 
-    // Compute the quasi-static grf estimate in world frame
+    // Compute the quasi-static grf estimate in world frame using statics
+    // tau = J^T * F, assuming J in world frame, F is also in world frame
     this->grf.segment(0, 3) = -(Jleft.transpose()).completeOrthogonalDecomposition().solve(
         this->robot->torque.segment(0, 5));
     this->grf.segment(3, 3) = -(Jright.transpose()).completeOrthogonalDecomposition().solve(

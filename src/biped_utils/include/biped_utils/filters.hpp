@@ -9,7 +9,6 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-using namespace Eigen;
 
 namespace control_utilities
 {
@@ -25,9 +24,9 @@ inline double low_pass_alpha(double dt, double dt_cutoff)
     return alpha;
 }
 
-inline VectorXd low_pass_alpha_vec(double dt, VectorXd dt_cutoff)
+inline Eigen::VectorXd low_pass_alpha_vec(double dt, Eigen::VectorXd dt_cutoff)
 {
-    VectorXd alpha = VectorXd::Zero(dt_cutoff.size());
+    Eigen::VectorXd alpha = Eigen::VectorXd::Zero(dt_cutoff.size());
     for(int i=0; i<dt_cutoff.size(); i++){
         alpha(i) = dt / (dt_cutoff(i) + dt);
     }
@@ -131,13 +130,13 @@ public:
 class LowPassFilterVec
 {
     /** @brief Filtering coefficient */
-    VectorXd alpha_;
+    Eigen::VectorXd alpha_;
     /** @brief Previously filtered value */
-    VectorXd prev_filt_;
+    Eigen::VectorXd prev_filt_;
     bool initialized;
 
 public:
-    LowPassFilterVec(double dt, VectorXd dt_cutoff, int size)
+    LowPassFilterVec(double dt, Eigen::VectorXd dt_cutoff, int size)
     {
         reconfigure(dt, dt_cutoff,size);
         prev_filt_.resize(size);
@@ -149,7 +148,7 @@ public:
      */
     void reset(double value = NAN)
     {
-        prev_filt_ = value*VectorXd::Ones(prev_filt_.size());
+        prev_filt_ = value*Eigen::VectorXd::Ones(prev_filt_.size());
         initialized = false;
     }
 
@@ -157,7 +156,7 @@ public:
      * @brief reconfigure Reconfigure coefficient, resetting previous value to NAN
      * @param alpha
      */
-    void reconfigure(VectorXd alpha)
+    void reconfigure(Eigen::VectorXd alpha)
     {
         alpha_ = alpha;
         reset();
@@ -168,7 +167,7 @@ public:
      * @param dt
      * @param dt_cutoff
      */
-    void reconfigure(double dt, VectorXd dt_cutoff, int size)
+    void reconfigure(double dt, Eigen::VectorXd dt_cutoff, int size)
     {
         reconfigure(low_pass_alpha_vec(dt, dt_cutoff));
         prev_filt_.resize(size);
@@ -178,9 +177,9 @@ public:
      * @brief update Update filter with current raw value, updating memory
      * @param cur_raw
      */
-    VectorXd update(VectorXd cur_raw)
+    Eigen::VectorXd update(Eigen::VectorXd cur_raw)
     {
-        VectorXd cur_filt= VectorXd::Zero(cur_raw.size());
+        Eigen::VectorXd cur_filt= Eigen::VectorXd::Zero(cur_raw.size());
         if (initialized)
         for(int i =0; i < cur_raw.size(); i++){
             cur_filt(i) = alpha_(i) * cur_raw(i) + (1 - alpha_(i)) * prev_filt_(i);
@@ -196,12 +195,12 @@ public:
         return cur_filt;
     }
 
-    VectorXd getAlpha() const
+    Eigen::VectorXd getAlpha() const
     {
         return alpha_;
     }
 
-    VectorXd getValue() const
+    Eigen::VectorXd getValue() const
     {
         return prev_filt_;
     }

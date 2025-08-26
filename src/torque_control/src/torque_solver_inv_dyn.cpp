@@ -3,7 +3,7 @@
 
 using std::cout;
 using std::endl;
-using namespace Eigen;
+
 
 TorqueSolverInvDyn::TorqueSolverInvDyn(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
@@ -47,7 +47,7 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
         Eigen::MatrixXd Jfullrank(output_->nh() + output_->ny(), robot_->nv());
 
         Jfullrank << output_->Jh,
-            output_->Jya(output_->active_y_idx, all);
+            output_->Jya(output_->active_y_idx, Eigen::all);
         Eigen::VectorXd ddy_star = output_->d2yd - OutputKPing_.cwiseProduct(output_->ya - output_->yd) - OutputKDing_.cwiseProduct(output_->dya - output_->dyd);
 
         Eigen::VectorXd bfullrank(output_->nh() + output_->ny());
@@ -71,28 +71,28 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
         // Contact Consistent Control Framework for Humanoid Robots
         // Important: this implementation only works for number of output = number of actuated motors
 
-        MatrixXd Jc = output_->Jh;
-        MatrixXd B = robot_->B()(all, output_->actuated_u_idx);
-        VectorXd ddy_star = output_->d2yd - OutputKPing_.cwiseProduct(output_->ya - output_->yd) - OutputKDing_.cwiseProduct(output_->dya - output_->dyd);
+        Eigen::MatrixXd Jc = output_->Jh;
+        Eigen::MatrixXd B = robot_->B()(Eigen::all, output_->actuated_u_idx);
+        Eigen::VectorXd ddy_star = output_->d2yd - OutputKPing_.cwiseProduct(output_->ya - output_->yd) - OutputKDing_.cwiseProduct(output_->dya - output_->dyd);
 
-        MatrixXd invD = PseudoInverse(robot_->D(), threshold_);
+        Eigen::MatrixXd invD = PseudoInverse(robot_->D(), threshold_);
 
-        MatrixXd Dc = PseudoInverse(Jc * invD * Jc.transpose(), threshold_);
-        MatrixXd Nc = MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.transpose() * Dc * Jc * invD;
+        Eigen::MatrixXd Dc = PseudoInverse(Jc * invD * Jc.transpose(), threshold_);
+        Eigen::MatrixXd Nc = Eigen::MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.transpose() * Dc * Jc * invD;
 
-        MatrixXd Jya = output_->Jya;
+        Eigen::MatrixXd Jya = output_->Jya;
 
-        MatrixXd Do = PseudoInverse(Jya * invD * Nc * Jya.transpose(), threshold_);
-        MatrixXd Jobar_tran = Do * Jya * invD * Nc;
-        MatrixXd Co = Do * Jya * invD * (Nc * robot_->H() + Jc.transpose() * Dc * output_->dJhdq) - Do * output_->dJyadq;
+        Eigen::MatrixXd Do = PseudoInverse(Jya * invD * Nc * Jya.transpose(), threshold_);
+        Eigen::MatrixXd Jobar_tran = Do * Jya * invD * Nc;
+        Eigen::MatrixXd Co = Do * Jya * invD * (Nc * robot_->H() + Jc.transpose() * Dc * output_->dJhdq) - Do * output_->dJyadq;
 
         u_sol = PseudoInverse(Jobar_tran * B, threshold_) * (Do * ddy_star + Co);
 
-        cout << "u_sol = [ " << u_sol.transpose() << "];" << std::endl;
+        std::cout << "u_sol = [ " << u_sol.transpose() << "];" << std::endl;
 
-        // VectorXd Cc = Dc * Jc * invD * robot_->H() - Dc * output_->dJhdq;
+        // Eigen::VectorXd Cc = Dc * Jc * invD * robot_->H() - Dc * output_->dJhdq;
 
-        // VectorXd ddq_computed = invD * (Nc * B * u_sol - robot_->H() + Jc.transpose() * Cc);
+        // Eigen::VectorXd ddq_computed = invD * (Nc * B * u_sol - robot_->H() + Jc.transpose() * Cc);
     }
 
     Eigen::VectorXd u_full = MapU2FullIdx(u_sol, output_->actuated_u_idx, robot_->nu());

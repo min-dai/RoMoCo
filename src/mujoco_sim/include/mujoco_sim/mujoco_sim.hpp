@@ -10,12 +10,12 @@
 
 #include <vector>
 
-class MujocoInterface
+class MujocoSim
 {
 
 public:
-    MujocoInterface();
-    ~MujocoInterface();
+    MujocoSim();
+    ~MujocoSim();
 
     bool Init(const char *modelfile, int width, int height, bool headless = false);
     void Close();
@@ -108,7 +108,7 @@ private:
     static void mouse_move(GLFWwindow *window, double xpos, double ypos);
     static void scroll(GLFWwindow *window, double xoffset, double yoffset);
 
-    static MujocoInterface *instance_; // For managing callbacks
+    static MujocoSim *instance_; // For managing callbacks
 
     std::vector<double> GetSensorDataById(int sensor_id);
 

@@ -7,7 +7,7 @@ ContactKf::ContactKf(const std::string &config_file, int n_encoders)
    config.yaml_parser.Init(config_file);
    config.Init();
 
-   MatrixXd I3 = MatrixXd::Identity(3, 3);
+   Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
    Qc.resize(15, 15);
    Qc.setZero();
    Qc.block(0, 0, 3, 3) = config.base_process_std * config.base_process_std * I3;
@@ -16,20 +16,20 @@ ContactKf::ContactKf(const std::string &config_file, int n_encoders)
    Qc.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * I3;
    Qc.block(12, 12, 3, 3) = config.acceleration_bias_std * config.acceleration_bias_std * I3;
 
-   Rc = MatrixXd::Zero(n_encoders, n_encoders);
+   Rc = Eigen::MatrixXd::Zero(n_encoders, n_encoders);
 
 
-   Fk_ = MatrixXd::Identity(15,15);
+   Fk_ = Eigen::MatrixXd::Identity(15,15);
 
    // Hk_ is constant
-   Hk_ = MatrixXd::Zero(6, 15);
+   Hk_ = Eigen::MatrixXd::Zero(6, 15);
    Hk_.block(0, 0, 3, 3) = -I3;
    Hk_.block(3, 0, 3, 3) = -I3;
    Hk_.block(0, 6, 3, 3) = I3;
    Hk_.block(3, 9, 3, 3) = I3;
 
-   Sk_ = MatrixXd::Zero(6, 6);
-   Kk_ = MatrixXd::Zero(15, 6);
+   Sk_ = Eigen::MatrixXd::Zero(6, 6);
+   Kk_ = Eigen::MatrixXd::Zero(15, 6);
 }
 
 void ContactKf::Config::Init(){
@@ -39,7 +39,7 @@ void ContactKf::Config::Init(){
     acceleration_bias_std = yaml_parser.get_double("acceleration_bias_std");
 }
 
-void ContactKf::Update(double t, const VectorXd& aIn, const MatrixXd& R, double lC, double rC, const Vector3d &plf, const Vector3d &prf, const MatrixXd &J_lf, const MatrixXd &J_rf) {
+void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::MatrixXd& R, double lC, double rC, const Eigen::Vector3d &plf, const Eigen::Vector3d &prf, const Eigen::MatrixXd &J_lf, const Eigen::MatrixXd &J_rf) {
 
    //  EulerAnglesZYXd eul_imu(robot->q(BaseRotZ),robot->q(BaseRotY), robot->q(BaseRotX));
    //  R = eul_imu.toRotationMatrix();
@@ -67,7 +67,7 @@ void ContactKf::Update(double t, const VectorXd& aIn, const MatrixXd& R, double 
 
 }
 
-void ContactKf::InitContact(double t, double lC, double rC, const VectorXd& plf, const VectorXd& prf)
+void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf)
 {
    // We initialize if time has passed and if both feet are in contact with the ground
    if (!is_initialized_)
@@ -78,7 +78,7 @@ void ContactKf::InitContact(double t, double lC, double rC, const VectorXd& plf,
          this->x_hat.col(2) = this->x_hat.col(0) + plf;
          this->x_hat.col(3) = this->x_hat.col(0) + prf;
 
-         MatrixXd tmpI = MatrixXd::Identity(3, 3);
+         Eigen::MatrixXd tmpI = Eigen::MatrixXd::Identity(3, 3);
          P.resize(15, 15);
          P.setZero();
          P.block(0, 0, 3, 3) = config.init_position_std * config.init_position_std * tmpI;
@@ -98,14 +98,14 @@ void ContactKf::InitContact(double t, double lC, double rC, const VectorXd& plf,
    }
 }
 
-void ContactKf::PredictStep(double dt, const Matrix3d& R, const Vector3d& acc_measured, double lC, double rC){
-    VectorXd pm(3), vm(3), plfm(3), prfm(3), bam(3);
+void ContactKf::PredictStep(double dt, const Eigen::Matrix3d& R, const Eigen::Vector3d& acc_measured, double lC, double rC){
+    Eigen::VectorXd pm(3), vm(3), plfm(3), prfm(3), bam(3);
     this->UnpackState(this->x_hat,pm,vm,plfm,prfm,bam);
 
     // Sensor model: a = acc_measured - bam;
 
     // Propagate the state
-    VectorXd p(3), v(3), plf(3), prf(3), ba(3);
+    Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
     p = pm + vm*dt + 0.5*(R*(acc_measured - bam) + this->g_)*dt*dt;
     v = vm + (R*(acc_measured - bam) + this->g_)*dt;
     ba = bam;
@@ -120,7 +120,7 @@ void ContactKf::PredictStep(double dt, const Matrix3d& R, const Vector3d& acc_me
     //       zeros(3),   zeros(3),    eye(3),     zeros(3),  zeros(3);
     //       zeros(3),   zeros(3),    zeros(3),   eye(3),    zeros(3); 
     //       zeros(3),   zeros(3),    zeros(3),   zeros(3),  eye(3)];
-    MatrixXd eye3 = MatrixXd::Identity(3,3);
+    Eigen::MatrixXd eye3 = Eigen::MatrixXd::Identity(3,3);
     Fk_.block(0,0,3,3)   = eye3;
     Fk_.block(0,3,3,3)   = eye3*dt;
     Fk_.block(0,12,3,3)  = -R*(dt*dt/2.0);
@@ -128,8 +128,8 @@ void ContactKf::PredictStep(double dt, const Matrix3d& R, const Vector3d& acc_me
 
     // MatrixXd Ft = MatrixXd::Identity(12,12);
     // Ft.block(0,3,3,3)   = eye3*dt;
-    
-    MatrixXd Qk_ = this->Qc;
+
+    Eigen::MatrixXd Qk_ = this->Qc;
 
     if (lC < rC){
         Qk_.block(6,6,3,3) = 1000000.*eye3;
@@ -152,20 +152,20 @@ void ContactKf::PredictStep(double dt, const Matrix3d& R, const Vector3d& acc_me
 
 //@param: plf_enc, prf_enc: 3-by-1 vector, position of left/right foot w.r.t. pelvis, in world frame
 //@param: J_lf, J_rf, 3-by-nlegjoints: Jacobians of left/right foot position w.r.t. left/right joints 
-void ContactKf::UpdateStep(const Vector3d& plf_enc, const Vector3d& prf_enc, const MatrixXd& J_lf, const MatrixXd& J_rf){
+void ContactKf::UpdateStep(const Eigen::Vector3d& plf_enc, const Eigen::Vector3d& prf_enc, const Eigen::MatrixXd& J_lf, const Eigen::MatrixXd& J_rf){
    // yk = zk - Hk * xhat_k|k-1
 
     // Compute h(x,z)
-    VectorXd p(3), v(3), plf(3), prf(3), ba(3);
+    Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
     this->UnpackState(this->x_hat,p,v,plf,prf,ba);
-    
-   //  MatrixXd JLf(3,18), JRf(3,18);
+
+   //  Eigen::MatrixXd JLf(3,18), JRf(3,18);
    //  SymFunction::J_position_leftFoot(JLf,q_zeroAngle);
    //  SymFunction::J_position_rightFoot(JRf,q_zeroAngle);
-   //  MatrixXd J_computed_lf(3,6), J_computed_rf(3,6);
+   //  Eigen::MatrixXd J_computed_lf(3,6), J_computed_rf(3,6);
    //  J_computed_lf = JLf.block(0,LeftHipRoll,3,6);
    //  J_computed_rf = JRf.block(0,RightHipRoll,3,6);
-    VectorXd y;
+    Eigen::VectorXd y;
     y.resize(6); y.setZero();
     y.segment(0,3) = plf_enc - (plf - p);
     y.segment(3,3) = prf_enc - (prf - p);
@@ -187,16 +187,16 @@ void ContactKf::UpdateStep(const Vector3d& plf_enc, const Vector3d& prf_enc, con
 
 
     // Kalman gain
- 
-    VectorXd dx = VectorXd::Zero(15);
-    
+
+    Eigen::VectorXd dx = Eigen::VectorXd::Zero(15);
+
 
 
     Sk_ = Hk_*P*Hk_.transpose() + Rc;
     Kk_ = (P*Hk_.transpose())*Sk_.inverse();
 
     dx = Kk_*y;
-    P = (MatrixXd::Identity(15,15) - Kk_*Hk_)*P;
+    P = (Eigen::MatrixXd::Identity(15,15) - Kk_*Hk_)*P;
 
     // Pack state
     this->x_hat.col(0) = this->x_hat.col(0) + dx.segment(0,3);  // p
@@ -215,7 +215,7 @@ void ContactKf::Reset(){
    is_initialized_ = false;
 }
 
-void ContactKf::UnpackState(MatrixXd& x, VectorXd& p, VectorXd& v, VectorXd& plf, VectorXd& prf, VectorXd& ba){
+void ContactKf::UnpackState(Eigen::MatrixXd& x, Eigen::VectorXd& p, Eigen::VectorXd& v, Eigen::VectorXd& plf, Eigen::VectorXd& prf, Eigen::VectorXd& ba){
     p.resize(3); v.resize(3); plf.resize(3); prf.resize(3); ba.resize(3);
     p   = x.col(0);
     v   = x.col(1);
@@ -225,7 +225,7 @@ void ContactKf::UnpackState(MatrixXd& x, VectorXd& p, VectorXd& v, VectorXd& plf
 
 }
 
-void ContactKf::PackState(MatrixXd& x, const VectorXd& p, const VectorXd& v, const VectorXd& plf, const VectorXd& prf, const VectorXd& ba){
+void ContactKf::PackState(Eigen::MatrixXd& x, const Eigen::VectorXd& p, const Eigen::VectorXd& v, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf, const Eigen::VectorXd& ba){
     x.resize(3,5); x.setZero();
     x.col(0) = p;
     x.col(1) = v;
