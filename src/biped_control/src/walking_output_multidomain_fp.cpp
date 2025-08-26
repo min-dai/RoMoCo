@@ -1,5 +1,4 @@
 #include "biped_control/walking_output_multidomain_fp.hpp"
-#include "biped_command/radio_slider_map.hpp"
 #include "biped_planner/HLIPplanner.hpp"
 
 WalkingOutputMultiDomainFP::WalkingOutputMultiDomainFP(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
@@ -156,16 +155,16 @@ void WalkingOutputMultiDomainFP::timeBasedDomainContactStatusSwitch(double t)
    } while (transitioned);
 }
 
-void WalkingOutputMultiDomainFP::updateTargetWalkingRadio(const VectorXd &radio)
+void WalkingOutputMultiDomainFP::updateTargetWalkingRadio(const DesiredCommand &command)
 {
-   lowpass_vel_x_des_.update(config.velXmax * radio(Radio::LV));
-   lowpass_vel_y_des_.update(config.velYmax * radio(Radio::LH));
-   updated.delta_yaw_des = updated.delta_yaw_des + radio(Radio::RH) * updated.dt;
+   lowpass_vel_x_des_.update(config.velXmax * command(Channel::X));
+   lowpass_vel_y_des_.update(config.velYmax * command(Channel::Y));
+   updated.delta_yaw_des = updated.delta_yaw_des + command(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
    updated.desiredVy = lowpass_vel_y_des_.getValue() + config.vy_offset;
 
-   double Tradio = (config.TDS + config.TSS) + 0.1 * radio(Radio::RS); // walking period
+   double Tradio = (config.TDS + config.TSS) + 0.1 * command(Channel::StepTime); // walking period
    updated.TSS = Tradio / (config.TDS + config.TSS) * config.TSS;
    updated.TDS = Tradio / (config.TDS + config.TSS) * config.TDS;
 
@@ -173,15 +172,15 @@ void WalkingOutputMultiDomainFP::updateTargetWalkingRadio(const VectorXd &radio)
    updated.TFA = 0;
    updated.TOA = updated.TDS;
 
-   updated.zCOMdes = config.znom + 0.05 * radio(Radio::LS); // walking height
+   updated.zCOMdes = config.znom + 0.05 * command(Channel::Z); // walking height
 
-   updated.stepWidth = config.stepWidthNominal + 0.2 * radio(Radio::S2);
+   updated.stepWidth = config.stepWidthNominal + 0.2 * command(Channel::StepWidth);
    updated.stepWidth = std::clamp(updated.stepWidth, 0.15, 0.5); // range of the realizable step Width
 
    ROplanner->UpdateParams(updated.zCOMdes, updated.TSS, updated.TDS, updated.desiredVx, updated.desiredVy, updated.stepWidth);
 }
 
-void WalkingOutputMultiDomainFP::UpdateOutput(const Eigen::VectorXd &radio, const double &t, const double &t_old)
+void WalkingOutputMultiDomainFP::UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old)
 {
    updated.t = t;
    updated.dt = t - t_old;

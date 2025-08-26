@@ -8,7 +8,7 @@
 #include "torque_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
-#include "biped_command/radio_subscriber.hpp"
+#include "screen_radio/radio_subscriber.hpp"
 
 #include <cstdlib> // For getenv()
 

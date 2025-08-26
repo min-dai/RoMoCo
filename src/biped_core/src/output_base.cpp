@@ -5,6 +5,9 @@ OutputBase::OutputBase(std::shared_ptr<RobotBasePinocchio> robot)
 {
 }
 
+
+
+
 void OutputBase::ForwardPosIk(const VectorXd &qk, VectorXd &fk, MatrixXd &Jk)
 {
     robot_->UpdateKinematics(qk, VectorXd::Zero(robot_->nv()));

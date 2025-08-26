@@ -1,4 +1,4 @@
-#include "biped_command/radio_slider_gui.hpp"
+#include "screen_radio/radio_slider_gui.hpp"
 
 RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
 {

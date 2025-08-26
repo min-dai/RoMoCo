@@ -27,9 +27,9 @@ public:
       };
 
       WalkingOutputFp(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot);
-      void UpdateOutput(const Eigen::VectorXd &radio, const double &t, const double &t_old) override;
+      void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
 
-      void updateTargetWalkingRadio(const VectorXd &radio);
+      void updateTargetWalkingRadio(const DesiredCommand &command);
       void ComputeActual() override;
       void ComputeDesired();
 

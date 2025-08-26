@@ -46,7 +46,7 @@ void InAirOutput::Config::Init(RobotType robot_type)
     yd_lowpass_dt_cutoff = yaml_parser.get_VectorXd("pose_command/yd_lowpass_dt_cutoff");
 }
 
-void InAirOutput::UpdateOutput(const Eigen::VectorXd &reference, const double &t, const double &t_old)
+void InAirOutput::UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old)
 {
     // Add the implementation here
     updated.t = t;
@@ -66,7 +66,7 @@ void InAirOutput::UpdateOutput(const Eigen::VectorXd &reference, const double &t
     }
 
     // Compute Desired
-    ComputeDesired(reference);
+    ComputeDesired(command);
 
     // holonomic constriants changes if there're internal constraints
     ComputeHolonomicConstraints();
@@ -116,18 +116,18 @@ void InAirOutput::ComputeActual()
         robot_->GetRightFootDeltaRoll().dJdq;  // 1 or 0
 }
 
-void InAirOutput::ComputeDesired(const Eigen::VectorXd &reference)
+void InAirOutput::ComputeDesired(const DesiredCommand &command)
 {
 
-    double xcom_d = 0.5 * reference(Radio::LV) * (config.swingX_forward - config.swingX_backward) + 0.5 * (config.swingX_forward + config.swingX_backward);
-    double ycom_d = 0.5 * reference(Radio::LH) * (config.swingY_outer - config.swingY_inner) + 0.5 * (config.swingY_inner + config.swingY_outer);
-    double zcom_d = 0.5 * reference(Radio::LS) * (config.swingZ_ub - config.swingZ_lb) + 0.5 * (config.swingZ_ub + config.swingZ_lb);
-    double pitch_d = 0.5 * reference(Radio::RV) * (config.pitch_ub - config.pitch_lb) + 0.5 * (config.pitch_ub + config.pitch_lb);
-    double yaw_d = 0.5 * reference(Radio::RS) * (config.yaw_ub - config.yaw_lb) + 0.5 * (config.yaw_ub + config.yaw_lb);
+    double xcom_d = 0.5 * command.values(Channel::X) * (config.swingX_forward - config.swingX_backward) + 0.5 * (config.swingX_forward + config.swingX_backward);
+    double ycom_d = 0.5 * command.values(Channel::Y) * (config.swingY_outer - config.swingY_inner) + 0.5 * (config.swingY_inner + config.swingY_outer);
+    double zcom_d = 0.5 * command.values(Channel::Z) * (config.swingZ_ub - config.swingZ_lb) + 0.5 * (config.swingZ_ub + config.swingZ_lb);
+    double pitch_d = 0.5 * command.values(Channel::Pitch) * (config.pitch_ub - config.pitch_lb) + 0.5 * (config.pitch_ub + config.pitch_lb);
+    double yaw_d = 0.5 * command.values(Channel::Yaw) * (config.yaw_ub - config.yaw_lb) + 0.5 * (config.yaw_ub + config.yaw_lb);
 
     if (robot_->robot_type() == RobotType::PlaneFoot)
     {
-        double roll_d = 0.5 * reference(Radio::RH) * (config.roll_ub - config.roll_lb) + 0.5 * (config.roll_ub + config.roll_lb);
+        double roll_d = 0.5 * command.values(Channel::Roll) * (config.roll_ub - config.roll_lb) + 0.5 * (config.roll_ub + config.roll_lb);
 
         yd << xcom_d, ycom_d, zcom_d, -yaw_d, pitch_d, -roll_d,
             xcom_d, -ycom_d, zcom_d, yaw_d, pitch_d, roll_d;

@@ -15,7 +15,7 @@
 #include "biped_control/inair_output.hpp"
 
 //enum classes
-#include "biped_command/radio_slider_map.hpp"
+#include "screen_radio/radio_slider_map.hpp"
 #include "biped_types/biped_constants.hpp"
 #include "biped_types/biped_motor_commands.hpp"
 
@@ -88,7 +88,7 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
    locomotion_input_ = VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
 }
 
-double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_radio,
+double BasicStateMachine::Update(const DesiredCommand &command,
                                std::shared_ptr<RobotBasePinocchio> robot_ptr,
                                std::shared_ptr<OutputBase> &output,
                                std::unique_ptr<TorqueSolverBase> &torque_solver,
@@ -98,48 +98,48 @@ double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_ra
    // to be called after spinOnce inside ros::ok() loop
    //  Determine config file based on mode
    std::string config_file, logFilePath;
-   if (mode_command == Radio::Standing)
+   if (command.mode == Mode::Standing)
    {
       config_file = config_folder_ + "/standing_config.yaml";
       logFilePath = log_path_ + "/logStand.bin";
    }
-   else if (mode_command == Radio::InAir)
+   else if (command.mode == Mode::InAir)
    {
       config_file = config_folder_ + "/inair_config.yaml";
       logFilePath = log_path_ + "/logInAir.bin";
       sim_->SimHoldPelvis();
    }
-   else if (mode_command == Radio::Walking)
+   else if (command.mode == Mode::Walking)
    {
       config_file = config_folder_ + "/walking_config.yaml";
       logFilePath = log_path_ + "/logWalk.bin";
    }
-   else if (mode_command == Radio::Null)
+   else if (command.mode == Mode::Null)
    {
       //do nothing, just reset the state machine
    }
    else{
-      std::cerr << "Invalid mode command: " << mode_command << std::endl;
-      std::cerr << "Did you forget to launch fake_radio?" << std::endl;
+      std::cerr << "Invalid mode command: " << std::endl;
+      std::cerr << "Did you forget to launch screen_radio?" << std::endl;
       //skip the rest of the update
       return sim_->sim_time();
    }
 
-   if (cur_mode_ != mode_command)
+   if (cur_mode_ != command.mode)
    {
       bool canSwitch = true;
-      if (cur_mode_ == Radio::Standing && mode_command == Radio::Walking)
+      if (cur_mode_ == Mode::Standing && command.mode == Mode::Walking)
       {
          canSwitch = output && output->isReadyToTransition(); // Check OUTPUT_STAND
       }
-      else if (cur_mode_ == Radio::Walking && mode_command == Radio::Standing)
+      else if (cur_mode_ == Mode::Walking && command.mode == Mode::Standing)
       {
          canSwitch = output && output->isReadyToTransition(); // Check OUTPUT_HLIP
       }
 
       if (canSwitch)
       {
-         if (mode_command == Radio::Null)
+         if (command.mode == Mode::Null)
          {
             // Reset to default state (stop controllers)
             if (output && torque_solver)
@@ -148,7 +148,7 @@ double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_ra
                output.reset();        // Remove output
                torque_solver.reset(); // Remove Torque Solver
             }
-            cur_mode_ = Radio::Null;
+            cur_mode_ = Mode::Null;
             if (logFile_.is_open())
             {
                logFile_.close();
@@ -156,8 +156,8 @@ double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_ra
          }
          else
          {
-            SelectControllers(mode_command, config_file, robot_ptr, output, torque_solver);
-            cur_mode_ = mode_command;
+            SelectControllers(command.mode, config_file, robot_ptr, output, torque_solver);
+            cur_mode_ = command.mode;
 
             if (logFile_.is_open())
             {
@@ -194,7 +194,7 @@ double BasicStateMachine::Update(const int mode_command, const VectorXd &fake_ra
          if (output && torque_solver)
          {
 
-            output->UpdateOutput(fake_radio, sim_->sim_time(), t_old_);
+            output->UpdateOutput(command, sim_->sim_time(), t_old_);
             t_old_ = sim_->sim_time();
 
             BipedMotorCommands motor_commands = torque_solver->Solve();
@@ -246,7 +246,7 @@ Eigen::VectorXf BasicStateMachine::CollectLog(const double t, const std::vector<
 }
 
 void BasicStateMachine::SelectControllers(
-    int mode,
+    Mode mode,
     const std::string &config_file,
     std::shared_ptr<RobotBasePinocchio> robot_ptr,
     std::shared_ptr<OutputBase> &output,
@@ -259,13 +259,13 @@ void BasicStateMachine::SelectControllers(
    // Select output
    switch (mode)
    {
-   case Radio::Standing:
+   case Mode::Standing:
       output = std::make_shared<StandingOutput>(config_file, robot_ptr);
       break;
-   case Radio::InAir:
+   case Mode::InAir:
       output = std::make_shared<InAirOutput>(config_file, robot_ptr);
       break;
-   case Radio::Walking:
+   case Mode::Walking:
       output = std::make_shared<WalkingOutputFp>(config_file, robot_ptr);
       // output = std::make_shared<WalkingOutputMultiDomainFP>(config_file, robot_ptr);
       break;

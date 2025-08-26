@@ -13,7 +13,7 @@ public:
     : Node(node_name)
     {
         sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-            "radio_slider_values", 1, std::bind(&RadioSubscriber::callback, this, std::placeholders::_1));
+            "screen_radio_values", 1, std::bind(&RadioSubscriber::callback, this, std::placeholders::_1));
     }
 
     Eigen::VectorXd fake_radio() {

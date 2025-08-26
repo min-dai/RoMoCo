@@ -14,7 +14,7 @@
 
   <depend>biped_core</depend>
   <depend>biped_utils</depend>
-  <depend>biped_command</depend>
+  <depend>screen_radio</depend>
   <depend>biped_planner</depend>
 
   <!-- <test_depend>ament_lint_auto</test_depend> 

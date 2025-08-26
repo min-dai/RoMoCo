@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(biped_command)
+project(screen_radio)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -16,16 +16,18 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(biped_types REQUIRED)
 
 set(dependencies 
   rclcpp
   std_msgs
   Eigen3
   Qt5Widgets
+  biped_types
 )
 
 # Library target
-qt5_wrap_cpp(SLIDER_MOC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/include/biped_command/radio_slider_gui.hpp)
+qt5_wrap_cpp(SLIDER_MOC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/include/screen_radio/radio_slider_gui.hpp)
 
 add_library(${PROJECT_NAME} SHARED
     src/radio_slider_gui.cpp
@@ -59,10 +61,10 @@ install(
 
 
 ## Ros Node
-add_executable(fake_radio_node src/radio_main_node.cpp)
-target_link_libraries(fake_radio_node ${PROJECT_NAME})
+add_executable(screen_radio_node src/radio_main_node.cpp)
+target_link_libraries(screen_radio_node ${PROJECT_NAME})
 install(
-  TARGETS fake_radio_node
+  TARGETS screen_radio_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

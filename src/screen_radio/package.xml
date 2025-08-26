@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>biped_command</name>
+  <name>screen_radio</name>
   <version>0.0.0</version>
-  <description>The biped_command package</description>
+  <description>The screen_radio package provides a GUI for sliders as radio input.</description>
   <maintainer email="mdai@caltech.edu">mdai</maintainer>
   <license>GPL-3.0-or-later</license>
   <author email="mdai@caltech.edu">Min Dai</author>

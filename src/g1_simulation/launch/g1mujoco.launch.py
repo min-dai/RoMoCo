@@ -10,9 +10,9 @@ def generate_launch_description() -> LaunchDescription:
             output="screen"
         ),
         Node(
-            package="biped_command",
-            executable="fake_radio_node",
-            name="fake_radio_node",
+            package="screen_radio",
+            executable="screen_radio_node",
+            name="screen_radio_node",
             output="screen"
         )
     ])

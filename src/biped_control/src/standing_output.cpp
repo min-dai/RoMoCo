@@ -58,13 +58,13 @@ void StandingOutput::Config::Init(RobotType robot_type)
     fric_params.Rot_frictionCoef = yaml_parser.get_double("friction/Rot_frictionCoef");
 }
 
-void StandingOutput::UpdateOutput(const Eigen::VectorXd &radio, const double &t, const double &t_old)
+void StandingOutput::UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old)
 {
     // Add the implementation here
     updated.t = t;
     updated.readyToTransition = false;
 
-    updated.queueTransition = (radio(Radio::SB) == Radio::Walking) ? true : false;
+    updated.queueTransition = (command.mode == Mode::Walking) ? true : false;
 
     // Compute Actual
     ComputeActual();
@@ -79,7 +79,7 @@ void StandingOutput::UpdateOutput(const Eigen::VectorXd &radio, const double &t,
     }
 
     // Compute Desired
-    ComputeDesired(radio);
+    ComputeDesired(command);
 
     if (updated.queueTransition && (abs(ya(yCOM)) >= abs(config.stand2step_y_offset - 0.005)))
     {
@@ -124,15 +124,15 @@ void StandingOutput::ComputeActual()
         deltaYaw_cross.dJdq.z();        // 1
 }
 
-void StandingOutput::ComputeDesired(const Eigen::VectorXd &radio)
+void StandingOutput::ComputeDesired(const DesiredCommand &command)
 {
-    double x_d = (updated.queueTransition) ? config.x_offset : config.x_offset + radio(Radio::LV) * config.x_range;
-    double y_d = (updated.queueTransition) ? config.stand2step_y_offset : radio(Radio::LH) * config.y_range;
-    double z_d = 0.5 * radio(Radio::LS) * (config.z_ub - config.z_lb) + 0.5 * (config.z_ub + config.z_lb);
-    // double z_d = updated.initial_height + 0.1*radio(Radio::LS);
-    double yaw_d = (updated.queueTransition) ? 0 : radio(Radio::RS) * config.yaw_range;
-    double pitch_d = (updated.queueTransition) ? 0 : radio(Radio::RH) * config.pitch_range;
-    double roll_d = (updated.queueTransition) ? 0 : radio(Radio::RV) * config.roll_range;
+    double x_d = (updated.queueTransition) ? config.x_offset : config.x_offset + command.values(Channel::X) * config.x_range;
+    double y_d = (updated.queueTransition) ? config.stand2step_y_offset : command.values(Channel::Y) * config.y_range;
+    double z_d = 0.5 * command.values(Channel::Z) * (config.z_ub - config.z_lb) + 0.5 * (config.z_ub + config.z_lb);
+    // double z_d = updated.initial_height + 0.1*command(Channel::Z);
+    double yaw_d = (updated.queueTransition) ? 0 : command.values(Channel::Yaw) * config.yaw_range;
+    double pitch_d = (updated.queueTransition) ? 0 : command.values(Channel::Pitch) * config.pitch_range;
+    double roll_d = (updated.queueTransition) ? 0 : command.values(Channel::Roll) * config.roll_range;
 
     yd << x_d, y_d, z_d, yaw_d, pitch_d, roll_d;
     yd = lowpassyd.update(yd);
@@ -145,10 +145,6 @@ void StandingOutput::ComputeHolonomicConstraints()
     MatrixXd Jh_internal, Jh_contact;
     VectorXd dJhdq_internal, dJhdq_contact;
     robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
-    //     Matrix3d Rground;
-    //     Rground << 1, 0, 0,
-    //    0, 0.995004165278026, -0.0998334166468282,
-    //    0, 0.0998334166468282, 0.995004165278026;
     robot_->GetContactHolonomicConstraints(contact.leftC, contact.rightC, Jh_contact, dJhdq_contact);
 
     Jh.resize(Jh_internal.rows() + Jh_contact.rows(), robot_->nv());

@@ -5,7 +5,7 @@
 #include "torque_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
-#include "biped_command/radio_subscriber.hpp"
+#include "screen_radio/radio_subscriber.hpp"
 
 #include <cstdlib> // For getenv()
 
@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "g1_mujoco_node");
     ros::NodeHandle nh;
-    // ros::Subscriber sub = nh.subscribe("radio_slider_values", 10, sliderCallback);
+    // ros::Subscriber sub = nh.subscribe("screen_radio_values", 10, sliderCallback);
 
-    RadioSubscriber radio_subscriber(nh, "radio_slider_values");
+    RadioSubscriber radio_subscriber(nh, "screen_radio_values");
 
     std::string home = std::string(getenv("HOME"));
 

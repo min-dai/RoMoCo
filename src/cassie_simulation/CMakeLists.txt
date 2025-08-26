@@ -21,7 +21,7 @@ find_package(biped_core REQUIRED)
 find_package(torque_control REQUIRED)
 find_package(biped_control REQUIRED)
 find_package(biped_utils REQUIRED)
-find_package(biped_command REQUIRED)
+find_package(screen_radio REQUIRED)
 find_package(biped_state_machine REQUIRED)
 
 
@@ -33,7 +33,7 @@ set(dependencies
   torque_control
   biped_control
   biped_utils
-  biped_command
+  screen_radio
   biped_state_machine
   Eigen3
 )

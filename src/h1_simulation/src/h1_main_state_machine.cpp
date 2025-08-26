@@ -10,8 +10,8 @@
 #include "torque_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
-#include "biped_command/radio_subscriber.hpp"
-
+#include "screen_radio/radio_subscriber.hpp"
+#include "screen_radio/screen_radio.hpp"
 #include <cstdlib> // For getenv()
 
 
@@ -59,17 +59,17 @@ int main(int argc, char *argv[])
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 
     double t_sim = 0.0;
-
+    VectorXd fake_radio;
 
     while (rclcpp::ok())
     {
         rclcpp::spin_some(node);
 
 
-        int mode_command = node->mode_command();
-        VectorXd fake_radio = node->fake_radio();
+        fake_radio = node->fake_radio();
+        DesiredCommand command = getScreenCommand(fake_radio);
 
-        t_sim = state_machine.Update(mode_command, fake_radio, robot_ptr, output, torque_solver, getLegModel, getUpper);
+        t_sim = state_machine.Update(command, robot_ptr, output, torque_solver, getLegModel, getUpper);
 
     }
 

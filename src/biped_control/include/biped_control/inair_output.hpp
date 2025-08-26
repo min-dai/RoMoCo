@@ -4,17 +4,17 @@
 
 #include "biped_utils/filters.hpp"
 #include "biped_utils/yaml_parser.hpp"
-#include "biped_command/radio_slider_map.hpp"
+
 class InAirOutput : public OutputBase
 {
 public:
     InAirOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot);
 
-    void UpdateOutput(const Eigen::VectorXd &reference, const double &t, const double &t_old) override;
+    void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
 
     void ComputeActual() override;
 
-    void ComputeDesired(const Eigen::VectorXd &reference);
+    void ComputeDesired(const DesiredCommand &command);
 
     void ComputeHolonomicConstraints();
 

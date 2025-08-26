@@ -9,7 +9,7 @@
 #include "torque_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
-#include "biped_command/radio_slider_map.hpp"
+#include "biped_types/biped_commands.hpp"
 
 #include <fstream> // For std::fstream
 #include <string>  // For std::string
@@ -21,7 +21,7 @@ public:
    BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim);
    virtual ~BasicStateMachine();
 
-   double Update(const int mode_command, const VectorXd &fake_radio, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getLegModel, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getUpper);
+   double Update(const DesiredCommand &command, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getLegModel, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getUpper);
 
    void Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr);
 
@@ -30,13 +30,13 @@ public:
 private:
    Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
 
-   void SelectControllers(int mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
+   void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
 
    // path
    std::string config_folder_;
    std::string log_path_;
 
-   int cur_mode_ = Radio::Null;
+   Mode cur_mode_ = Mode::Null;
    Eigen::VectorXd qfull_, dqfull_;
    Eigen::VectorXd locomotion_input_; // input for locomotion controller
    Eigen::VectorXd locked_input_;     // input for locked joints PD controller

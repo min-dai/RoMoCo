@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <QApplication>
 
-#include "biped_command/radio_slider_gui.hpp"
+#include "screen_radio/radio_slider_gui.hpp"
 
 // Needed because QApplication requires argc/argv.
 int argc = 0;

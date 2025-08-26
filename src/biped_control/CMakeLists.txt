@@ -15,14 +15,14 @@ find_package(ament_cmake REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(biped_utils REQUIRED)
 find_package(biped_core REQUIRED)
-find_package(biped_command REQUIRED)
+find_package(screen_radio REQUIRED)
 find_package(biped_planner REQUIRED)
 
 set(dependencies
   Eigen3
   biped_utils
   biped_core
-  biped_command
+  screen_radio
   biped_planner
 )
 

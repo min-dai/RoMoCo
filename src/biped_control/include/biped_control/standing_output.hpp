@@ -5,7 +5,7 @@
 #include "biped_utils/filters.hpp"
 #include "biped_utils/yaml_parser.hpp"
 
-#include "biped_command/radio_slider_map.hpp"
+
 class StandingOutput : public OutputBase
 {
 public:
@@ -16,14 +16,14 @@ public:
         return this->updated.readyToTransition;
     }
 
-    void UpdateOutput(const Eigen::VectorXd &radio, const double &t, const double &t_old) override;
+    void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
 
 private:
     Contact contact;
 
     void ComputeActual() override;
 
-    void ComputeDesired(const Eigen::VectorXd &reference);
+    void ComputeDesired(const DesiredCommand &command);
 
     void ComputeHolonomicConstraints();
 

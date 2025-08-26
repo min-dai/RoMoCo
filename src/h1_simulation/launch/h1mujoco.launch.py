@@ -4,9 +4,9 @@ from launch_ros.actions import Node
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription([
         Node(
-            package="cassie_simulation",
-            executable="cassie_state_machine",
-            name="cassie_state_machine",
+            package="h1_simulation",
+            executable="h1_state_machine",
+            name="h1_state_machine",
             output="screen"
         ),
         Node(

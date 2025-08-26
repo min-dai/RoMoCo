@@ -1,13 +1,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 #include <QTimer>
-#include "biped_command/radio_slider_gui.hpp"
+#include "screen_radio/radio_slider_gui.hpp"
 
 int main(int argc, char **argv)
 {
    rclcpp::init(argc, argv);
-   auto node = rclcpp::Node::make_shared("radio_slider_node");
-   auto publisher = node->create_publisher<std_msgs::msg::Float64MultiArray>("radio_slider_values", 10);
+   auto node = rclcpp::Node::make_shared("screen_radio_node");
+   auto publisher = node->create_publisher<std_msgs::msg::Float64MultiArray>("screen_radio_values", 10);
    
    QApplication app(argc, argv);
    RadioSliderGUI fake_radio;

@@ -1,5 +1,4 @@
 #include "biped_control/walking_output_fp.hpp"
-#include "biped_command/radio_slider_map.hpp"
 #include "biped_planner/HLIPplanner.hpp"
 #include "biped_planner/DCMplanner.hpp"
 
@@ -32,7 +31,8 @@ void WalkingOutputFp::Init(const std::string &config_file)
    ROplanner = std::make_unique<DCMPlanner>();
 
    // update updated struct using config assuming radio is zero
-   updateTargetWalkingRadio(VectorXd::Zero(10));
+   DesiredCommand command;
+   updateTargetWalkingRadio(command);
 
    planner_params_.UpdateParamsLIP(updated.zCOMdes, updated.TSS, updated.TDS, updated.desiredVx, updated.desiredVy, updated.stepWidth);
 
@@ -147,22 +147,22 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
    } while (transitioned);
 }
 
-void WalkingOutputFp::updateTargetWalkingRadio(const VectorXd &radio)
+void WalkingOutputFp::updateTargetWalkingRadio(const DesiredCommand &command)
 {
-   lowpass_vel_x_des_.update(config.velXmax * radio(Radio::LV));
-   lowpass_vel_y_des_.update(config.velYmax * radio(Radio::LH));
-   updated.delta_yaw_des = updated.delta_yaw_des + radio(Radio::RH) * updated.dt;
+   lowpass_vel_x_des_.update(config.velXmax * command.values(Channel::X));
+   lowpass_vel_y_des_.update(config.velYmax * command.values(Channel::Y));
+   updated.delta_yaw_des = updated.delta_yaw_des + command.values(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
    updated.desiredVy = lowpass_vel_y_des_.getValue() + config.vy_offset;
 
-   double Tradio = (config.TDS + config.TSS) + 0.1 * radio(Radio::RS); // walking period
+   double Tradio = (config.TDS + config.TSS) + 0.1 * command.values(Channel::StepTime); // walking period
    updated.TSS = Tradio / (config.TDS + config.TSS) * config.TSS;
    updated.TDS = Tradio / (config.TDS + config.TSS) * config.TDS;
 
-   updated.zCOMdes = config.znom + 0.05 * radio(Radio::LS); // walking height
+   updated.zCOMdes = config.znom + 0.05 * command.values(Channel::Z); // walking height
 
-   updated.stepWidth = config.stepWidthNominal + 0.2 * radio(Radio::S2);
+   updated.stepWidth = config.stepWidthNominal + 0.2 * command.values(Channel::StepWidth);
    updated.stepWidth = std::clamp(updated.stepWidth, 0.15, 0.5); // range of the realizable step Width
 
    planner_params_.UpdateParamsLIP(updated.zCOMdes, updated.TSS, updated.TDS, updated.desiredVx, updated.desiredVy, updated.stepWidth);
@@ -172,7 +172,7 @@ void WalkingOutputFp::updateTargetWalkingRadio(const VectorXd &radio)
    updated.TOA = updated.TDS;
 }
 
-void WalkingOutputFp::UpdateOutput(const Eigen::VectorXd &radio, const double &t, const double &t_old)
+void WalkingOutputFp::UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old)
 {
    updated.t = t;
    updated.dt = t - t_old;
@@ -190,7 +190,7 @@ void WalkingOutputFp::UpdateOutput(const Eigen::VectorXd &radio, const double &t
       firstStepInitialized = true;
    }
 
-   updateTargetWalkingRadio(radio);
+   updateTargetWalkingRadio(command);
 
    timeBasedDomainContactStatusSwitch(t);
    phase.update(t - updated.tNstep0);

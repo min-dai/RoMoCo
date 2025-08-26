@@ -5,6 +5,7 @@
 #include "biped_core/outputs.hpp"
 #include <Eigen/Dense>
 #include "biped_utils/bezier_tools.hpp"
+#include "biped_types/biped_commands.hpp"
 
 using namespace bezier_tools;
 
@@ -22,7 +23,7 @@ public:
 
     virtual void reset(){};
 
-    virtual void UpdateOutput(const VectorXd &reference, const double &t, const double &t_old) = 0;
+    virtual void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) = 0;
 
     virtual void ComputeActual() = 0;
 
