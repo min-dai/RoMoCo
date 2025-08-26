@@ -42,19 +42,14 @@ private:
    std::string log_path_;
 
    Mode cur_mode_ = Mode::Null;
-   Eigen::VectorXd qfull_, dqfull_;
    Eigen::VectorXd locomotion_input_; // input for locomotion controller
-   Eigen::VectorXd locked_input_;     // input for locked joints PD controller
-   double t_old_ = 0;
+
 
    // for Log files
    std::fstream logFile_;
    std::string logFilePath_;
 
-   // for upper body locked joints PD control
-   int n_locked_joints_ = 0;
-   VectorXd q_locked_joints_des_, dq_locked_joints_des_;
-   PDController locked_joints_pd_controller_;
+
    SimpleTimer timer_;
 
    BipedMotorCommands motor_commands_;

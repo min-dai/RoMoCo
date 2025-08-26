@@ -83,8 +83,7 @@ void BasicControllerStateMachine::Init(const std::string &config_folder, const s
 
    timer_.Reset();
 
-   qfull_ = VectorXd::Zero(robot_ptr->nq() + n_locked_joints_);
-   dqfull_ = VectorXd::Zero(robot_ptr->nv() + n_locked_joints_);
+
    locomotion_input_ = VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
 }
 
@@ -176,6 +175,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
 
             motor_commands_ = torque_solver->Solve();
             Eigen::VectorXd u_loco = motor_commands_.joint_torques;
+            
             if (motor_commands_.joint_kp.size()>0){
                Eigen::VectorXd kp = motor_commands_.joint_kp;
                Eigen::VectorXd kd = motor_commands_.joint_kd;
