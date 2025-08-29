@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} SHARED
             src/planefoot_robot_base_pinocchio.cpp
             src/linefoot_robot_base_pinocchio.cpp
             src/com_states_rel_to_stance.cpp
+            src/prep_proprioception.cpp
             )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

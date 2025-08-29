@@ -1,6 +1,6 @@
 #include "g1_mujoco_sim.hpp"
 #include "biped_utils/yaml_parser.hpp"
-
+#include "biped_core/prep_proprioception.hpp"
 G1MujocoSim::G1MujocoSim(const std::string &config_file)
 {
    Init(config_file);
@@ -96,9 +96,6 @@ bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::Ve
       mujoco_.Sim1StepForward();
    }
 
-   sensor_.imu_gyro = mujoco_.GetSensorDataByIds(gyro_ids);
-   sensor_.imu_accelerometer = mujoco_.GetSensorDataByIds(accelerometer_ids);
-   sensor_.imu_framequat = mujoco_.GetSensorDataByIds(framequat_ids);
 
 
    sensor_.encoders_pos_pinocchio_order = mujoco_.GetJointPositionsByIds(all_joint_ids_pinocchio_order);
@@ -106,8 +103,12 @@ bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::Ve
 
    sensor_.base_lin_pos << mujoco_.qpos()[0], mujoco_.qpos()[1], mujoco_.qpos()[2];
    sensor_.base_lin_vel << mujoco_.qvel()[0], mujoco_.qvel()[1], mujoco_.qvel()[2];
-   sensor_.base_ang_quat << mujoco_.qpos()[3], mujoco_.qpos()[4], mujoco_.qpos()[5], mujoco_.qpos()[6];
+   sensor_.base_ang_quat.w() = mujoco_.qpos()[3];
+   sensor_.base_ang_quat.x() = mujoco_.qpos()[4];
+   sensor_.base_ang_quat.y() = mujoco_.qpos()[5];
+   sensor_.base_ang_quat.z() = mujoco_.qpos()[6];
    sensor_.base_ang_vel << mujoco_.qvel()[3], mujoco_.qvel()[4], mujoco_.qvel()[5];
+
 
    step_counter++;
    if (step_counter >= step_counter_threshold)
@@ -125,7 +126,9 @@ bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::Ve
 
 void G1MujocoSim::GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot)
 {
-   getAllJointStateFromSensorMujoco(sensor_, q, qdot);
+   BipedProprioception proprioception = GetBipedProprioceptionFromSensorDataPostEstimation(sensor_);
+   q = proprioception.q;
+   qdot = proprioception.qdot;
 }
 
 void G1MujocoSim::Close()

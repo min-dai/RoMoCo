@@ -3,8 +3,7 @@
 
 #include "mujoco_sim/mujoco_sim.hpp"
 #include "biped_core/mujoco_sim_base.hpp"
-#include "g1_sensor.hpp"
-
+#include "biped_types/biped_proprioception.hpp"
 class G1MujocoSim : public MujocoSimBase
 {
 public:
@@ -26,7 +25,7 @@ public:
 private:
    MujocoSim mujoco_;
 
-   g1_sensor sensor_;
+   SensorDataPostEstimation sensor_;
 
    void set_base_pos(const Eigen::Vector3d &pos) { mujoco_.set_base_pos(pos); }
    void set_base_quaternion(const Eigen::Vector4d &quat) { mujoco_.set_base_quaternion(quat); }
