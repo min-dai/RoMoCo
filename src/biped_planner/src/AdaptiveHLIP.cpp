@@ -56,7 +56,7 @@ Vector2d AdaptiveHLIP::solveDeadbeatControllerGain(MatrixXd Ahat, MatrixXd Bhat)
     // Khat = (Mat.completeOrthogonalDecomposition().solve(Vec));
 
     //solve for LQR gain
-    Khat = -solve_dlqr_gain(Ahat,Bhat,MatrixXd::Identity(2,2),MatrixXd::Identity(1,1)*10,0.00000001);
+    Khat = -SolveDlqrGain(Ahat,Bhat,MatrixXd::Identity(2,2),MatrixXd::Identity(1,1)*10,0.00000001);
 
     return Khat;
 };

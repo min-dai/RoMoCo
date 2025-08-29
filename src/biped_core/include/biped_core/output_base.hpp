@@ -21,7 +21,7 @@ public:
     virtual void ForwardPosIk(const VectorXd &qk,  VectorXd &fk, MatrixXd &Jk);
     
 
-    virtual void reset(){};
+    virtual void Reset(){};
 
     virtual void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) = 0;
 

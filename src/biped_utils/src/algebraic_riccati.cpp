@@ -2,7 +2,7 @@
 #include "biped_utils/algebraic_riccati.hpp"
 
 
-Eigen::MatrixXd solve_dare(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd Q, Eigen::MatrixXd R, double tol)
+Eigen::MatrixXd SolveDare(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd Q, Eigen::MatrixXd R, double tol)
 {
     Eigen::MatrixXd G = B * R.completeOrthogonalDecomposition().solve(B.transpose());
     Eigen::MatrixXd H = Q;
@@ -22,9 +22,9 @@ Eigen::MatrixXd solve_dare(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd
     }
     return H;
 };
-Eigen::VectorXd solve_dlqr_gain(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd Q, Eigen::MatrixXd R, double tol)
+Eigen::VectorXd SolveDlqrGain(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd Q, Eigen::MatrixXd R, double tol)
 {
-    Eigen::MatrixXd X = solve_dare(A, B, Q, R, tol);
+    Eigen::MatrixXd X = SolveDare(A, B, Q, R, tol);
     Eigen::MatrixXd K = (B.transpose() * X * B + R).completeOrthogonalDecomposition().solve(B.transpose() * X * A);
     Eigen::VectorXd Kvec = K.row(0);
     return Kvec;

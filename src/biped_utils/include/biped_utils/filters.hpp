@@ -73,43 +73,43 @@ class LowPassFilter
 public:
     LowPassFilter(double dt, double dt_cutoff)
     {
-        reconfigure(dt, dt_cutoff);
+        Reconfigure(dt, dt_cutoff);
     }
 
     /**
-     * @brief reset Reset the value
+     * @brief Reset Reset the value
      * @param value
      */
-    void reset(double value = NAN)
+    void Reset(double value = NAN)
     {
         prev_filt_ = value;
     }
 
     /**
-     * @brief reconfigure Reconfigure coefficient, resetting previous value to NAN
+     * @brief Reconfigure Reconfigure coefficient, resetting previous value to NAN
      * @param alpha
      */
-    void reconfigure(double alpha)
+    void Reconfigure(double alpha)
     {
         alpha_ = alpha;
-        reset();
+        Reset();
     }
 
     /**
-     * @brief reconfigure Reconfigure the filter, resetting the previous value
+     * @brief Reconfigure Reconfigure the filter, resetting the previous value
      * @param dt
      * @param dt_cutoff
      */
-    void reconfigure(double dt, double dt_cutoff)
+    void Reconfigure(double dt, double dt_cutoff)
     {
-        reconfigure(low_pass_alpha(dt, dt_cutoff));
+        Reconfigure(low_pass_alpha(dt, dt_cutoff));
     }
 
     /**
-     * @brief update Update filter with current raw value, updating memory
+     * @brief Update Update filter with current raw value, updating memory
      * @param cur_raw
      */
-    double update(double cur_raw)
+    double Update(double cur_raw)
     {
         double cur_filt = low_pass_first_order(alpha_, prev_filt_, cur_raw);
         prev_filt_ = cur_filt;
@@ -138,46 +138,46 @@ class LowPassFilterVec
 public:
     LowPassFilterVec(double dt, Eigen::VectorXd dt_cutoff, int size)
     {
-        reconfigure(dt, dt_cutoff,size);
+        Reconfigure(dt, dt_cutoff,size);
         prev_filt_.resize(size);
     }
 
     /**
-     * @brief reset Reset the value
+     * @brief Reset Reset the value
      * @param value
      */
-    void reset(double value = NAN)
+    void Reset(double value = NAN)
     {
         prev_filt_ = value*Eigen::VectorXd::Ones(prev_filt_.size());
         initialized = false;
     }
 
     /**
-     * @brief reconfigure Reconfigure coefficient, resetting previous value to NAN
+     * @brief Reconfigure Reconfigure coefficient, resetting previous value to NAN
      * @param alpha
      */
-    void reconfigure(Eigen::VectorXd alpha)
+    void Reconfigure(Eigen::VectorXd alpha)
     {
         alpha_ = alpha;
-        reset();
+        Reset();
     }
 
     /**
-     * @brief reconfigure Reconfigure the filter, resetting the previous value
+     * @brief Reconfigure Reconfigure the filter, resetting the previous value
      * @param dt
      * @param dt_cutoff
      */
-    void reconfigure(double dt, Eigen::VectorXd dt_cutoff, int size)
+    void Reconfigure(double dt, Eigen::VectorXd dt_cutoff, int size)
     {
-        reconfigure(low_pass_alpha_vec(dt, dt_cutoff));
+        Reconfigure(low_pass_alpha_vec(dt, dt_cutoff));
         prev_filt_.resize(size);
     }
 
     /**
-     * @brief update Update filter with current raw value, updating memory
+     * @brief Update Update filter with current raw value, updating memory
      * @param cur_raw
      */
-    Eigen::VectorXd update(Eigen::VectorXd cur_raw)
+    Eigen::VectorXd Update(Eigen::VectorXd cur_raw)
     {
         Eigen::VectorXd cur_filt= Eigen::VectorXd::Zero(cur_raw.size());
         if (initialized)

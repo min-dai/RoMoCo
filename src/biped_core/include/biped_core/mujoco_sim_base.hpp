@@ -37,5 +37,7 @@ protected:
       }
 
    } videoSetting;
+
+   
 };
 #endif // MUJOCO_SIM_BASE_HPP

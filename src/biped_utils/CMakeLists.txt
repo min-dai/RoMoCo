@@ -30,7 +30,8 @@ add_library(${PROJECT_NAME} SHARED
     src/algebraic_riccati.cpp
     src/Pinverse.cpp
     src/yaml_parser.cpp
-    src/angular_momentum_kf.cpp)
+    src/angular_momentum_kf.cpp
+    src/contact_classifier.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>

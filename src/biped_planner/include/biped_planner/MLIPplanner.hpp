@@ -14,7 +14,7 @@ public:
 
    void UpdateParams(double z0, double Ts, double Td, double velx, double vely, double stepwidth) override
    {
-      params.update(z0, Ts, Td, velx, vely, stepwidth);
+      params.Update(z0, Ts, Td, velx, vely, stepwidth);
       MLIP_sag.updateMLIP(params.z0, params.Ts, params.Td);
       MLIP_lat.updateMLIP(params.z0, params.Ts, params.Td);
       MLIP_sag.updateDesiredWalking(params.velx, 0.);

@@ -20,7 +20,7 @@ InAirOutput::InAirOutput(const std::string &config_file, std::shared_ptr<RobotBa
     actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
     active_y_idx = OutputBase::generate_full_y_idx(nY);
 
-    lowpassyd.reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
+    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
 }
 
 void InAirOutput::Config::Init(RobotType robot_type)
@@ -60,7 +60,7 @@ void InAirOutput::UpdateOutput(const DesiredCommand &command, const double &t, c
     if (!updated.isInitialized)
     {
         updated.isInitialized = true;
-        lowpassyd.update(ya);
+        lowpassyd.Update(ya);
 
         yd = ya;
     }
@@ -138,7 +138,7 @@ void InAirOutput::ComputeDesired(const DesiredCommand &command)
             xcom_d, -ycom_d, zcom_d, yaw_d, pitch_d;
     }
 
-    yd = lowpassyd.update(yd);
+    yd = lowpassyd.Update(yd);
 
     dyd.setZero();
 

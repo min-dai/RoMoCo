@@ -15,7 +15,6 @@ public:
 
     BipedMotorCommands Solve() override;
 
-    void reset();
 
 private:
     

@@ -11,6 +11,7 @@ struct BipedMotorCommands
    Eigen::VectorXd joint_kp;
    Eigen::VectorXd joint_kd;
    Eigen::VectorXd joint_torques;
+   std::vector<int> joint_indices;
 
    BipedMotorCommands() = default;
 
@@ -29,9 +30,51 @@ struct BipedMotorCommands
       joint_kd.resize(dof);
       joint_torques.resize(dof);
    }
+
+   void ZeroAll()
+   {
+      joint_positions.setZero();
+      joint_velocities.setZero();
+      joint_kp.setZero();
+      joint_kd.setZero();
+      joint_torques.setZero();
+   }
+
+   void ZeroAll(int dof)
+   {
+      joint_positions = Eigen::VectorXd::Zero(dof);
+      joint_velocities = Eigen::VectorXd::Zero(dof);
+      joint_kp = Eigen::VectorXd::Zero(dof);
+      joint_kd = Eigen::VectorXd::Zero(dof);
+      joint_torques = Eigen::VectorXd::Zero(dof);
+   }
+
    void ResizeTorque(int dof)
    {
       joint_torques.resize(dof);
+   }
+
+   BipedMotorCommands ConcatenateWithIndices(const BipedMotorCommands &other, int length) const
+   {
+       BipedMotorCommands result;
+       result.ZeroAll(length);
+       for (int i : joint_indices)
+       {
+           result.joint_positions[i] = joint_positions[i];
+           result.joint_velocities[i] = joint_velocities[i];
+           result.joint_kp[i] = joint_kp[i];
+           result.joint_kd[i] = joint_kd[i];
+           result.joint_torques[i] = joint_torques[i];
+       }
+       for (int i : other.joint_indices)
+       {
+           result.joint_positions[i] = other.joint_positions[i];
+           result.joint_velocities[i] = other.joint_velocities[i];
+           result.joint_kp[i] = other.joint_kp[i];
+           result.joint_kd[i] = other.joint_kd[i];
+           result.joint_torques[i] = other.joint_torques[i];
+       }
+       return result;
    }
 
    // Export to std::vector (handy for IPC/ROS messages).

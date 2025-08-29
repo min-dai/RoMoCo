@@ -1,30 +1,12 @@
 #pragma once
 
-#include "biped_core/planefoot_robot_base_pinocchio.hpp"
+#include "g1_model_leg.hpp"
 
-class G1Model : public PlaneFootRobotBasePinocchio
+class G1Model : public G1ModelLeg
 {
 public:
-    enum JointIndexPinocchio
+    enum JointIndexFull
     {
-        BasePosX = 0,
-        BasePosY = 1,
-        BasePosZ = 2,
-        BaseRotZ = 3,
-        BaseRotY = 4,
-        BaseRotX = 5,
-        LeftHipPitch = 6,
-        LeftHipRoll = 7,
-        LeftHipYaw = 8,
-        LeftKneePitch = 9,
-        LeftAnklePitch = 10,
-        LeftAnkleRoll = 11,
-        RightHipPitch = 12,
-        RightHipRoll = 13,
-        RightHipYaw = 14,
-        RightKneePitch = 15,
-        RightAnklePitch = 16,
-        RightAnkleRoll = 17,
         WaistYaw = 18,
         WaistRoll = 19,
         WaistPitch = 20,
@@ -52,12 +34,6 @@ public:
 
     void InitJointKinematics() override;
 
-    Kinematics1D GetLeftFootDeltaPitch() override;
-    Kinematics1D GetRightFootDeltaPitch() override;
-    Kinematics1D GetLeftFootDeltaRoll() override;
-    Kinematics1D GetRightFootDeltaRoll() override;
-    Kinematics1D GetBaseDeltaPitch() override;
-    Kinematics1D GetBaseDeltaRoll() override;
 
 private:
 

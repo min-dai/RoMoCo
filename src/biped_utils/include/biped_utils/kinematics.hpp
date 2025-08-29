@@ -70,7 +70,16 @@ struct Kinematics1D
         return result;
     }
 
-    void print() const;
+    //overload << for printing
+    friend std::ostream &operator<<(std::ostream &os, const Kinematics1D &k)
+    {
+        os << "Position: " << k.position.transpose() << "\n";
+        os << "Velocity: " << k.velocity.transpose() << "\n";
+        os << "Jacobian: \n" << k.jacobian << "\n";
+        os << "dJdq: " << k.dJdq.transpose() << "\n";
+        return os;
+    }
+
 };
 
 struct Kinematics3D
@@ -200,5 +209,13 @@ struct Kinematics3D
         return result;
     }
 
-    void print() const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Kinematics3D &k)
+    {
+        os << "Position: " << k.position.transpose() << "\n";
+        os << "Velocity: " << k.velocity.transpose() << "\n";
+        os << "Jacobian: \n" << k.jacobian << "\n";
+        os << "dJdq: " << k.dJdq.transpose() << "\n";
+        return os;
+    }
 };

@@ -44,7 +44,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
 
     Kdeadbeat = solve_deadbeat_gain(params.A_S2S, params.B_S2S);
 
-    Klqr = -solve_dlqr_gain(params.A_S2S, params.B_S2S, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * 20, 0.00000001);
+    Klqr = -SolveDlqrGain(params.A_S2S, params.B_S2S, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * 20, 0.00000001);
 
     //TODO:division by zero when Td=0
     params.a_DCM = exp(params.lambda * params.T);
@@ -54,7 +54,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
     }else{
         params.b_DCM = -exp(params.lambda * params.Ts);
     }
-    Eigen::VectorXd klqr_DCM_vector = -solve_dlqr_gain(Eigen::MatrixXd::Identity(1, 1) * params.a_DCM, Eigen::MatrixXd::Identity(1, 1) * params.b_DCM, Eigen::MatrixXd::Identity(1, 1), Eigen::MatrixXd::Identity(1, 1), 0.00000001);
+    Eigen::VectorXd klqr_DCM_vector = -SolveDlqrGain(Eigen::MatrixXd::Identity(1, 1) * params.a_DCM, Eigen::MatrixXd::Identity(1, 1) * params.b_DCM, Eigen::MatrixXd::Identity(1, 1), Eigen::MatrixXd::Identity(1, 1), 0.00000001);
     klqr_DCM = klqr_DCM_vector(0);
 
     // p1.K = Kdeadbeat;

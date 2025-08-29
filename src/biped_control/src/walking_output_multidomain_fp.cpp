@@ -30,7 +30,7 @@ void WalkingOutputMultiDomainFP::Init(const std::string &config_file)
 
    ROplanner = std::make_unique<HLIPPlanner>();
 
-   // update updated struct using config assuming radio is zero
+   // Update updated struct using config assuming radio is zero
    updateTargetWalkingRadio(Eigen::VectorXd::Zero(10));
 
    ROplanner->Init(updated.zCOMdes, updated.TSS, updated.TDS, 0., 0., updated.stepWidth);
@@ -39,8 +39,8 @@ void WalkingOutputMultiDomainFP::Init(const std::string &config_file)
 
    updated.bezierCOMz.resize(config.bezierComVertical.size());
 
-   lowpass_vel_x_des_.reconfigure(config.dt_lowpass, config.velX_dt_cutoff);
-   lowpass_vel_y_des_.reconfigure(config.dt_lowpass, config.velY_dt_cutoff);
+   lowpass_vel_x_des_.Reconfigure(config.dt_lowpass, config.velX_dt_cutoff);
+   lowpass_vel_y_des_.Reconfigure(config.dt_lowpass, config.velY_dt_cutoff);
    updated.tNstep0 = -1;
 }
 
@@ -62,7 +62,7 @@ void WalkingOutputMultiDomainFP::timeBasedDomainContactStatusSwitch(double t)
          updated.isDSP = false;
          updated.readyToTransition = true;
 
-         // update stance leg
+         // Update stance leg
          domain.NextStance();
          if (domain.isLeftStance())
          {
@@ -86,7 +86,7 @@ void WalkingOutputMultiDomainFP::timeBasedDomainContactStatusSwitch(double t)
 
          updated.tNstep0 = t;
          updated.PhaseRange << 0, updated.TSS;
-         phase.reconfigure(updated.PhaseRange, 1);
+         phase.Reconfigure(updated.PhaseRange, 1);
 
          ComputeActual();
          updated.y0_UA = ya;
@@ -100,12 +100,12 @@ void WalkingOutputMultiDomainFP::timeBasedDomainContactStatusSwitch(double t)
          updated.target_yaw = updated.stance_toe_yaw - updated.delta_yaw;
          cout << "delta: " << updated.delta_yaw << ", stance_toe: " << updated.stance_toe_yaw << ", target: " << updated.target_yaw << endl;
 
-         // update bezier polynomials that only need to update once
+         // Update bezier polynomials that only need to Update once
          updated.bezierSwingz << updated.y0_UA(swingStepz), updated.y0_UA(swingStepz), config.zsw_max / 3,
              config.zsw_max, config.zsw_max, config.zsw_max / 2, // config.zsw_neg ,
              config.zsw_neg;
          updated.bezierCOMz = (Eigen::VectorXd::Ones(updated.bezierCOMz.size()) - config.bezierComVertical) * updated.y0_UA(zCOM) + config.bezierComVertical * updated.zCOMdes;
-         // update bezier parameters for swing and stance hip yaw
+         // Update bezier parameters for swing and stance hip yaw
          double ToYaw = updated.delta_yaw / 2.;
          updated.bezierStanceHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(stanceHipYaw) + config.bezierSwingHorizontal * ToYaw;
          updated.bezierSwingHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingHipYaw) - config.bezierSwingHorizontal * ToYaw;
@@ -157,8 +157,8 @@ void WalkingOutputMultiDomainFP::timeBasedDomainContactStatusSwitch(double t)
 
 void WalkingOutputMultiDomainFP::updateTargetWalkingRadio(const DesiredCommand &command)
 {
-   lowpass_vel_x_des_.update(config.velXmax * command(Channel::X));
-   lowpass_vel_y_des_.update(config.velYmax * command(Channel::Y));
+   lowpass_vel_x_des_.Update(config.velXmax * command(Channel::X));
+   lowpass_vel_y_des_.Update(config.velYmax * command(Channel::Y));
    updated.delta_yaw_des = updated.delta_yaw_des + command(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
@@ -201,7 +201,7 @@ void WalkingOutputMultiDomainFP::UpdateOutput(const DesiredCommand &command, con
    updateTargetWalkingRadio(radio);
 
    timeBasedDomainContactStatusSwitch(t);
-   phase.update(t - updated.tNstep0);
+   phase.Update(t - updated.tNstep0);
 
    // bewteen 0-1
    tau_DS = (updated.isDSP && updated.TDS != 0) ? (phase.tau - 1.) * updated.TSS / updated.TDS : NAN;
@@ -257,7 +257,7 @@ Vector2d WalkingOutputMultiDomainFP::computeFPwithROmodel()
    // swing x and y
    Vector4d x_now;
    x_now << com_rel_to_toe.states.pCOM.x(), com_rel_to_toe.states.Lpivot.y(), com_rel_to_toe.states.pCOM.y(), com_rel_to_toe.states.Lpivot.x();
-   double T2imp = (updated.PhaseRange(1) - phase.pActual);
+   double T2imp = (updated.PhaseRange(1) - phase.time_passed());
    Vector2d stepSize = ROplanner->UpdatePlan(x_now, T2imp, domain.stance);
 
    double ang = updated.target_yaw - robot_->q()(BaseRotZ); // convert from target yaw frame to local frame

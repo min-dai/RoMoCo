@@ -5,41 +5,28 @@ PhaseVariable::PhaseVariable()
 {
     this->tau = 0.0;
     this->dtau = 0.0;
-    this->pActual = 0.0;
-    this->dpActual = 0.0;
-    this->phaseRange << 0.0, 1.0;
+    this->time_passed_ = 0.0;
+    this->phase_range_ << 0.0, 1.0;
 }
 
-void PhaseVariable::reconfigure(Eigen::Vector2d &phaseRange, double timeScale = 1.0)
+void PhaseVariable::Reconfigure(Eigen::Vector2d &phase_range)
 {
-    this->phaseRange << phaseRange;
-    this->timeScale = timeScale;
+    this->phase_range_ << phase_range;
 }
 
-void PhaseVariable::update(double time)
+void PhaseVariable::Update(double time)
 {
-    this->calcP(time);
-    this->calcTau();
-    this->calcDTau();
+    this->UpdateTime(time);
+    this->UpdatePhase();
 }
 
-void PhaseVariable::calcP(double time)
+void PhaseVariable::UpdateTime(double time)
 {
-    this->pActual = time * this->timeScale;
-    this->dpActual = this->timeScale;
+    this->time_passed_ = this->phase_range_(0) + time;
 }
 
-void PhaseVariable::calcTau()
+void PhaseVariable::UpdatePhase()
 {
-    this->tau = (this->pActual - this->phaseRange(0)) / (this->phaseRange(1) - this->phaseRange(0));
-}
-
-void PhaseVariable::calcDTau()
-{
-    this->dtau = this->dpActual / (this->phaseRange(1) - this->phaseRange(0));
-}
-
-Eigen::Vector2d PhaseVariable::getPhaseRange()
-{
-    return this->phaseRange;
+    this->tau = (this->time_passed_ - this->phase_range_(0)) / (this->phase_range_(1) - this->phase_range_(0));
+    this->dtau = 1.0 / (this->phase_range_(1) - this->phase_range_(0));
 }

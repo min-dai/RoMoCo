@@ -33,7 +33,7 @@ struct RawSensorDataHardware : RawSensorData
    Eigen::Vector3d base_lin_acc;
 };
 
-struct SensorDataPostEstimation : RawSensorData
+struct SensorDataPostEstimation : RawSensorData 
 {
    Eigen::Vector3d base_lin_vel;
 };

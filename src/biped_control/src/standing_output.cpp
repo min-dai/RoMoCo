@@ -29,7 +29,7 @@ StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<R
 
     ComputeFrictionConstriants();
 
-    lowpassyd.reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
+    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
 }
 
 void StandingOutput::Config::Init(RobotType robot_type)
@@ -72,7 +72,7 @@ void StandingOutput::UpdateOutput(const DesiredCommand &command, const double &t
     if (!updated.isInitialized)
     {
         updated.isInitialized = true;
-        lowpassyd.update(ya);
+        lowpassyd.Update(ya);
 
         yd = ya;
         updated.initial_height = ya(zCOM);
@@ -135,7 +135,7 @@ void StandingOutput::ComputeDesired(const DesiredCommand &command)
     double roll_d = (updated.queueTransition) ? 0 : command.values(Channel::Roll) * config.roll_range;
 
     yd << x_d, y_d, z_d, yaw_d, pitch_d, roll_d;
-    yd = lowpassyd.update(yd);
+    yd = lowpassyd.Update(yd);
     dyd.setZero();
     d2yd.setZero();
 }

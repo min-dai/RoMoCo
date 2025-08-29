@@ -13,22 +13,21 @@ class PhaseVariable
 public:
     double tau;
     double dtau;
-    double pActual;
-    double dpActual;
-
-    Eigen::Vector2d phaseRange;
 
     PhaseVariable();
-    void update(double time);
-    void reconfigure(Eigen::Vector2d &phaseRange, double timeScale);
-    Eigen::Vector2d getPhaseRange();
+    void Update(double time);
+    void Reconfigure(Eigen::Vector2d &phase_range);
+
+    double time_passed() { return time_passed_; }
+    double time_left() { return phase_range_(1) - time_passed_; }
+    Eigen::Vector2d phase_range() { return phase_range_; };
 
 private:
-    double timeScale;
 
-    void calcP(double time);
-    void calcTau();
-    void calcDTau();
+    Eigen::Vector2d phase_range_;
+    double time_passed_;
+    void UpdateTime(double time);
+    void UpdatePhase();
 };
 
 #endif // PHASE_VARIABLE_HPP

@@ -47,8 +47,11 @@ public:
     Kinematics1D GetRightFootDeltaRoll() override;
     Kinematics1D GetBaseDeltaPitch() override;
     Kinematics1D GetBaseDeltaRoll() override;
-    
 
-private:
+
+
+protected:
+    void AddFramesImpl(const std::string& base_joint_name);
+    void InitActuationImpl(int nu);
 
 };

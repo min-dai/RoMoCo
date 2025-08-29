@@ -80,6 +80,23 @@ std::vector<int> G1ModelLeg::actuated_u_idx(AnkleMotorStatus left_ankle_status, 
 
 void G1ModelLeg::AddFrames()
 {
+    AddFramesImpl("root_joint");
+}
+
+void G1ModelLeg::InitActuation()
+{
+    InitActuationImpl(12);
+
+}
+
+void G1ModelLeg::InitJointKinematics()
+{
+    left_hip_yaw_.joint_id = LeftHipYaw;
+    right_hip_yaw_.joint_id = RightHipYaw;
+}
+
+void G1ModelLeg::AddFramesImpl(const std::string& base_joint_name)
+{
     pinocchio::SE3 placement = pinocchio::SE3::Identity();
 
     pinocchio::JointIndex left_ankle_joint_id = model_.getJointId("left_ankle_roll_joint");
@@ -102,11 +119,11 @@ void G1ModelLeg::AddFrames()
         {"right_mid_foot", {0.035, 0.0, -0.03}, righ_ankle_joint_id},
         {"left_hip", {0.0, 0.0, 0.0}, model_.getJointId("left_hip_roll_joint")},
         {"right_hip", {0.0, 0.0, 0.0}, model_.getJointId("right_hip_roll_joint")},
-        {"base", {0.0, 0.0, 0.0}, model_.getJointId("root_joint")},
-        {"baseF", {0.05, 0.0, 0.0}, model_.getJointId("root_joint")},
-        {"baseB", {-0.05, 0.0, 0.0}, model_.getJointId("root_joint")},
-        {"baseL", {0.0, 0.05, 0.0}, model_.getJointId("root_joint")},
-        {"baseR", {0.0, -0.05, 0.0}, model_.getJointId("root_joint")}
+        {"base", {0, 0, .15},        model_.getJointId(base_joint_name)},
+        {"baseF", {0.05, 0.0, .15},  model_.getJointId(base_joint_name)},
+        {"baseB", {-0.05, 0.0, .15}, model_.getJointId(base_joint_name)},
+        {"baseL", {0.0, 0.05, .15},  model_.getJointId(base_joint_name)},
+        {"baseR", {0.0, -0.05, .15}, model_.getJointId(base_joint_name)}
     };
 
     for (const auto &frame : frame_data)
@@ -116,10 +133,9 @@ void G1ModelLeg::AddFrames()
     }
 }
 
-void G1ModelLeg::InitActuation()
+void G1ModelLeg::InitActuationImpl(int nu)
 {
-    // todo: find a cleaner way to do this
-    nu_ = 12;
+    nu_ = nu;
 
     // set actuateion matrix
     VectorXd Btmp = model_.rotorGearRatio.tail(nu_);
@@ -127,13 +143,6 @@ void G1ModelLeg::InitActuation()
     B_.bottomRows(nu_) = Btmp.asDiagonal();
     u_ub_ = model_.effortLimit.tail(nu_);
     u_lb_ = -model_.effortLimit.tail(nu_);
-
-}
-
-void G1ModelLeg::InitJointKinematics()
-{
-    left_hip_yaw_.joint_id = LeftHipYaw;
-    right_hip_yaw_.joint_id = RightHipYaw;
 }
 
 Kinematics1D G1ModelLeg::GetLeftFootDeltaPitch()

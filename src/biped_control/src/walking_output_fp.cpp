@@ -30,7 +30,7 @@ void WalkingOutputFp::Init(const std::string &config_file)
 
    ROplanner = std::make_unique<DCMPlanner>();
 
-   // update updated struct using config assuming radio is zero
+   // Update updated struct using config assuming radio is zero
    DesiredCommand command;
    updateTargetWalkingRadio(command);
 
@@ -42,8 +42,8 @@ void WalkingOutputFp::Init(const std::string &config_file)
 
    updated.bezierCOMz.resize(config.bezierComVertical.size());
 
-   lowpass_vel_x_des_.reconfigure(config.dt_lowpass, config.velX_dt_cutoff);
-   lowpass_vel_y_des_.reconfigure(config.dt_lowpass, config.velY_dt_cutoff);
+   lowpass_vel_x_des_.Reconfigure(config.dt_lowpass, config.velX_dt_cutoff);
+   lowpass_vel_y_des_.Reconfigure(config.dt_lowpass, config.velY_dt_cutoff);
 
    updated.tNstep0 = -1;
 }
@@ -66,7 +66,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          updated.isDSP = false;
          updated.readyToTransition = true;
 
-         // update stance leg
+         // Update stance leg
          domain.NextStance();
          if (domain.isLeftStance())
          {
@@ -88,7 +88,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
 
          updated.tNstep0 = t;
          updated.PhaseRange << 0, updated.TSS;
-         phase.reconfigure(updated.PhaseRange, 1);
+         phase.Reconfigure(updated.PhaseRange);
 
          ComputeActual();
          updated.y0_UA = ya;
@@ -102,12 +102,12 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          updated.target_yaw = updated.stance_toe_yaw - updated.delta_yaw;
          cout << "delta: " << updated.delta_yaw << ", stance_toe: " << updated.stance_toe_yaw << ", target: " << updated.target_yaw << endl;
 
-         // update bezier polynomials that only need to update once
+         // Update bezier polynomials that only need to Update once
          updated.bezierSwingz << updated.y0_UA(swingStepz), updated.y0_UA(swingStepz), config.zsw_max / 3,
              config.zsw_max, config.zsw_max, config.zsw_max / 2, // config.zsw_neg ,
              0, 0, config.zsw_neg;
          updated.bezierCOMz = (Eigen::VectorXd::Ones(updated.bezierCOMz.size()) - config.bezierComVertical) * updated.y0_UA(zCOM) + config.bezierComVertical * updated.zCOMdes;
-         // update bezier parameters for swing and stance hip yaw
+         // Update bezier parameters for swing and stance hip yaw
          double ToYaw = updated.delta_yaw / 2.;
          // double ToYaw = (updated.stance_toe_yaw) / 2.;
          updated.bezierStanceHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(stanceHipYaw) + config.bezierSwingHorizontal * ToYaw;
@@ -149,8 +149,8 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
 
 void WalkingOutputFp::updateTargetWalkingRadio(const DesiredCommand &command)
 {
-   lowpass_vel_x_des_.update(config.velXmax * command.values(Channel::X));
-   lowpass_vel_y_des_.update(config.velYmax * command.values(Channel::Y));
+   lowpass_vel_x_des_.Update(config.velXmax * command.values(Channel::X));
+   lowpass_vel_y_des_.Update(config.velYmax * command.values(Channel::Y));
    updated.delta_yaw_des = updated.delta_yaw_des + command.values(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
@@ -193,7 +193,7 @@ void WalkingOutputFp::UpdateOutput(const DesiredCommand &command, const double &
    updateTargetWalkingRadio(command);
 
    timeBasedDomainContactStatusSwitch(t);
-   phase.update(t - updated.tNstep0);
+   phase.Update(t - updated.tNstep0);
 
    // bewteen 0-1
    tau_DS = (updated.isDSP && updated.TDS != 0) ? (phase.tau - 1.) * updated.TSS / updated.TDS : NAN;
@@ -260,7 +260,7 @@ Eigen::Vector2d WalkingOutputFp::computeFPwithROmodel()
    // swing x and y
    Eigen::Vector4d x_now;
    x_now << com_rel_to_below_ankle.states.pCOM.x(), com_rel_to_below_ankle.states.Lpivot.y(), com_rel_to_below_ankle.states.pCOM.y(), com_rel_to_below_ankle.states.Lpivot.x();
-   double T2imp = (updated.PhaseRange(1) - phase.pActual);
+   double T2imp = (updated.PhaseRange(1) - phase.time_passed());
    planner_input_.UpdateInputLIP(x_now, domain.stance, T2imp);
    planner_output_ = ROplanner->UpdatePlan(planner_input_);
    Eigen::Vector2d stepSize = planner_output_.footstep;

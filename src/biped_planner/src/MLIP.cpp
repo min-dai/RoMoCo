@@ -55,9 +55,9 @@ void MLIP::updateMLIP(double z0, double TOA, double TFA, double TUA)
 
     double eps = 0.00000001;
 
-    Klqr_h2t = -solve_dlqr_gain(params.A2_S2S_h2t, params.B2_S2S_h2t, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
-    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
-    Klqr_t2h = -solve_dlqr_gain(params.A2_S2S_t2h, params.B2_S2S_t2h, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_h2t = -SolveDlqrGain(params.A2_S2S_h2t, params.B2_S2S_h2t, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_flat = -SolveDlqrGain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_t2h = -SolveDlqrGain(params.A2_S2S_t2h, params.B2_S2S_t2h, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
 
     // p1.K = Kdeadbeat;
     // p2.K = Kdeadbeat;
@@ -68,7 +68,7 @@ void MLIP::updateMLIP(double z0, double TOA, double TFA, double TUA)
     p1.K_t2h = Klqr_t2h;
     r = 1;
 
-    Klqr_flat = -solve_dlqr_gain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
+    Klqr_flat = -SolveDlqrGain(params.A2_S2S_flat, params.B2_S2S_flat, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * r, eps);
 
     p2.K = Klqr_flat;
 }
