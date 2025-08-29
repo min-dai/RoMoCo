@@ -63,23 +63,6 @@ void BasicControllerStateMachine::Init(const std::string &config_folder, const s
 
    YAMLParser yaml_parser(mujoco_config_file);
 
-   std::vector<std::string> locked_joints_names = yaml_parser.get_string_vector("locked_joints_names");
-   n_locked_joints_ = locked_joints_names.size();
-
-   VectorXd Kp_locked_joints, Kd_locked_joints;
-
-   if (n_locked_joints_ > 0)
-   {
-      q_locked_joints_des_ = VectorXd::Zero(n_locked_joints_);
-
-      q_locked_joints_des_ = yaml_parser.get_VectorXd("qdes_locked_joints");
-      dq_locked_joints_des_ = VectorXd::Zero(n_locked_joints_);
-      Kp_locked_joints = yaml_parser.get_VectorXd("Kp_locked_joints");
-      Kd_locked_joints = yaml_parser.get_VectorXd("Kd_locked_joints");
-      locked_joints_pd_controller_.Reconfigure(Kp_locked_joints, Kd_locked_joints);
-   }
-   locked_input_ = VectorXd::Zero(n_locked_joints_);
-
 
    timer_.Reset();
 
