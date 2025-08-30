@@ -1,5 +1,5 @@
 #include "torque_control/torque_solver_inv_dyn.hpp"
-#include "biped_utils/Pinverse.hpp"
+#include "biped_utils/pseudo_inverse.hpp"
 
 using std::cout;
 using std::endl;

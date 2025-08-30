@@ -88,8 +88,6 @@ std::vector<pinocchio::JointIndex> RobotBasePinocchio::JointNamesToIds(const std
 
 void RobotBasePinocchio::UpdateAll(const Eigen::VectorXd &q, const Eigen::VectorXd &dq)
 {
-    q_ = q;
-    dq_ = dq;
     UpdateKinematics(q, dq);
     UpdateDynamics(q, dq);
 }
@@ -104,16 +102,10 @@ void RobotBasePinocchio::UpdateDynamics(const Eigen::VectorXd &q, const Eigen::V
     pinocchio::computeGeneralizedGravity(model_, data_, q);
     // Compute the non-linear effects (Coriolis, centrifugal, etc.) (H)
     pinocchio::nonLinearEffects(model_, data_, q, dq);
-
-
-    // Optional: Compute centroidal dynamics if needed
-    // Eigen::MatrixXd A = pinocchio::ccrba(model, data, q, qdot);
-    // Eigen::MatrixXd dA = pinocchio::dccrba(model, data, q, qdot);
 }
 
 void RobotBasePinocchio::UpdateKinematics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq)
 {
-    //TODO: tmperorary
     q_ = q;
     dq_ = dq;
     

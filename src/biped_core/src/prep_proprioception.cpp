@@ -23,15 +23,9 @@ BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSen
    proprioception.q.resize(6 + raw_sensor_data.encoders_pos_pinocchio_order.size());
    proprioception.qdot.resize(6 + raw_sensor_data.encoders_vel_pinocchio_order.size());
 
-   if (raw_sensor_data.base_lin_pos.size() == 3)
-   {
-      proprioception.q << raw_sensor_data.base_lin_pos, euler.alpha(), euler.beta(), euler.gamma(), raw_sensor_data.encoders_pos_pinocchio_order;
-   }
-   else
-   {
-      proprioception.q << 0., 0., 0., euler.alpha(), euler.beta(), euler.gamma(), raw_sensor_data.encoders_pos_pinocchio_order;
-   }
+   Eigen::VectorXd lin_pos = ((raw_sensor_data.base_lin_pos.array().isNaN()).any()) ? Eigen::Vector3d::Zero() : raw_sensor_data.base_lin_pos;
 
+   proprioception.q << lin_pos, euler.alpha(), euler.beta(), euler.gamma(), raw_sensor_data.encoders_pos_pinocchio_order;
    proprioception.qdot << estimation.base_lin_vel, angularVel2EulerRate(euler, raw_sensor_data.base_ang_vel), raw_sensor_data.encoders_vel_pinocchio_order;
 
 

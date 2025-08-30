@@ -23,8 +23,11 @@
 #include <pinocchio/algorithm/rnea.hpp>
 
 #include "biped_utils/kinematics.hpp"
+#include "biped_utils/contact_classifier.hpp"
 #include "biped_types/biped_constants.hpp"
 #include "biped_types/friction_params.hpp"
+
+#include "biped_types/biped_estimation_input.hpp"
 
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
@@ -44,6 +47,15 @@ public:
     virtual RobotType robot_type() const = 0;
 
     void Init();
+
+    // if robot class need estimation, prepare contact classifier, otherwise do nothing
+    bool need_estimation() const { return need_estimation_; }
+    void set_need_estimation(bool need_estimation) { need_estimation_ = need_estimation; }
+    //TODO: make pure virutal
+    virtual void ComputeContactClassifierInput(){};
+    //TODO: add toe, heel version as well
+    virtual void ComputeEstimationKinematicsInput(){};
+
 
     double mass() const { return mass_; }
     int nq() const { return model_.nq; }
@@ -104,7 +116,7 @@ public:
     virtual void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Jh, VectorXd &dJhdq, const Matrix3d Rground = MatrixXd::Identity(3, 3)) = 0;
     virtual void GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Acone, VectorXd &bcone) = 0;
 
-    // update kinematics and dynamics using pinocchio
+    // Update kinematics and dynamics using pinocchio
     void UpdateAll(const Eigen::VectorXd &q, const Eigen::VectorXd &dq);
     virtual void UpdateDynamics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq);
     void UpdateKinematics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq);
@@ -184,6 +196,13 @@ public:
 protected:
     pinocchio::Model model_; // Pinocchio model
     pinocchio::Data data_;   // Pinocchio data
+
+    //contact classifier
+    ContactClassifier contact_classifier_;
+    bool need_estimation_ = false;
+    ContactClassifierInput contact_classifier_input_;
+    Eigen::VectorXd computed_torque_;
+    BipedEstimationKinematicsInput biped_estimation_kinematics_input_;
 
     // Some frame and joint kinematics needed
     FrameKinematics3D left_below_ankle_, right_below_ankle_;

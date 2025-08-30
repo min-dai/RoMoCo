@@ -1,6 +1,6 @@
 
 #include "biped_control/walking_output_base.hpp"
-#include "biped_utils/PhaseVariable.hpp"
+#include "biped_utils/phase_variable.hpp"
 
 #include "biped_core/com_states_rel_to_stance.hpp"
 #include "biped_planner/flatfoot_fp_planner.hpp"

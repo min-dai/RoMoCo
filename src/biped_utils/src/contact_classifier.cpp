@@ -25,9 +25,9 @@ ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &
 {
     ContactClassifierOutput output;
     // Compute the quasi-static grf estimate in world frame using statics
-    // tau = J^T * F, assuming J in world frame, F is also in world frame
-    grf_.segment(0, 3) = -(input.Jleft.transpose()).completeOrthogonalDecomposition().solve(input.tau_left);
-    grf_.segment(3, 3) = -(input.Jright.transpose()).completeOrthogonalDecomposition().solve(input.tau_right);
+    // torque = J^T * F, assuming J in world frame, F is also in world frame
+    grf_.segment(0, 3) = -(input.Jleft_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_left);
+    grf_.segment(3, 3) = -(input.Jright_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_right);
     // Update vertical grf lowpass
     LowPassLeft.Update(grf_(2));
     LowPassRight.Update(grf_(5));

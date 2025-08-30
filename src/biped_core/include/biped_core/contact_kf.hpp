@@ -4,7 +4,7 @@
 #include "biped_utils/filters.hpp"
 
 #include "biped_utils/yaml_parser.hpp"
-
+#include "biped_types/biped_estimation_input.hpp"
 
 class ContactKf
 {
@@ -13,7 +13,7 @@ public:
    ContactKf(const std::string &config_file, int n_encoders);
 
 
-   void Update(double t, const Eigen::VectorXd& aIn, const Eigen::MatrixXd& R, double lC, double rC, const Eigen::Vector3d &plf, const Eigen::Vector3d &prf, const Eigen::MatrixXd &J_lf, const Eigen::MatrixXd &J_rf);
+   void Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input);
 
    void InitContact(double t, double lC, double rC, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf);
 

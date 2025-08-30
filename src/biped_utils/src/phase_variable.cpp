@@ -1,5 +1,5 @@
 
-#include <biped_utils/PhaseVariable.hpp>
+#include <biped_utils/phase_variable.hpp>
 
 PhaseVariable::PhaseVariable()
 {

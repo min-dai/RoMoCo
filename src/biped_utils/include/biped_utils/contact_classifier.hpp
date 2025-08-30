@@ -12,10 +12,10 @@ struct ContactClassifierOutput
 };
 struct ContactClassifierInput
 {
-    Eigen::MatrixXd Jleft;
-    Eigen::MatrixXd Jright;
-    Eigen::VectorXd tau_left;
-    Eigen::VectorXd tau_right;
+    Eigen::MatrixXd Jleft_active;
+    Eigen::MatrixXd Jright_active;
+    Eigen::VectorXd torque_left;
+    Eigen::VectorXd torque_right;
 };
 
 class ContactClassifier

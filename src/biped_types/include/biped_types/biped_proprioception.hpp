@@ -5,7 +5,8 @@
 #include <Eigen/Geometry>
 struct RawSensorData
 {
-   Eigen::Vector3d base_lin_pos; //optional
+   //initialize lin_pos as NAN
+   Eigen::Vector3d base_lin_pos = Eigen::Vector3d::Constant(NAN);
    Eigen::Quaterniond base_ang_quat;
    Eigen::Vector3d base_ang_vel;
    Eigen::VectorXd encoders_pos_pinocchio_order;

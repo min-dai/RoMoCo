@@ -1,4 +1,4 @@
-#include <biped_estimation/contact_kf.hpp>
+#include <biped_core/contact_kf.hpp>
 
 using namespace std;
 
@@ -39,13 +39,12 @@ void ContactKf::Config::Init(){
     acceleration_bias_std = yaml_parser.get_double("acceleration_bias_std");
 }
 
-void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::MatrixXd& R, double lC, double rC, const Eigen::Vector3d &plf, const Eigen::Vector3d &prf, const Eigen::MatrixXd &J_lf, const Eigen::MatrixXd &J_rf) {
+void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input) {
 
-   //  EulerAnglesZYXd eul_imu(robot->q(BaseRotZ),robot->q(BaseRotY), robot->q(BaseRotX));
-   //  R = eul_imu.toRotationMatrix();
+    Eigen::MatrixXd R = q.toRotationMatrix();
 
     // Does nothing if initialized already
-    InitContact(t, lC, rC, plf, prf);
+    InitContact(t, input.left_contact_prob, input.right_contact_prob, input.p_left_foot, input.p_right_foot);
 
     // Update timer
     double dt = t - tprev_;
@@ -55,12 +54,12 @@ void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Matrix
     if (is_initialized_){
         // Update contacts
         // compute the prediction step
-        PredictStep(dt,R,aIn,lC,rC);
+        PredictStep(dt,R,aIn,input.left_contact_prob,input.right_contact_prob);
         vel_pre =  getvel();
 
-        if (lC > 0.5 || rC > 0.5){
+        if (input.left_contact_prob > 0.5 || input.right_contact_prob > 0.5){
             // Compute the measurement
-            UpdateStep(plf, prf, J_lf, J_rf);
+            UpdateStep(input.p_left_foot, input.p_right_foot, input.J_left_foot, input.J_right_foot);
         }
     } 
 

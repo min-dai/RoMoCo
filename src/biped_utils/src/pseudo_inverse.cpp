@@ -1,4 +1,4 @@
-#include <biped_utils/Pinverse.hpp>
+#include <biped_utils/pseudo_inverse.hpp>
 #include <Eigen/QR>
 
 Eigen::MatrixXd PseudoInverse(const Eigen::MatrixXd &matrix,

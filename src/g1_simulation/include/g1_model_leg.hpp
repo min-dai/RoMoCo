@@ -29,7 +29,9 @@ public:
 
     G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
     ~G1ModelLeg() override = default;
-    
+
+    void ComputeContactClassifierInput() override;
+    void ComputeEstimationKinematicsInput() override;
 
     std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
     std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;

@@ -24,11 +24,11 @@ set(dependencies
 # Library target
 add_library(${PROJECT_NAME} SHARED
     src/bezier_tools.cpp
-    src/PhaseVariable.cpp
+    src/phase_variable.cpp
     src/geometry.cpp
     src/hyperbolic.cpp
     src/algebraic_riccati.cpp
-    src/Pinverse.cpp
+    src/pseudo_inverse.cpp
     src/yaml_parser.cpp
     src/angular_momentum_kf.cpp
     src/contact_classifier.cpp)

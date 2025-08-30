@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+
 G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names, const VectorXd &locked_joints_q)
     : PlaneFootRobotBasePinocchio(urdf_path, locked_joints_names, locked_joints_q)
 {
@@ -143,6 +144,8 @@ void G1ModelLeg::InitActuationImpl(int nu)
     B_.bottomRows(nu_) = Btmp.asDiagonal();
     u_ub_ = model_.effortLimit.tail(nu_);
     u_lb_ = -model_.effortLimit.tail(nu_);
+
+    computed_torque_ = Eigen::VectorXd::Zero(nu_);
 }
 
 Kinematics1D G1ModelLeg::GetLeftFootDeltaPitch()
@@ -173,3 +176,30 @@ Kinematics1D G1ModelLeg::GetBaseDeltaRoll()
 {
     return (baseL_.kinematics.z() - baseR_.kinematics.z())/0.1;
 }
+
+void G1ModelLeg::ComputeContactClassifierInput()
+{
+    MatrixXd Jleft_ankle =left_ankle_.kinematics.jacobian;
+    MatrixXd Jright_ankle =right_ankle_.kinematics.jacobian;
+
+    contact_classifier_input_.Jleft_active = Jleft_ankle(Eigen::all, {LeftHipPitch, LeftHipRoll, LeftHipYaw, LeftKneePitch, LeftAnklePitch, LeftAnkleRoll});
+    contact_classifier_input_.Jright_active = Jright_ankle(Eigen::all, {RightHipPitch, RightHipRoll, RightHipYaw, RightKneePitch, RightAnklePitch, RightAnkleRoll});
+
+    contact_classifier_input_.torque_left = computed_torque_({0, 1, 2, 3, 4, 5});
+    contact_classifier_input_.torque_right = computed_torque_({6, 7, 8, 9, 10, 11});
+}
+
+
+void G1ModelLeg::ComputeEstimationKinematicsInput()
+{
+    ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
+
+    biped_estimation_kinematics_input_.p_left_foot = left_ankle_.kinematics.position;
+    biped_estimation_kinematics_input_.p_right_foot = right_ankle_.kinematics.position;
+    biped_estimation_kinematics_input_.J_left_foot = contact_classifier_input_.Jleft_active;
+    biped_estimation_kinematics_input_.J_right_foot = contact_classifier_input_.Jright_active;
+    biped_estimation_kinematics_input_.left_contact_prob = contact_classifier_output_.left_contact_prob;
+    biped_estimation_kinematics_input_.right_contact_prob = contact_classifier_output_.right_contact_prob;
+}
+
+

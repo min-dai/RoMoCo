@@ -1,5 +1,5 @@
-#ifndef PINVERSE_HPP
-#define PINVERSE_HPP
+#ifndef PSEUDO_PINVERSE_HPP
+#define PSEUDO_PINVERSE_HPP
 
 #include <Eigen/Dense>
 
@@ -11,4 +11,4 @@ Eigen::MatrixXd WeightedPseudoInverse(const Eigen::MatrixXd &J,
                                       const Eigen::MatrixXd &W,
                                       const double &threshold = 1e-6);
 
-#endif // PINVERSE_HPP
+#endif // PSEUDO_PINVERSE_HPP
