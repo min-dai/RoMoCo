@@ -100,7 +100,12 @@ target_link_libraries(g1_hardware_interface
   unitree_sdk2
 )
 
-
+## Ros Node
+add_executable(g1_test_connection src/g1_ankle_swing_dds_example.cpp)
+target_link_libraries(g1_test_connection
+  ${PROJECT_NAME}
+  unitree_sdk2
+)
 
 
 # add_executable(g1_momentum src/g1_state_machine_momentum.cpp)
@@ -109,14 +114,14 @@ target_link_libraries(g1_hardware_interface
 # )
 
 install(
-  TARGETS g1_state_machine
+  TARGETS g1_state_machine g1_hardware_interface g1_test_connection
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(
-  TARGETS g1_hardware_interface
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(
+#   TARGETS g1_hardware_interface
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 ## config files
 install(DIRECTORY config_18dof/
