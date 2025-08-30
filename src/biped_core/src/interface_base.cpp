@@ -26,3 +26,12 @@ std::vector<int> InterfaceBase::GetJointIndicesFromSubset(
 
    return subset_indices;
 }
+
+BipedProprioception InterfaceBase::Update(const BipedMotorCommands &loco_cmd)
+{
+   ReadAndEstimate();
+   ComputePdMotorCommands();
+   final_motor_commands_ = pd_motor_commands_.ConcatenateWithIndices(loco_cmd, total_dof_);
+   sendPacket(final_motor_commands_);
+   return loco_proprioception_;
+}

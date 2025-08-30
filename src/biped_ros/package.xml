@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>biped_ros</name>
+  <version>0.0.0</version>
+  <description>The biped_ros package provides a ROS interface for the biped robot.</description>
+  <maintainer email="mdai@caltech.edu">mdai</maintainer>
+  <license>GPL-3.0-or-later</license>
+  <author email="mdai@caltech.edu">Min Dai</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>biped_types</depend>
+  <depend>biped_core</depend>
+  <depend>biped_state_machine</depend>
+  <depend>biped_msgs</depend>
+  <depend>screen_radio</depend>
+
+  <build_export_depend>eigen</build_export_depend>
+  <exec_depend>eigen</exec_depend>
+
+
+
+  <!-- <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend> -->
+  <test_depend>ament_cmake_gtest</test_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

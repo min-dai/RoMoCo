@@ -77,6 +77,18 @@ struct BipedMotorCommands
        return result;
    }
 
+   void UpdatePartialWithIndices(const BipedMotorCommands &other)
+   {
+       for (int i : joint_indices)
+       {
+           joint_positions[i] = other.joint_positions[i];
+           joint_velocities[i] = other.joint_velocities[i];
+           joint_kp[i] = other.joint_kp[i];
+           joint_kd[i] = other.joint_kd[i];
+           joint_torques[i] = other.joint_torques[i];
+       }
+   }
+
    // Export to std::vector (handy for IPC/ROS messages).
    static std::vector<double> ToStdVector(const Eigen::VectorXd &v)
    {

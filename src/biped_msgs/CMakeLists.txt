@@ -21,7 +21,7 @@ find_package(Eigen3 3.4 REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/BipedMotorCommands.msg"
-  "msg/BipedProprioceptionPostEstimation.msg"
+  "msg/BipedProprioception.msg"
 )
 ament_export_dependencies(rosidl_default_runtime)
 
