@@ -6,7 +6,7 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,
                                      std::shared_ptr<RobotBasePinocchio> robot)
     : Node("controller_node"),
-      controller_(config_folder, log_path, robot),
+      controller_(std::make_unique<BasicControllerStateMachine>(config_folder, log_path, robot)),
       robot_(robot)
 {
   using namespace std::chrono_literals;
@@ -14,7 +14,7 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
   // Sub: proprioception from interface node
   proprio_sub_ = create_subscription<biped_msgs::msg::BipedProprioception>(
       "proprioception", 10,
-      std::bind(&ControllerNode::proprioCallback, this, std::placeholders::_1));
+      std::bind(&RosControllerNode::ProprioCallback, this, std::placeholders::_1));
 
   // Sub: radio commands
   radio_sub_ = create_subscription<std_msgs::msg::Float64MultiArray>(
@@ -31,17 +31,17 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
       "controller_cmds", 10);
 
   // Timer: control loop
-  timer_ = create_wall_timer(1ms, std::bind(&RosControllerNode::loop, this));
+  timer_ = create_wall_timer(1ms, std::bind(&RosControllerNode::Loop, this));
 }
 
-void ControllerNode::proprioCallback(
+void RosControllerNode::ProprioCallback(
     const biped_msgs::msg::BipedProprioception::SharedPtr msg)
 {
   loco_proprioception_ = fromRosMsg(*msg);
   has_proprio_ = true;
 }
 
-void ControllerNode::controlLoop()
+void RosControllerNode::Loop()
 {
   if (!has_proprio_)
   {
@@ -54,7 +54,7 @@ void ControllerNode::controlLoop()
   Eigen::VectorXd dq_loco = loco_proprioception_.qdot;
 
   // Run state machine controller
-  auto motor_cmd = controller_.UpdateControl(desired_cmd_, robot_, output_,
+  auto motor_cmd = controller_->UpdateControl(desired_cmd_, robot_, output_,
                                              torque_solver_, q_loco, dq_loco);
 
   // Publish ROS message

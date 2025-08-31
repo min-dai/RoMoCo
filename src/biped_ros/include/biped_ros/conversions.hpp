@@ -8,14 +8,14 @@
 
 
 
-BipedProprioception fromRosMsg(const biped_msgs::msg::BipedProprioception& msg) {
+inline BipedProprioception fromRosMsg(const biped_msgs::msg::BipedProprioception& msg) {
   BipedProprioception proprioception;
   proprioception.q = Eigen::Map<const Eigen::VectorXd>(msg.q.data(), msg.q.size());
   proprioception.qdot = Eigen::Map<const Eigen::VectorXd>(msg.qdot.data(), msg.qdot.size());
   return proprioception;
 }
 
-biped_msgs::msg::BipedProprioception toRosMsg(const BipedProprioception& proprioception) {
+inline biped_msgs::msg::BipedProprioception toRosMsg(const BipedProprioception& proprioception) {
   biped_msgs::msg::BipedProprioception msg;
   // Resize and copy values
   msg.q.assign(proprioception.q.data(), proprioception.q.data() + proprioception.q.size());
@@ -23,7 +23,7 @@ biped_msgs::msg::BipedProprioception toRosMsg(const BipedProprioception& proprio
   return msg;
 }
 
-BipedMotorCommands fromRosMsg(const biped_msgs::msg::BipedMotorCommands& msg) {
+inline BipedMotorCommands fromRosMsg(const biped_msgs::msg::BipedMotorCommands& msg) {
   BipedMotorCommands cmd;
   cmd.joint_positions = Eigen::Map<const Eigen::VectorXd>(msg.joint_positions.data(), msg.joint_positions.size());
   cmd.joint_velocities = Eigen::Map<const Eigen::VectorXd>(msg.joint_velocities.data(), msg.joint_velocities.size());
@@ -33,7 +33,7 @@ BipedMotorCommands fromRosMsg(const biped_msgs::msg::BipedMotorCommands& msg) {
   return cmd;
 }
 
-biped_msgs::msg::BipedMotorCommands toRosMsg(const BipedMotorCommands& cmd) {
+inline biped_msgs::msg::BipedMotorCommands toRosMsg(const BipedMotorCommands& cmd) {
   biped_msgs::msg::BipedMotorCommands msg;
   // Resize and copy values
   msg.joint_positions.assign(cmd.joint_positions.data(), cmd.joint_positions.data() + cmd.joint_positions.size());

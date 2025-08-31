@@ -25,7 +25,7 @@ set(dependencies
 
 
 # Library target
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
     src/HLIP.cpp
     src/MLIP.cpp
     src/HLIPplanner.cpp

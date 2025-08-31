@@ -2,9 +2,12 @@
 #define BIPED_ROS_CONTROLLER_NODE_HPP
 
 #include <rclcpp/rclcpp.hpp>
-#include <biped_state_machine/basic_controller_state_machine.hpp>
+#include "biped_state_machine/basic_controller_state_machine.hpp"
 #include "biped_msgs/msg/biped_motor_commands.hpp"
 #include "biped_msgs/msg/biped_proprioception.hpp"
+#include "biped_types/biped_proprioception.hpp"
+#include "biped_types/biped_motor_commands.hpp"
+#include "biped_types/biped_commands.hpp"
 #include <std_msgs/msg/float64_multi_array.hpp>
 
 class RosControllerNode : public rclcpp::Node
@@ -15,12 +18,12 @@ public:
                               std::shared_ptr<RobotBasePinocchio> robot);
 
 private:
-   void proprioCallback(const biped_msgs::msg::BipedProprioception::SharedPtr msg);
-   void loop();
+   void ProprioCallback(const biped_msgs::msg::BipedProprioception::SharedPtr msg);
+   void Loop();
 
-   std::shared_ptr<BasicControllerStateMachine> controller_;
+   std::unique_ptr<BasicControllerStateMachine> controller_;
 
-   rclcpp::Publisher<biped_msgs::msg::BipedMotorCommands>::SharedPtr ctrl_pub_;
+   rclcpp::Publisher<biped_msgs::msg::BipedMotorCommands>::SharedPtr motor_pub_;
    rclcpp::Subscription<biped_msgs::msg::BipedProprioception>::SharedPtr proprio_sub_;
    rclcpp::TimerBase::SharedPtr timer_;
 

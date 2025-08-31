@@ -27,7 +27,7 @@ set(dependencies
 )
 
 # Library target
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
     src/inair_output.cpp
     src/standing_output.cpp
     src/walking_output_base.cpp

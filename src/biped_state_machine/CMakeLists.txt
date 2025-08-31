@@ -29,7 +29,7 @@ set(dependencies
 )
 
 # Library target
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
     src/basic_state_machine.cpp
     src/basic_controller_state_machine.cpp
 )

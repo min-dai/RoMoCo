@@ -33,7 +33,7 @@ set(dependencies
 
 add_library(${PROJECT_NAME} SHARED
     src/interface_node.cpp
-    # src/controller_node.cpp
+    src/controller_node.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

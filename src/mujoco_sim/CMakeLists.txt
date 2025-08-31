@@ -31,7 +31,7 @@ set(include_dirs
 )
 
 # Library target
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
    src/mujoco_sim.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC

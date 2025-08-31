@@ -34,7 +34,7 @@ set(include_dirs
 
 
 # Library target
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/torque_solver_base.cpp
   src/torque_solver_tscqp.cpp
   src/pd_controller.cpp

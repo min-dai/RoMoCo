@@ -1,5 +1,5 @@
-#ifndef BASIC_STATE_MACHINE_HPP
-#define BASIC_STATE_MACHINE_HPP
+#ifndef BASIC_CONTROLLER_STATE_MACHINE_HPP
+#define BASIC_CONTROLLER_STATE_MACHINE_HPP
 
 #include "biped_core/robot_base_pinocchio.hpp"
 
@@ -55,4 +55,4 @@ private:
    BipedMotorCommands motor_commands_;
 };
 
-#endif // BASIC_STATE_MACHINE_HPP
+#endif // BASIC_CONTROLLER_STATE_MACHINE_HPP
