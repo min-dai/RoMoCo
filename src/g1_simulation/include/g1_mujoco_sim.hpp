@@ -2,9 +2,9 @@
 #define G1_MUJOCO_SIM_HPP
 
 #include "mujoco_sim/mujoco_sim.hpp"
-#include "biped_core/mujoco_sim_base.hpp"
+#include "biped_core/mujoco_interface_base.hpp"
 #include "biped_types/biped_proprioception.hpp"
-class G1MujocoSim : public MujocoSimBase
+class G1MujocoSim : public MujocoInterfaceBase
 {
 public:
    G1MujocoSim();

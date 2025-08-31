@@ -19,7 +19,7 @@
 #include "biped_types/biped_constants.hpp"
 #include "biped_types/biped_motor_commands.hpp"
 
-BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim)
+BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim)
     : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))
 {
    Init(config_folder, log_path, robot_ptr);

@@ -3,7 +3,7 @@
 
 #include "biped_core/robot_base_pinocchio.hpp"
 
-#include "biped_core/mujoco_sim_base.hpp"
+#include "biped_core/mujoco_interface_base.hpp"
 
 #include "torque_control/pd_controller.hpp"
 #include "torque_control/torque_solver_base.hpp"

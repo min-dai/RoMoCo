@@ -2,10 +2,10 @@
 #define H1_MUJOCO_SIM_HPP
 
 #include "mujoco_sim/mujoco_sim.hpp"
-#include "biped_core/mujoco_sim_base.hpp"
+#include "biped_core/mujoco_interface_base.hpp"
 #include "h1_sensor.hpp"
 
-class H1MujocoSim : public MujocoSimBase
+class H1MujocoSim : public MujocoInterfaceBase
 {
 public:
    H1MujocoSim();

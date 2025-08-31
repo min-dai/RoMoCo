@@ -8,14 +8,14 @@
 #include "cassie_sensor.hpp"
 
 
-#include "biped_core/mujoco_sim_base.hpp"
+#include "biped_core/mujoco_interface_base.hpp"
 
 #include <cassie_interface/cassie_out_t.h>
 #include <cassie_interface/cassie_user_in_t.h>
 #include <cassie_interface/cassiemujoco.h> // mujoco
 
 
-class CassieMujocoSim : public MujocoSimBase
+class CassieMujocoSim : public MujocoInterfaceBase
 {
 public:
     CassieMujocoSim();

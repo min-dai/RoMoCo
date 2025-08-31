@@ -39,6 +39,8 @@ add_library(${PROJECT_NAME} SHARED
             src/com_states_rel_to_stance.cpp
             src/prep_proprioception.cpp
             src/contact_kf.cpp
+            src/interface_base.cpp
+            src/mujoco_interface_base.cpp
             )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

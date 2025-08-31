@@ -1,12 +1,12 @@
-#ifndef MUJOCO_SIM_BASE_HPP
-#define MUJOCO_SIM_BASE_HPP
+#ifndef MUJOCO_INTERFACE_BASE_HPP
+#define MUJOCO_INTERFACE_BASE_HPP
 
 #include "biped_utils/yaml_parser.hpp"
-class MujocoSimBase
+class MujocoInterfaceBase
 {
 public:
-   MujocoSimBase() = default;
-   virtual ~MujocoSimBase() = default;
+   MujocoInterfaceBase() = default;
+   virtual ~MujocoInterfaceBase() = default;
 
    virtual void Init(const std::string &config_folder) = 0;
    virtual bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) = 0;
@@ -40,4 +40,4 @@ protected:
 
    
 };
-#endif // MUJOCO_SIM_BASE_HPP
+#endif // MUJOCO_INTERFACE_BASE_HPP

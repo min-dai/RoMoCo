@@ -3,7 +3,7 @@
 
 #include "biped_core/robot_base_pinocchio.hpp"
 
-#include "biped_core/mujoco_sim_base.hpp"
+#include "biped_core/mujoco_interface_base.hpp"
 
 #include "torque_control/pd_controller.hpp"
 #include "torque_control/torque_solver_base.hpp"
@@ -18,7 +18,7 @@ class BasicStateMachine
 {
 public:
    BasicStateMachine() = default;
-   BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoSimBase> sim);
+   BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim);
    virtual ~BasicStateMachine();
 
    double Update(const DesiredCommand &command, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getLegModel, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getUpper);
@@ -44,7 +44,7 @@ private:
    int control_counter_ = 0;
    int control_counter_threshold_ = 1;
 
-   std::unique_ptr<MujocoSimBase> sim_;
+   std::unique_ptr<MujocoInterfaceBase> sim_;
 
    // for Log files
    std::fstream logFile_;
