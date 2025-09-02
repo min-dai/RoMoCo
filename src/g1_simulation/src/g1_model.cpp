@@ -1,7 +1,7 @@
 #include "g1_model.hpp"
 
-G1Model::G1Model(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names, const VectorXd &locked_joints_q)
-    : G1ModelLeg(urdf_path, locked_joints_names, locked_joints_q)
+G1Model::G1Model(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+    : G1ModelLeg(urdf_path, locked_encoder_names, locked_joints_q)
 {
     Init();
 }

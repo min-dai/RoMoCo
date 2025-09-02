@@ -54,8 +54,10 @@ void RosControllerNode::Loop()
   Eigen::VectorXd dq_loco = loco_proprioception_.qdot;
 
   // Run state machine controller
-  auto motor_cmd = controller_->UpdateControl(desired_cmd_, robot_, output_,
+  BipedMotorCommands motor_cmd = controller_->UpdateControl(desired_cmd_, robot_, output_,
                                              torque_solver_, q_loco, dq_loco);
+
+  std::cout << "Motor Commands: " << motor_cmd << std::endl;
 
   // Publish ROS message
   motor_pub_->publish(toRosMsg(motor_cmd));

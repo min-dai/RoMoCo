@@ -29,7 +29,7 @@ inline BipedMotorCommands fromRosMsg(const biped_msgs::msg::BipedMotorCommands& 
   cmd.joint_velocities = Eigen::Map<const Eigen::VectorXd>(msg.joint_velocities.data(), msg.joint_velocities.size());
   cmd.joint_kp = Eigen::Map<const Eigen::VectorXd>(msg.joint_kp.data(), msg.joint_kp.size());
   cmd.joint_kd = Eigen::Map<const Eigen::VectorXd>(msg.joint_kd.data(), msg.joint_kd.size());
-  cmd.joint_torques = Eigen::Map<const Eigen::VectorXd>(msg.joint_torques.data(), msg.joint_torques.size());
+  cmd.joint_torques_ff = Eigen::Map<const Eigen::VectorXd>(msg.joint_torques_ff.data(), msg.joint_torques_ff.size());
   return cmd;
 }
 
@@ -40,7 +40,7 @@ inline biped_msgs::msg::BipedMotorCommands toRosMsg(const BipedMotorCommands& cm
   msg.joint_velocities.assign(cmd.joint_velocities.data(), cmd.joint_velocities.data() + cmd.joint_velocities.size());
   msg.joint_kp.assign(cmd.joint_kp.data(), cmd.joint_kp.data() + cmd.joint_kp.size());
   msg.joint_kd.assign(cmd.joint_kd.data(), cmd.joint_kd.data() + cmd.joint_kd.size());
-  msg.joint_torques.assign(cmd.joint_torques.data(), cmd.joint_torques.data() + cmd.joint_torques.size());
+  msg.joint_torques_ff.assign(cmd.joint_torques_ff.data(), cmd.joint_torques_ff.data() + cmd.joint_torques_ff.size());
 
   return msg;
 }

@@ -37,9 +37,9 @@ class RobotBasePinocchio
 public:
     // Constructor for RobotBasePinocchio.
     // @param urdf_path: Path to the robot's URDF file.
-    // @param locked_joints_names: Names of joints to be locked (fixed) in the model.
-    // @param locked_joints_q: Values for the locked joints (must match the size of locked_joints_names).
-    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+    // @param locked_encoder_names: Names of joints to be locked (fixed) in the model.
+    // @param locked_joints_q: Values for the locked joints (must match the size of locked_encoder_names).
+    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
     // virtual destructor
     virtual ~RobotBasePinocchio() = default;
 

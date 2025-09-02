@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     YAMLParser yaml_parser(mujoco_config_file);
     std::string urdf_name = yaml_parser.get_string("urdf_name");
     std::string urdf_path = package_folder + "/model_files/" + urdf_name;
-    std::vector<std::string> locked_joints_names = yaml_parser.get_string_vector("locked_joints_names");
+    std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
 
-    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_joints_names);
+    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_encoder_names);
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 

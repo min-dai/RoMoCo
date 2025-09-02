@@ -22,9 +22,9 @@ RosInterfaceNode::RosInterfaceNode(std::shared_ptr<InterfaceBase> interface)
   }
 
 void RosInterfaceNode::loop() {
-
+    loco_proprioception_ = interface_->Update(ctrl_cmd_);
    if (has_ctrl_cmd_) {
-      loco_proprioception_ = interface_->Update(ctrl_cmd_);
+      interface_->SendPacket();
    }
 
     // Publish proprioception

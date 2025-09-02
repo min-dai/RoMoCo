@@ -27,7 +27,7 @@ public:
         RightAnkleRoll = 17
     };
 
-    G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+    G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
     ~G1ModelLeg() override = default;
 
     void ComputeContactClassifierInput() override;

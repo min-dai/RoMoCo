@@ -22,6 +22,7 @@ find_package(biped_control REQUIRED)
 find_package(biped_utils REQUIRED)
 find_package(screen_radio REQUIRED)
 find_package(biped_state_machine REQUIRED)
+find_package(biped_ros REQUIRED)
 
 
 
@@ -51,6 +52,7 @@ set(dependencies
   screen_radio
   biped_state_machine
   Eigen3
+  biped_ros
 )
 
 # Library target
@@ -101,10 +103,15 @@ target_link_libraries(g1_hardware_interface
 )
 
 ## Ros Node
-add_executable(g1_test_connection src/g1_ankle_swing_dds_example.cpp)
-target_link_libraries(g1_test_connection
+add_executable(g1_interface_node_main src/g1_interface_node_main.cpp)
+target_link_libraries(g1_interface_node_main
   ${PROJECT_NAME}
   unitree_sdk2
+)
+
+add_executable(g1_controller_node_main src/g1_controller_node_main.cpp)
+target_link_libraries(g1_controller_node_main
+  ${PROJECT_NAME}
 )
 
 
@@ -114,7 +121,7 @@ target_link_libraries(g1_test_connection
 # )
 
 install(
-  TARGETS g1_state_machine g1_hardware_interface g1_test_connection
+  TARGETS g1_state_machine g1_hardware_interface g1_interface_node_main g1_controller_node_main
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -10,7 +10,7 @@
 #include "cassie_sensor.hpp"
 
 #include "torque_control/torque_solver_tscqp.hpp"
-#include "torque_control/pd_controller.hpp"
+#include "biped_utils/pd_controller.hpp"
 #include "torque_control/torque_solver_inv_dyn.hpp"
 #include "torque_control/torque_solver_vel_ik.hpp"
 #include "biped_utils/yaml_parser.hpp"
@@ -55,9 +55,9 @@ TEST_F(CassieTest, TestStandingController)
    YAMLParser yaml_parser(mujoco_config_file);
    std::string urdf_name = yaml_parser.get_string("urdf_name");
    std::string urdf_path = home + "/biped_simulation/src/cassie_simulation/cassie_model_files/" + urdf_name;
-   std::vector<std::string> locked_joints_names = yaml_parser.get_string_vector("locked_joints_names");
+   std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
 
-   std::shared_ptr<CassieModel> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_joints_names);
+   std::shared_ptr<CassieModel> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_encoder_names);
 
    std::shared_ptr<StandingOutput> output = std::make_shared<StandingOutput>(config_file, robot_ptr);
    std::shared_ptr<TorqueSolverTSCQP> torque_solver_qp = std::make_shared<TorqueSolverTSCQP>(config_file, robot_ptr, output);

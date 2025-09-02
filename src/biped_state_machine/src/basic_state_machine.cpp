@@ -64,8 +64,8 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
 
    YAMLParser yaml_parser(mujoco_config_file);
 
-   std::vector<std::string> locked_joints_names = yaml_parser.get_string_vector("locked_joints_names");
-   n_locked_joints_ = locked_joints_names.size();
+   std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
+   n_locked_joints_ = locked_encoder_names.size();
 
    Eigen::VectorXd Kp_locked_joints, Kd_locked_joints;
 
@@ -198,7 +198,7 @@ double BasicStateMachine::Update(const DesiredCommand &command,
             t_old_ = sim_->sim_time();
 
             BipedMotorCommands motor_commands = torque_solver->Solve();
-            Eigen::VectorXd u_leg = motor_commands.joint_torques;
+            Eigen::VectorXd u_leg = motor_commands.joint_torques_ff;
 
             locomotion_input_ = u_leg;
 

@@ -23,15 +23,16 @@ set(dependencies
 
 # Library target
 add_library(${PROJECT_NAME} SHARED
-    src/bezier_tools.cpp
-    src/phase_variable.cpp
-    src/geometry.cpp
-    src/hyperbolic.cpp
-    src/algebraic_riccati.cpp
-    src/pseudo_inverse.cpp
-    src/yaml_parser.cpp
-    src/angular_momentum_kf.cpp
-    src/contact_classifier.cpp)
+  src/pd_controller.cpp
+  src/bezier_tools.cpp
+  src/phase_variable.cpp
+  src/geometry.cpp
+  src/hyperbolic.cpp
+  src/algebraic_riccati.cpp
+  src/pseudo_inverse.cpp
+  src/yaml_parser.cpp
+  src/angular_momentum_kf.cpp
+  src/contact_classifier.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>

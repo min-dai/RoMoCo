@@ -1,19 +1,26 @@
 #ifndef MUJOCO_INTERFACE_BASE_HPP
 #define MUJOCO_INTERFACE_BASE_HPP
-
+#include "biped_core/interface_base.hpp"
 #include "biped_utils/yaml_parser.hpp"
-class MujocoInterfaceBase
+#include "biped_types/biped_proprioception.hpp"
+
+class MujocoInterfaceBase : public InterfaceBase
 {
 public:
    MujocoInterfaceBase() = default;
    virtual ~MujocoInterfaceBase() = default;
 
-   virtual void Init(const std::string &config_folder) = 0;
+   void ReadAndEstimate() override;
+   void SendPacket() override;
+
+
+   void GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot);
+
+
    virtual bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) = 0;
-   virtual void GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot) = 0;
+   
    virtual void SimHoldPelvis() = 0;
    virtual void SimReleasePelvis() = 0;
-   virtual void Close() = 0;
 
    virtual bool paused() = 0;
    virtual double sim_time() = 0;
@@ -37,6 +44,14 @@ protected:
       }
 
    } videoSetting;
+
+   SensorDataPostEstimation sensor_;
+   RawSensorDataHardware sensor_hw_;
+
+   Eigen::VectorXd torque_loco_;
+   Eigen::VectorXd torque_pd_;
+
+
 
    
 };

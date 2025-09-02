@@ -31,7 +31,7 @@ public:
 
     Kinematics1D left_achilles, right_achilles;
 
-    CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {});
+    CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {});
 
     std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
     std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;

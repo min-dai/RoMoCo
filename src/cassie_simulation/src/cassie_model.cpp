@@ -1,8 +1,8 @@
 #include "cassie_model.hpp"
 using Eigen::Vector3d;
 
-CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names)
-    : LineFootRobotBasePinocchio(urdf_path, locked_joints_names)
+CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names)
+    : LineFootRobotBasePinocchio(urdf_path, locked_encoder_names)
 {
     Init();
 }

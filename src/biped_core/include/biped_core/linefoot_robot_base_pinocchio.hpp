@@ -6,7 +6,7 @@
 class LineFootRobotBasePinocchio : public RobotBasePinocchio
 {
 public:
-   LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+   LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
    ~LineFootRobotBasePinocchio() override = default;
 
    Kinematics3D left_toe_kinematics() const override { return left_footF_.kinematics; }

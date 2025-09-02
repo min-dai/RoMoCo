@@ -10,7 +10,7 @@ struct BipedMotorCommands
    Eigen::VectorXd joint_velocities;
    Eigen::VectorXd joint_kp;
    Eigen::VectorXd joint_kd;
-   Eigen::VectorXd joint_torques;
+   Eigen::VectorXd joint_torques_ff;
    std::vector<int> joint_indices;
 
    BipedMotorCommands() = default;
@@ -20,7 +20,7 @@ struct BipedMotorCommands
          joint_velocities(Eigen::VectorXd::Zero(dof)),
          joint_kp(Eigen::VectorXd::Zero(dof)),
          joint_kd(Eigen::VectorXd::Zero(dof)),
-         joint_torques(Eigen::VectorXd::Zero(dof)) {};
+         joint_torques_ff(Eigen::VectorXd::Zero(dof)) {};
 
    void ResizeAll(int dof)
    {
@@ -28,7 +28,7 @@ struct BipedMotorCommands
       joint_velocities.resize(dof);
       joint_kp.resize(dof);
       joint_kd.resize(dof);
-      joint_torques.resize(dof);
+      joint_torques_ff.resize(dof);
    }
 
    void ZeroAll()
@@ -37,7 +37,7 @@ struct BipedMotorCommands
       joint_velocities.setZero();
       joint_kp.setZero();
       joint_kd.setZero();
-      joint_torques.setZero();
+      joint_torques_ff.setZero();
    }
 
    void ZeroAll(int dof)
@@ -46,66 +46,47 @@ struct BipedMotorCommands
       joint_velocities = Eigen::VectorXd::Zero(dof);
       joint_kp = Eigen::VectorXd::Zero(dof);
       joint_kd = Eigen::VectorXd::Zero(dof);
-      joint_torques = Eigen::VectorXd::Zero(dof);
+      joint_torques_ff = Eigen::VectorXd::Zero(dof);
    }
 
    void ResizeTorque(int dof)
    {
-      joint_torques.resize(dof);
-   }
-
-   BipedMotorCommands ConcatenateWithIndices(const BipedMotorCommands &other, int length) const
-   {
-       BipedMotorCommands result;
-       result.ZeroAll(length);
-       for (int i : joint_indices)
-       {
-           result.joint_positions[i] = joint_positions[i];
-           result.joint_velocities[i] = joint_velocities[i];
-           result.joint_kp[i] = joint_kp[i];
-           result.joint_kd[i] = joint_kd[i];
-           result.joint_torques[i] = joint_torques[i];
-       }
-       for (int i : other.joint_indices)
-       {
-           result.joint_positions[i] = other.joint_positions[i];
-           result.joint_velocities[i] = other.joint_velocities[i];
-           result.joint_kp[i] = other.joint_kp[i];
-           result.joint_kd[i] = other.joint_kd[i];
-           result.joint_torques[i] = other.joint_torques[i];
-       }
-       return result;
+      joint_torques_ff.resize(dof);
    }
 
    void UpdatePartialWithIndices(const BipedMotorCommands &other)
    {
-       for (int i : joint_indices)
+      if (other.joint_indices.size() > 0){
+         for (int i : other.joint_indices)
        {
            joint_positions[i] = other.joint_positions[i];
            joint_velocities[i] = other.joint_velocities[i];
            joint_kp[i] = other.joint_kp[i];
            joint_kd[i] = other.joint_kd[i];
-           joint_torques[i] = other.joint_torques[i];
+           joint_torques_ff[i] = other.joint_torques_ff[i];
        }
-   }
-
-   // Export to std::vector (handy for IPC/ROS messages).
-   static std::vector<double> ToStdVector(const Eigen::VectorXd &v)
-   {
-      return std::vector<double>(v.data(), v.data() + v.size());
-   }
-
-   // Import from std::vector (resizes Eigen vector).
-   static void FromStdVector(const std::vector<double> &src, Eigen::VectorXd *dst)
-   {
-      if (dst == nullptr)
-         return;
-      dst->resize(static_cast<int>(src.size()));
-      if (!src.empty())
-      {
-         Eigen::Map<const Eigen::VectorXd> m(src.data(), static_cast<int>(src.size()));
-         *dst = m;
       }
+       
+   }
+   Eigen::VectorXd SolveFullTorque(const Eigen::VectorXd &qa, const Eigen::VectorXd &qa_dot) const
+   {
+      Eigen::VectorXd full_torque = joint_torques_ff;
+
+      // Compute the full torque using the joint positions and velocities
+      full_torque -= joint_kp.cwiseProduct(qa - joint_positions);
+      full_torque -= joint_kd.cwiseProduct(qa_dot - joint_velocities);
+
+      return full_torque;
+   }
+
+   friend std::ostream &operator<<(std::ostream &os, const BipedMotorCommands &cmd)
+   {
+      os << "Joint Positions: " << cmd.joint_positions.transpose() << "\n"
+         << "Joint Velocities: " << cmd.joint_velocities.transpose() << "\n"
+         << "Joint KP: " << cmd.joint_kp.transpose() << "\n"
+         << "Joint KD: " << cmd.joint_kd.transpose() << "\n"
+         << "Joint Torques FF: " << cmd.joint_torques_ff.transpose();
+      return os;
    }
 };
 

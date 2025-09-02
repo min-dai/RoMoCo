@@ -1,7 +1,7 @@
 
 #include "biped_core/robot_base_pinocchio.hpp"
 
-RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names, const VectorXd &locked_joints_q)
+RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
 {
     pinocchio::JointModelComposite jointComposite(2);
     jointComposite.addJoint(pinocchio::JointModelTranslation());
@@ -9,9 +9,9 @@ RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::
 
     pinocchio::urdf::buildModel(urdf_path,jointComposite, model_);
 
-    if (locked_joints_names.size() > 0)
+    if (locked_encoder_names.size() > 0)
     {
-        std::vector<pinocchio::JointIndex> locked_joints_ids = JointNamesToIds(locked_joints_names);
+        std::vector<pinocchio::JointIndex> locked_joints_ids = JointNamesToIds(locked_encoder_names);
 
         Eigen::VectorXd q_neutral = pinocchio::neutral(model_);
         for (size_t i = 0; i < locked_joints_ids.size(); ++i)

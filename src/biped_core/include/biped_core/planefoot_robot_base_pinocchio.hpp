@@ -5,7 +5,7 @@
 class PlaneFootRobotBasePinocchio : public RobotBasePinocchio
 {
 public:
-   PlaneFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_joints_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+   PlaneFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
 
    Kinematics3D left_toe_kinematics() const override { return (left_footLF_.kinematics + left_footRF_.kinematics) / 2.; }
    Kinematics3D right_toe_kinematics() const override { return (right_footLF_.kinematics + right_footRF_.kinematics) / 2.; }

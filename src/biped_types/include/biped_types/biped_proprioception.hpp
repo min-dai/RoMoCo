@@ -49,6 +49,28 @@ struct BipedProprioception
        os << "Proprioception qdot: " << data.qdot.transpose() << "\n";
        return os;
    }
+   BipedProprioception GetIndex(const std::vector<int> &indices) const
+   {
+       BipedProprioception result;
+       result.q = q(indices);
+       result.qdot = qdot(indices);
+       return result;
+   }
+   void ResizeAll(int dof)
+   {
+       q.resize(dof);
+       qdot.resize(dof);
+   }
+   void ZeroAll()
+   {
+       q.setZero();
+       qdot.setZero();
+   }
+   void ZeroAll(int dof)
+   {
+       q = Eigen::VectorXd::Zero(dof);
+       qdot = Eigen::VectorXd::Zero(dof);
+   }
 };
 
 #endif // BIPED_PROPRIOCEPTION_HPP

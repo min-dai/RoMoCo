@@ -157,7 +157,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
 
 
             motor_commands_ = torque_solver->Solve();
-            Eigen::VectorXd u_loco = motor_commands_.joint_torques;
+            Eigen::VectorXd u_loco = motor_commands_.joint_torques_ff;
             
             if (motor_commands_.joint_kp.size()>0){
                Eigen::VectorXd kp = motor_commands_.joint_kp;

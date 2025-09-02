@@ -16,4 +16,4 @@ video_settings:                  # Video recording settings
 
 
 urdf_name: "urdf/cassieRigid_new.urdf"
-locked_joints_names:
+locked_encoder_names:
