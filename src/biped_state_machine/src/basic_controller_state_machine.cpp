@@ -157,19 +157,8 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
 
 
             motor_commands_ = torque_solver->Solve();
-            Eigen::VectorXd u_loco = motor_commands_.joint_torques_ff;
+            locomotion_input_ = motor_commands_.joint_torques;
             
-            if (motor_commands_.joint_kp.size()>0){
-               Eigen::VectorXd kp = motor_commands_.joint_kp;
-               Eigen::VectorXd kd = motor_commands_.joint_kd;
-               Eigen::VectorXd q_des = motor_commands_.joint_positions;
-               Eigen::VectorXd dq_des = motor_commands_.joint_velocities;
-
-               locomotion_input_ = -kp.cwiseProduct(q_loco-q_des)-kd.cwiseProduct(dq_loco-dq_des)+u_loco;
-            }else{
-               locomotion_input_ = u_loco;
-            }
-
 
             // Logging
             Eigen::VectorXf LogData;

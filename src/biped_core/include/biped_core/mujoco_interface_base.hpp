@@ -10,7 +10,7 @@ public:
    MujocoInterfaceBase() = default;
    virtual ~MujocoInterfaceBase() = default;
 
-   bool IsInterfaceRunning()  override{
+   bool IsInterfaceRunning() const override{
       return !paused();
    }
 
@@ -26,8 +26,8 @@ public:
    virtual void SimHoldPelvis() = 0;
    virtual void SimReleasePelvis() = 0;
 
-   virtual bool paused() = 0;
-   virtual double sim_time() = 0;
+   virtual bool paused() const = 0;
+   virtual double sim_time() const = 0;
 
 protected:
    struct VideoSetting

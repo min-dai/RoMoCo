@@ -81,7 +81,7 @@ void StandingOutput::UpdateOutput(const DesiredCommand &command, const double &t
     // Compute Desired
     ComputeDesired(command);
 
-    if (updated.queueTransition && (abs(ya(yCOM)) >= abs(config.stand2step_y_offset - 0.005)))
+    if (updated.queueTransition && (abs(ya(yCOM)) >= abs(config.stand2step_y_offset - 0.01)))
     {
         updated.readyToTransition = true;
     }

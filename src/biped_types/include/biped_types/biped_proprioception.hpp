@@ -32,11 +32,25 @@ struct BipedEstimation
 struct RawSensorDataHardware : RawSensorData
 {
    Eigen::Vector3d base_lin_acc;
+   // overload <<
+   friend std::ostream &operator<<(std::ostream &os, const RawSensorDataHardware &data)
+   {
+       os << static_cast<const RawSensorData &>(data);
+       os << "Base Linear Acceleration: " << data.base_lin_acc.transpose() << "\n";
+       return os;
+   }
 };
 
 struct SensorDataPostEstimation : RawSensorData 
 {
    Eigen::Vector3d base_lin_vel;
+   //overload << operator
+   friend std::ostream &operator<<(std::ostream &os, const SensorDataPostEstimation &data)
+   {
+       os << static_cast<const RawSensorData &>(data);
+       os << "Base Linear Velocity: " << data.base_lin_vel.transpose() << "\n";
+       return os;
+   }
 };
 
 struct BipedProprioception
@@ -60,11 +74,6 @@ struct BipedProprioception
    {
        q.resize(dof);
        qdot.resize(dof);
-   }
-   void ZeroAll()
-   {
-       q.setZero();
-       qdot.setZero();
    }
    void ZeroAll(int dof)
    {

@@ -199,7 +199,7 @@ double BasicStateMachine::Update(const DesiredCommand &command,
             t_old_ = sim_->sim_time();
 
             BipedMotorCommands motor_commands = torque_solver->Solve();
-            Eigen::VectorXd u_leg = motor_commands.joint_torques_ff;
+            Eigen::VectorXd u_leg = motor_commands.joint_torques;
 
             locomotion_input_ = u_leg;
 

@@ -9,40 +9,31 @@ G1MujocoSim::~G1MujocoSim()
    std::cout << "G1 Mujoco simulation destructor called." << std::endl;
 }
 
+
+
+
 void G1MujocoSim::Init(const std::string &config_folder)
 {
-   all_encoder_names_pinocchio_order_ = {
-       "left_hip_pitch_joint",
-       "left_hip_roll_joint",
-       "left_hip_yaw_joint",
-       "left_knee_joint",
-       "left_ankle_pitch_joint",
-       "left_ankle_roll_joint",
-       "right_hip_pitch_joint",
-       "right_hip_roll_joint",
-       "right_hip_yaw_joint",
-       "right_knee_joint",
-       "right_ankle_pitch_joint",
-       "right_ankle_roll_joint",
-       "waist_yaw_joint",
-       "waist_roll_joint",
-       "waist_pitch_joint",
-       "left_shoulder_pitch_joint",
-       "left_shoulder_roll_joint",
-       "left_shoulder_yaw_joint",
-       "left_elbow_joint",
-       "left_wrist_roll_joint",
-       "left_wrist_pitch_joint",
-       "left_wrist_yaw_joint",
-       "right_shoulder_pitch_joint",
-       "right_shoulder_roll_joint",
-       "right_shoulder_yaw_joint",
-       "right_elbow_joint",
-       "right_wrist_roll_joint",
-       "right_wrist_pitch_joint",
-       "right_wrist_yaw_joint"};
+      all_encoder_names_pinocchio_order_ = {
+       "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
+       "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint",
+       "right_hip_pitch_joint", "right_hip_roll_joint", "right_hip_yaw_joint",
+       "right_knee_joint", "right_ankle_pitch_joint", "right_ankle_roll_joint",
+       "waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
+       "left_shoulder_pitch_joint", "left_shoulder_roll_joint", "left_shoulder_yaw_joint",
+       "left_elbow_joint", "left_wrist_roll_joint", "left_wrist_pitch_joint", "left_wrist_yaw_joint",
+       "right_shoulder_pitch_joint", "right_shoulder_roll_joint", "right_shoulder_yaw_joint",
+       "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint", "right_wrist_yaw_joint"};
 
-   InitInterface(config_folder);
+
+   InitDofAndIndicesFromConfigFile(config_folder);
+
+      
+   InitMotorCommands();
+   std::cout << "Init Motor Commands" << std::endl;
+   std::string interface_config_file = config_folder + "/interface_config.yaml";
+   ReconfigurePdMotorCommands(interface_config_file);
+   InitProprioception();
 
    // Init Mujoco
    std::string config_file = config_folder + "/mujoco_config.yaml";
@@ -51,12 +42,9 @@ void G1MujocoSim::Init(const std::string &config_folder)
    std::string model_name = yaml_parser.get_string("mujoco_settings/model_name");
    videoSetting.InitVideoSetting(config_file);
 
-   char modelfile[500] = "";
-   strcat(modelfile, config_folder.c_str());
-   strcat(modelfile, "/../model_files/");
-   strcat(modelfile, model_name.c_str());
-
-   mujoco_.Init(modelfile, videoSetting.video_width, videoSetting.video_height);
+   const std::string model_path = config_folder + "/../model_files/" + model_name;
+    
+    mujoco_.Init(model_path.c_str(), videoSetting.video_width, videoSetting.video_height);
 
    gyro_mj_ids = mujoco_.GetSensorIdsByName(gyro_name);
    accelerometer_mj_ids = mujoco_.GetSensorIdsByName(accelerometer_name);
@@ -94,9 +82,12 @@ void G1MujocoSim::Init(const std::string &config_folder)
    torque_loco_ = Eigen::VectorXd::Zero(locomotion_actuator_mj_ids_.size());
    torque_pd_ = Eigen::VectorXd::Zero(locked_actuator_mj_ids_.size());
 
-   Step(torque_loco_, torque_pd_);
-   std::cout << "size torque_loco_: " << torque_loco_.size() << std::endl;
-   std::cout << "size torque_pd_: " << torque_pd_.size() << std::endl;
+   // Initial step to set up sensor_
+   if (!Step(torque_loco_, torque_pd_))
+   {
+      throw std::runtime_error("Initial simulation step failed");
+   }
+   std::cout << "sensor" << sensor_ << std::endl;
 }
 
 bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input)
@@ -110,6 +101,8 @@ bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::Ve
 
    if (!mujoco_.paused())
    {
+
+
       mujoco_.UpdateControlInput(leg_control_input, locomotion_actuator_mj_ids_);
       if (locked_actuator_mj_ids_.size() > 0)
       {
@@ -121,13 +114,20 @@ bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::Ve
    sensor_.encoders_pos_pinocchio_order = mujoco_.GetJointPositionsByIds(all_encoder_mj_ids_pinocchio_order);
    sensor_.encoders_vel_pinocchio_order = mujoco_.GetJointVelocitiesByIds(all_encoder_mj_ids_pinocchio_order);
 
-   sensor_.base_lin_pos << mujoco_.qpos()[0], mujoco_.qpos()[1], mujoco_.qpos()[2];
-   sensor_.base_lin_vel << mujoco_.qvel()[0], mujoco_.qvel()[1], mujoco_.qvel()[2];
-   sensor_.base_ang_quat.w() = mujoco_.qpos()[3];
-   sensor_.base_ang_quat.x() = mujoco_.qpos()[4];
-   sensor_.base_ang_quat.y() = mujoco_.qpos()[5];
-   sensor_.base_ang_quat.z() = mujoco_.qpos()[6];
-   sensor_.base_ang_vel << mujoco_.qvel()[3], mujoco_.qvel()[4], mujoco_.qvel()[5];
+   // Update base position and velocity
+   const auto *qpos = mujoco_.qpos();
+   const auto *qvel = mujoco_.qvel();
+
+   sensor_.base_lin_pos << qpos[0], qpos[1], qpos[2];
+   sensor_.base_lin_vel << qvel[0], qvel[1], qvel[2];
+
+   // Update base orientation (quaternion: w, x, y, z)
+   sensor_.base_ang_quat.w() = qpos[3];
+   sensor_.base_ang_quat.x() = qpos[4];
+   sensor_.base_ang_quat.y() = qpos[5];
+   sensor_.base_ang_quat.z() = qpos[6];
+
+   sensor_.base_ang_vel << qvel[3], qvel[4], qvel[5];
 
    render_loop_counter_++;
    if (render_loop_counter_ % render_loop_counter_threshold_ == 0)

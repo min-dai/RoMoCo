@@ -20,7 +20,7 @@ RosInterfaceNode::RosInterfaceNode(std::shared_ptr<InterfaceBase> interface)
       create_publisher<biped_msgs::msg::BipedProprioception>("proprioception", 1);
 
   // Timer: control loop
-  timer_ = create_wall_timer(0.5ms, std::bind(&RosInterfaceNode::Loop, this));
+  timer_ = create_wall_timer(1ms, std::bind(&RosInterfaceNode::Loop, this));
 
   init_timer_ = create_wall_timer(
       std::chrono::milliseconds(100), // Small delay to ensure node is fully ready
@@ -31,19 +31,28 @@ RosInterfaceNode::RosInterfaceNode(std::shared_ptr<InterfaceBase> interface)
       });
 
       std::cout << "ROS Interface Node created." << std::endl;
+
+      ctrl_cmd_.ZeroAll(interface_->loco_motor_dof());
 }
 
 void RosInterfaceNode::Init()
 {
   std::cout << "Initializing ROS Interface Node..." << std::endl;
 
-  loco_proprioception_ = interface_->Update();
+
+  loco_proprioception_ = interface_->Update(ctrl_cmd_);
+
+  std::cout << "Init Interface proprioception: " << loco_proprioception_ << std::endl;
 
   proprio_pub_->publish(toRosMsg(loco_proprioception_));
+
+  
 }
 
 void RosInterfaceNode::Loop()
 {
+
+
   loco_proprioception_ = interface_->Update(ctrl_cmd_);
 
   if (interface_->IsInterfaceRunning())

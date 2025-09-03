@@ -63,7 +63,7 @@ void TorqueSolverTSCQP::ResetSize()
     F_sol_ = VectorXd::Zero(output_->nh());
     u_sol_prev_ = VectorXd::Zero(output_->nu());
 
-    motor_commands_.ZeroAll(robot_->nv());
+    motor_commands_.ZeroAll(robot_->nu());
 }
 
 BipedMotorCommands TorqueSolverTSCQP::Solve()
@@ -115,6 +115,7 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
 
 
     motor_commands_.joint_torques_ff = u_full;
+    motor_commands_.joint_torques = u_full;
 
 
     // Implement the solver

@@ -20,8 +20,8 @@ public:
    void SimReleasePelvis() override { mujoco_.SimReleasePelvis(); }
 
 
-   bool paused() override { return mujoco_.paused(); }
-   double sim_time() override { return mujoco_.time(); }
+   bool paused() const override { return mujoco_.paused(); }
+   double sim_time() const override { return mujoco_.time(); }
 
 private:
    void Init(const std::string &config_folder) override;

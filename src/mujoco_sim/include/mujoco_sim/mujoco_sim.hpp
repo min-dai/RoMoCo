@@ -32,9 +32,9 @@ public:
     void StopVideoRecording();
     void RecordVideoFrame();
 
-    inline bool paused() { return settings_.paused; }
-    inline double time() { return d->time; }
-    inline double timestep() { return m->opt.timestep; }
+    inline bool paused() const { return settings_.paused; }
+    inline double time() const { return d->time; }
+    inline double timestep() const { return m->opt.timestep; }
 
     std::vector<int> GetActuatorIdsByName(const std::vector<std::string> &actuator_names);
     std::vector<int> GetSensorIdsByName(const std::vector<std::string> &sensor_names);
@@ -44,8 +44,8 @@ public:
     Eigen::VectorXd GetJointPositionsByIds(const std::vector<int> &joint_ids);
     Eigen::VectorXd GetJointVelocitiesByIds(const std::vector<int> &joint_ids);
 
-    double *qpos() { return d->qpos; }
-    double *qvel() { return d->qvel; }
+    double *qpos() const { return d->qpos; }
+    double *qvel() const { return d->qvel; }
 
     void set_1dof_joint_qpos(const Eigen::VectorXd &qpos, const std::vector<int> &joint_ids);
     void set_base_quaternion(const Eigen::Vector4d &quat);

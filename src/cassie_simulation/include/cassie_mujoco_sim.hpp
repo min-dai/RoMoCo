@@ -29,8 +29,8 @@ public:
     void SimReleasePelvis() override {cassie_sim_release(sim);}
 
     
-    bool paused() override {return cassie_vis_paused(vis);}
-    double sim_time() override {return *timeMujoP;}
+    bool paused() const override {return cassie_vis_paused(vis);}
+    double sim_time() const override {return *timeMujoP;}
 
 
 private:

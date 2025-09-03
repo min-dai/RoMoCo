@@ -49,6 +49,8 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
 
 BipedMotorCommands TorqueSolverPOSIK::Solve()
 {
+    std::cout << "qIK = " << robot_->q().transpose() << std::endl;
+
     SolveIk();
 
     pd_controller_.Reconfigure(JointKPing_(output_->actuated_u_idx), JointKDing_(output_->actuated_u_idx));
@@ -63,10 +65,11 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 
 
     motor_commands_.joint_torques_ff = u_full;
-    motor_commands_.joint_positions = output_->qDes_actuated;
-    motor_commands_.joint_velocities = output_->dqDes_actuated;
-    motor_commands_.joint_kp = JointKPing_;
-    motor_commands_.joint_kd = JointKDing_;
+    motor_commands_.joint_positions = MapU2FullIdx(output_->qDes_actuated, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_velocities = MapU2FullIdx(output_->dqDes_actuated, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_kp = MapU2FullIdx(JointKPing_, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_kd = MapU2FullIdx(JointKDing_, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_torques = u_full;
 
     return motor_commands_;
 }

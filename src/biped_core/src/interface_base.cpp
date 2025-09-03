@@ -2,7 +2,7 @@
 #include "biped_utils/yaml_parser.hpp"
 
 
-void InterfaceBase::InitInterface(const std::string &config_folder)
+void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_folder)
 {
    // pull locked and loco encoder names from interface config
    std::string interface_config_file = config_folder + "/interface_config.yaml";
@@ -35,6 +35,13 @@ void InterfaceBase::InitInterface(const std::string &config_folder)
                   [](int idx)
                   { return idx + 6; });
 
+   // offset 
+   motored_loco_proprio_indices_  = loco_motor_indices_;
+   for (int &x : motored_loco_proprio_indices_)
+   {
+      x += 6;
+   }
+   // simply offset by 6 for PD joints               
    pd_proprio_indices_ = pd_motor_indices_;
 
    for (int &x : pd_proprio_indices_)
@@ -42,10 +49,7 @@ void InterfaceBase::InitInterface(const std::string &config_folder)
       x += 6;
    }
 
-   InitMotorCommands();
-   ReconfigurePdMotorCommands(interface_config_file);
-   InitProprioception();
-   std::cout << "Interface BASE initialized successfully." << std::endl;
+
 }
 void InterfaceBase::InitMotorCommands()
 {
@@ -53,13 +57,11 @@ void InterfaceBase::InitMotorCommands()
    {
       throw std::runtime_error("Motor command sizes do not match total DOF");
    }
-   std::cout << "size pd_motor_indices_: " << pd_motor_indices_.size() << std::endl;
-   std::cout << "size loco_motor_indices_: " << loco_motor_indices_.size() << std::endl;
 
    pd_motor_commands_.ZeroAll(pd_motor_indices_.size());
    loco_motor_commands_.ZeroAll(loco_motor_indices_.size());
    final_motor_commands_.ZeroAll(total_motor_dof_);
-}
+  }
 
 void InterfaceBase::InitProprioception()
 {
@@ -122,6 +124,7 @@ void InterfaceBase::ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const 
    pd_motor_commands_.joint_kp = Kp;
    pd_motor_commands_.joint_kd = Kd;
    pd_motor_commands_.joint_torques_ff.setZero();
+   pd_motor_commands_.joint_torques.setZero();
    final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
 }
 
@@ -134,5 +137,35 @@ void InterfaceBase::ReconfigurePdMotorCommands(std::string &config_file)
    pd_motor_commands_.joint_kp = yaml_parser.get_VectorXd("Kp_locked_joints");
    pd_motor_commands_.joint_kd = yaml_parser.get_VectorXd("Kd_locked_joints");
    pd_motor_commands_.joint_torques_ff.setZero();
+   pd_motor_commands_.joint_torques.setZero();
    final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
+}
+
+void InterfaceBase::PrintDebugInfo() const
+{
+    std::cout << "=== Interface Debug Info ===" << std::endl;
+    std::cout << "PD proprio indices: ";
+    for (const auto idx : pd_proprio_indices_) {
+        std::cout << idx << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Loco proprio indices: ";
+    for (const auto idx : loco_proprio_indices_) {
+        std::cout << idx << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "PD motor indices: ";
+    for (const auto idx : pd_motor_indices_) {
+        std::cout << idx << " ";
+    }
+    std::cout << std::endl;
+    
+    std::cout << "Loco motor indices: ";
+    for (const auto idx : loco_motor_indices_) {
+        std::cout << idx << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "=========================" << std::endl;
 }

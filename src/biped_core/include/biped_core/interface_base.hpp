@@ -17,6 +17,8 @@ public:
     // full_proprioception_, loco_proprioception_, and pd_proprioception_
     virtual void ReadAndEstimate() = 0;
 
+    int loco_motor_dof() const { return loco_motor_indices_.size(); }
+
 
     // update loco_motor_commands, pd_motor_commands are constants
     // return loco_proprioception_
@@ -28,19 +30,13 @@ public:
     // Internally update sensor_ (type depends on HW/SIM)
     virtual void SendPacket() = 0;
 
-    virtual bool IsInterfaceRunning()  = 0;
-
-protected:
+    virtual bool IsInterfaceRunning() const  = 0;
 
     virtual void Init(const std::string &config_folder) = 0;
 
-    void InitInterface(const std::string &config_folder);
+protected:
 
-    
-
-    
-
-
+    void InitDofAndIndicesFromConfigFile(const std::string &config_folder);
 
     void InitMotorCommands();
 
@@ -53,6 +49,7 @@ protected:
     void ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd, const Eigen::VectorXd &qd);
     void ReconfigurePdMotorCommands(std::string &config_file);
 
+    void PrintDebugInfo() const;
 
     std::vector<std::string> pd_encoder_names_;
     std::vector<std::string> loco_encoder_names_;
@@ -62,6 +59,8 @@ protected:
     int total_proprio_dof_;
     std::vector<int> pd_proprio_indices_;
     std::vector<int> loco_proprio_indices_;
+
+    std::vector<int> motored_loco_proprio_indices_;
 
     BipedProprioception full_proprioception_;
     BipedProprioception loco_proprioception_;

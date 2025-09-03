@@ -63,10 +63,11 @@ BipedMotorCommands TorqueSolverVELIK::Solve()
     Eigen::VectorXd u_full = MapU2FullIdx(u_ff+u_fb, output_->actuated_u_idx, robot_->nu());
 
     motor_commands_.joint_torques_ff = u_full;
-    motor_commands_.joint_positions = output_->qDes_actuated;
-    motor_commands_.joint_velocities = output_->dqDes_actuated;
-    motor_commands_.joint_kp = JointKPing_;
-    motor_commands_.joint_kd = JointKDing_;
+    motor_commands_.joint_positions = MapU2FullIdx(output_->qDes_actuated, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_velocities = MapU2FullIdx(output_->dqDes_actuated, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_kp = MapU2FullIdx(JointKPing_, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_kd = MapU2FullIdx(JointKDing_, output_->actuated_u_idx, robot_->nu());
+    motor_commands_.joint_torques = u_full;
 
     return motor_commands_;
 }

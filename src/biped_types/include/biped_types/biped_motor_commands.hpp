@@ -11,6 +11,8 @@ struct BipedMotorCommands
    Eigen::VectorXd joint_kp;
    Eigen::VectorXd joint_kd;
    Eigen::VectorXd joint_torques_ff;
+
+   Eigen::VectorXd joint_torques; // final torques after adding feedback terms for logging
    std::vector<int> joint_indices;
 
    BipedMotorCommands() = default;
@@ -20,7 +22,8 @@ struct BipedMotorCommands
          joint_velocities(Eigen::VectorXd::Zero(dof)),
          joint_kp(Eigen::VectorXd::Zero(dof)),
          joint_kd(Eigen::VectorXd::Zero(dof)),
-         joint_torques_ff(Eigen::VectorXd::Zero(dof)) {};
+         joint_torques_ff(Eigen::VectorXd::Zero(dof)),
+         joint_torques(Eigen::VectorXd::Zero(dof)) {};
 
    void ResizeAll(int dof)
    {
@@ -29,6 +32,7 @@ struct BipedMotorCommands
       joint_kp.resize(dof);
       joint_kd.resize(dof);
       joint_torques_ff.resize(dof);
+      joint_torques.resize(dof);
    }
 
    void ZeroAll()
@@ -38,6 +42,7 @@ struct BipedMotorCommands
       joint_kp.setZero();
       joint_kd.setZero();
       joint_torques_ff.setZero();
+      joint_torques.setZero();
    }
 
    void ZeroAll(int dof)
@@ -47,11 +52,13 @@ struct BipedMotorCommands
       joint_kp = Eigen::VectorXd::Zero(dof);
       joint_kd = Eigen::VectorXd::Zero(dof);
       joint_torques_ff = Eigen::VectorXd::Zero(dof);
+      joint_torques = Eigen::VectorXd::Zero(dof);
    }
 
    void ResizeTorque(int dof)
    {
       joint_torques_ff.resize(dof);
+      joint_torques.resize(dof);
    }
 
    void UpdatePartialWithIndices(const BipedMotorCommands &other)
@@ -64,6 +71,7 @@ struct BipedMotorCommands
            joint_kp[i] = other.joint_kp[i];
            joint_kd[i] = other.joint_kd[i];
            joint_torques_ff[i] = other.joint_torques_ff[i];
+           joint_torques[i] = other.joint_torques[i];
        }
       }
        
@@ -85,7 +93,9 @@ struct BipedMotorCommands
          << "Joint Velocities: " << cmd.joint_velocities.transpose() << "\n"
          << "Joint KP: " << cmd.joint_kp.transpose() << "\n"
          << "Joint KD: " << cmd.joint_kd.transpose() << "\n"
-         << "Joint Torques FF: " << cmd.joint_torques_ff.transpose();
+         << "Joint Torques FF: " << cmd.joint_torques_ff.transpose() << "\n"
+         << "Joint Torques: " << cmd.joint_torques.transpose() << "\n";
+
       return os;
    }
 };
