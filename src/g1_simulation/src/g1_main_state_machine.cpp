@@ -14,7 +14,7 @@
 #include <cstdlib> // For getenv()
 
 // need to set up sim
-#include "g1_mujoco_sim.hpp"
+#include "g1_mujoco_interface.hpp"
 
 
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
     std::string urdf_path = package_folder + "/model_files/" + urdf_name;
     std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
-    int n_locked_joints = locked_encoder_names.size();
+
     VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
 
     std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<G1ModelLeg>(urdf_path, locked_encoder_names, locked_joints_q);
@@ -69,11 +69,11 @@ int main(int argc, char *argv[])
     //     return q.tail(n_locked_joints);
     // };
 
-    std::unique_ptr<G1MujocoSim> mujocosim = std::make_unique<G1MujocoSim>(config_folder);
+    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 
-    double t_sim = 0.0;
+    double t_sim=0;
     VectorXd fake_radio;
 
 

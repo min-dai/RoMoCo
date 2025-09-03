@@ -4,12 +4,12 @@
 #include "mujoco_sim/mujoco_sim.hpp"
 #include "biped_core/mujoco_interface_base.hpp"
 
-class G1MujocoSim : public MujocoInterfaceBase
+class G1MujocoInterface : public MujocoInterfaceBase
 {
 public:
-   G1MujocoSim();
-   G1MujocoSim(const std::string &config_file);
-   ~G1MujocoSim() override;
+   G1MujocoInterface();
+   G1MujocoInterface(const std::string &config_file);
+   ~G1MujocoInterface() override;
 
 
 

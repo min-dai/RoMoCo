@@ -10,7 +10,7 @@
 #include <cstdlib> // For getenv()
 
 // need to set up sim
-#include "g1_mujoco_sim.hpp"
+#include "g1_mujoco_interface.hpp"
 
 #include <ros/package.h>
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     };
 
 
-    std::unique_ptr<G1MujocoSim> mujocosim = std::make_unique<G1MujocoSim>(config_folder);
+    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 

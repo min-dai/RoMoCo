@@ -1,18 +1,18 @@
-#include "g1_mujoco_sim.hpp"
+#include "g1_mujoco_interface.hpp"
 
-G1MujocoSim::G1MujocoSim(const std::string &config_file)
+G1MujocoInterface::G1MujocoInterface(const std::string &config_file)
 {
    Init(config_file);
 }
-G1MujocoSim::~G1MujocoSim()
+G1MujocoInterface::~G1MujocoInterface()
 {
-   std::cout << "G1 Mujoco simulation destructor called." << std::endl;
+   std::cout << "G1 Mujoco interface destructor called." << std::endl;
 }
 
 
 
 
-void G1MujocoSim::Init(const std::string &config_folder)
+void G1MujocoInterface::Init(const std::string &config_folder)
 {
       all_encoder_names_pinocchio_order_ = {
        "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
@@ -90,7 +90,7 @@ void G1MujocoSim::Init(const std::string &config_folder)
    std::cout << "sensor" << sensor_ << std::endl;
 }
 
-bool G1MujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input)
+bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input)
 {
    if (!mujoco_.IsWindowOpen())
    {

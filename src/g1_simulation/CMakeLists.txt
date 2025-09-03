@@ -59,8 +59,7 @@ set(dependencies
 add_library(${PROJECT_NAME}
    src/g1_model_leg.cpp
    src/g1_model.cpp
-   src/g1_sensor.cpp
-   src/g1_mujoco_sim.cpp
+   src/g1_mujoco_interface.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -95,16 +94,25 @@ target_link_libraries(g1_state_machine
   ${PROJECT_NAME}
 )
 
-## Ros Node
-add_executable(g1_hardware_interface src/g1_hardware_interface.cpp)
-target_link_libraries(g1_hardware_interface
-  ${PROJECT_NAME}
-  unitree_sdk2
-)
+
+
+# ## Ros Node
+# add_executable(g1_hardware_interface_main 
+#   src/g1_hardware_interface_main.cpp
+#   src/g1_hardware_interface.cpp
+# )
+# target_link_libraries(g1_hardware_interface_main
+#   ${PROJECT_NAME}
+#   unitree_sdk2
+# )
+
+
 
 ## Ros Node
-add_executable(g1_interface_node_main src/g1_interface_node_main.cpp)
-target_link_libraries(g1_interface_node_main
+add_executable(g1_mujoco_interface_node_main 
+  src/g1_mujoco_interface_node_main.cpp
+)
+target_link_libraries(g1_mujoco_interface_node_main
   ${PROJECT_NAME}
   unitree_sdk2
 )
@@ -121,7 +129,7 @@ target_link_libraries(g1_controller_node_main
 # )
 
 install(
-  TARGETS g1_state_machine g1_hardware_interface g1_interface_node_main g1_controller_node_main
+  TARGETS g1_state_machine  g1_mujoco_interface_node_main g1_controller_node_main
   DESTINATION lib/${PROJECT_NAME}
 )
 
