@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
     std::string config_folder = package_folder + "/config";
     std::string log_path = home + "/ROBOTLOG/Cassie";
 
-    std::string mujoco_config_file = config_folder + "/mujoco_config.yaml";
-    YAMLParser yaml_parser(mujoco_config_file);
+    std::string config_file = config_folder + "/interface_config.yaml";
+    YAMLParser yaml_parser(config_file);
     std::string urdf_name = yaml_parser.get_string("urdf_name");
     std::string urdf_path = package_folder + "/model_files/" + urdf_name;
     std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");

@@ -36,7 +36,7 @@ int main(int argc, char **argv)
    });
 
     
-   timer.start(10); // Check every 10ms
+   timer.start(100); // Check every 100ms
 
    QObject::connect(&app, &QApplication::aboutToQuit, [&]()
                     { rclcpp::shutdown(); });

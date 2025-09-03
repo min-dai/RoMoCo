@@ -2,7 +2,7 @@
 #define TORQUE_SOLVER_VELIK_HPP
 
 #include "torque_control/torque_solver_base.hpp"
-#include "torque_control/pd_controller.hpp"
+#include "biped_utils/pd_controller.hpp"
 
 class TorqueSolverVELIK : public TorqueSolverBase
 {

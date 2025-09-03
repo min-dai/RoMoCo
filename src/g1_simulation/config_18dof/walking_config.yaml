@@ -1,6 +1,6 @@
 
 # qp or posik
-controller: "qp"
+controller: "posik"
 
 
 
@@ -11,7 +11,7 @@ pose_command:
   vx_offset: 0.0
   vy_offset: 0.0
   TSS: 0.3
-  TDS: 0.03
+  TDS: 0.0
   znom: 0.65
   zsw_max: 0.1
   zsw_neg: -0.01

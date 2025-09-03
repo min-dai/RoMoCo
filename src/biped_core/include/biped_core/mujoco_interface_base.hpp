@@ -10,6 +10,10 @@ public:
    MujocoInterfaceBase() = default;
    virtual ~MujocoInterfaceBase() = default;
 
+   bool IsInterfaceRunning()  override{
+      return !paused();
+   }
+
    void ReadAndEstimate() override;
    void SendPacket() override;
 
@@ -51,8 +55,8 @@ protected:
    Eigen::VectorXd torque_loco_;
    Eigen::VectorXd torque_pd_;
 
+   int render_loop_counter_ = 0;
+   int render_loop_counter_threshold_ = 40;
 
-
-   
 };
 #endif // MUJOCO_INTERFACE_BASE_HPP

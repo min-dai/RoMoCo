@@ -13,15 +13,30 @@ public:
 
     virtual ~InterfaceBase() = default;
 
+    // Use internal sensor_ to update internal estimation to update
+    // full_proprioception_, loco_proprioception_, and pd_proprioception_
+    virtual void ReadAndEstimate() = 0;
+
+
+    // update loco_motor_commands, pd_motor_commands are constants
+    // return loco_proprioception_
     BipedProprioception Update(const BipedMotorCommands &loco_cmd);
 
+    BipedProprioception Update();
+
+    // Send control commands to the robot
+    // Internally update sensor_ (type depends on HW/SIM)
     virtual void SendPacket() = 0;
-    
+
+    virtual bool IsInterfaceRunning()  = 0;
+
 protected:
+
     virtual void Init(const std::string &config_folder) = 0;
 
-    // Pull raw sensors and update internal estimation to update proprioception_
-    virtual void ReadAndEstimate() = 0;
+    void InitInterface(const std::string &config_folder);
+
+    
 
     
 
@@ -36,7 +51,13 @@ protected:
         const std::vector<std::string> &subset_joint_names);
 
     void ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd, const Eigen::VectorXd &qd);
+    void ReconfigurePdMotorCommands(std::string &config_file);
 
+
+    std::vector<std::string> pd_encoder_names_;
+    std::vector<std::string> loco_encoder_names_;
+    std::vector<std::string> all_encoder_names_pinocchio_order_;
+    
 
     int total_proprio_dof_;
     std::vector<int> pd_proprio_indices_;

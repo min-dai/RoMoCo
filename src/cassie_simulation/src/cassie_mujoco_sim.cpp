@@ -16,6 +16,13 @@ CassieMujocoSim::~CassieMujocoSim()
 
 void CassieMujocoSim::Init(const std::string &config_folder)
 {
+    total_motor_dof_ = 10;
+    total_proprio_dof_ = 18;
+    loco_motor_indices_ = {0, 1, 2, 3, 5, 6, 7, 8, 9, 11};
+    loco_proprio_indices_ = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+    InitMotorCommands();
+    InitProprioception();
+
     std::string config_file = config_folder + "/mujoco_config.yaml";
     YAMLParser yaml_parser(config_file);
 
@@ -43,7 +50,6 @@ void CassieMujocoSim::Init(const std::string &config_folder)
     }
 
     cassie_sim_step(sim, &cassie_out, &cassie_user_in);
-
 
     std::cout << "Cassie Mujoco simulation initialized successfully." << std::endl;
 }
@@ -75,8 +81,8 @@ bool CassieMujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen
         sensor_.base_ang_quat.z() = cassie_out.pelvis.vectorNav.orientation[3];
 
         sensor_.base_ang_vel << cassie_out.pelvis.vectorNav.angularVelocity[0],
-                                 cassie_out.pelvis.vectorNav.angularVelocity[1],
-                                 cassie_out.pelvis.vectorNav.angularVelocity[2];
+            cassie_out.pelvis.vectorNav.angularVelocity[1],
+            cassie_out.pelvis.vectorNav.angularVelocity[2];
 
         sensor_.encoders_pos_pinocchio_order << cassie_out.leftLeg.hipRollDrive.position,
             cassie_out.leftLeg.hipYawDrive.position,
@@ -102,24 +108,20 @@ bool CassieMujocoSim::Step(const Eigen::VectorXd &leg_control_input, const Eigen
             cassie_out.rightLeg.kneeDrive.velocity,
             cassie_out.rightLeg.tarsusJoint.velocity,
             cassie_out.rightLeg.footJoint.velocity;
-
-
     }
 
-    cassie_vis_draw(vis, sim);
-
-    if (videoSetting.record_video && !cassie_vis_paused(vis))
+    render_loop_counter_++;
+    if (render_loop_counter_ % render_loop_counter_threshold_ == 0)
     {
-        cassie_vis_record_frame(vis);
-    }
+        cassie_vis_draw(vis, sim);
 
+        if (videoSetting.record_video && !cassie_vis_paused(vis))
+        {
+            cassie_vis_record_frame(vis);
+        }
+    }
     return 1;
 }
-
-
-
-
-
 
 void CassieMujocoSim::Close()
 {

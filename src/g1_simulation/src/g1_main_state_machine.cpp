@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
 
     std::string log_path = home + "/ROBOTLOG/G1";
 
-    std::string mujoco_config_file = config_folder + "/mujoco_config.yaml";
-    YAMLParser yaml_parser(mujoco_config_file);
+    std::string config_file = config_folder + "/interface_config.yaml";
+    YAMLParser yaml_parser(config_file);
     std::string urdf_name = yaml_parser.get_string("urdf_name");
-
+    std::cout << "Using URDF: " << urdf_name << std::endl;
 
     std::string urdf_path = package_folder + "/model_files/" + urdf_name;
     std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
@@ -81,9 +81,9 @@ int main(int argc, char *argv[])
     {
         rclcpp::spin_some(node);
 
-        // fake_radio = node->fake_radio();
+        fake_radio = node->fake_radio();
 
-        fake_radio = predefined_radio(t_sim);
+        // fake_radio = predefined_radio(t_sim);
         DesiredCommand command = getScreenCommand(fake_radio);
 
 

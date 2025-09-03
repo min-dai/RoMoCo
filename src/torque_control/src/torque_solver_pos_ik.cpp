@@ -62,7 +62,7 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 
 
 
-    motor_commands_.joint_torques = u_full;
+    motor_commands_.joint_torques_ff = u_full;
     motor_commands_.joint_positions = output_->qDes_actuated;
     motor_commands_.joint_velocities = output_->dqDes_actuated;
     motor_commands_.joint_kp = JointKPing_;

@@ -46,7 +46,7 @@ void BasicStateMachine::Close()
 void BasicStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
 {
    //  Initialize the robot config folder and log path
-   std::string mujoco_config_file = config_folder + "/mujoco_config.yaml";
+   std::string config_file = config_folder + "/interface_config.yaml";
    log_path_ = log_path; // log path = home + "/ROBOTLOG/" + robot_name ;
 
    // Check if the log directory exists, if not, create it
@@ -62,7 +62,7 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
       }
    }
 
-   YAMLParser yaml_parser(mujoco_config_file);
+   YAMLParser yaml_parser(config_file);
 
    std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
    n_locked_joints_ = locked_encoder_names.size();
@@ -178,10 +178,11 @@ double BasicStateMachine::Update(const DesiredCommand &command,
       {
          control_counter_ = 0;
 
+         sim_->ReadAndEstimate();
          sim_->GetAllJointStateFromSensorMujoco(qfull_, dqfull_);
 
-         cout << "qfull_: " << qfull_.transpose() << endl;
-         cout << "dqfull_: " << dqfull_.transpose() << endl;
+         std::cout << "qfull_: " << qfull_.transpose() << std::endl;
+         std::cout << "dqfull_: " << dqfull_.transpose() << std::endl;
 
          Eigen::VectorXd q_leg = getLegModel(qfull_);
          Eigen::VectorXd dq_leg = getLegModel(dqfull_);

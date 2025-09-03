@@ -37,6 +37,30 @@ struct DesiredCommand
    {
       values.setZero();
    }
+   //overload <<
+   friend std::ostream &operator<<(std::ostream &os, const DesiredCommand &cmd)
+   {
+      switch (cmd.mode)
+      {
+      case Mode::Standing:
+         os << "Mode: Standing, ";
+         break;
+      case Mode::Walking:
+         os << "Mode: Walking, ";
+         break;
+      case Mode::InAir:
+         os << "Mode: InAir, ";
+         break;
+      case Mode::Null:
+         os << "Mode: Null, ";
+         break;
+      default:
+         os << "Mode: Unknown, ";
+         break;
+      }
+      os << "Values: " << cmd.values.transpose();
+      return os;
+   }
 };
 
 #endif // BIPED_COMMANDS_HPP

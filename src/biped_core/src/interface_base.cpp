@@ -1,11 +1,61 @@
 #include "biped_core/interface_base.hpp"
+#include "biped_utils/yaml_parser.hpp"
 
+
+void InterfaceBase::InitInterface(const std::string &config_folder)
+{
+   // pull locked and loco encoder names from interface config
+   std::string interface_config_file = config_folder + "/interface_config.yaml";
+   YAMLParser yaml_parser(interface_config_file);
+   yaml_parser.Init(interface_config_file);
+   pd_encoder_names_ = yaml_parser.get_string_vector("locked_encoder_names");
+   loco_encoder_names_ = yaml_parser.get_string_vector("pinocchio_encoder_names");
+   //verify they add up to all
+   if (pd_encoder_names_.size() + loco_encoder_names_.size() != all_encoder_names_pinocchio_order_.size())
+   {
+      throw std::runtime_error("Interface Error: Locked and locomotion encoder names do not add up to all encoders");
+   }
+
+   // Initialize MotorCommands and Proprioception
+
+   total_motor_dof_ = all_encoder_names_pinocchio_order_.size();
+   loco_motor_indices_ = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, loco_encoder_names_);
+   pd_motor_indices_ = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, pd_encoder_names_);
+
+   total_proprio_dof_ = 6 + total_motor_dof_;
+
+   // proprio indices = base + shifted motors
+   loco_proprio_indices_ = {0, 1, 2, 3, 4, 5};
+   loco_proprio_indices_.reserve(6 + loco_motor_indices_.size());
+
+   // append shifted motor indices
+   std::transform(loco_motor_indices_.begin(),
+                  loco_motor_indices_.end(),
+                  std::back_inserter(loco_proprio_indices_),
+                  [](int idx)
+                  { return idx + 6; });
+
+   pd_proprio_indices_ = pd_motor_indices_;
+
+   for (int &x : pd_proprio_indices_)
+   {
+      x += 6;
+   }
+
+   InitMotorCommands();
+   ReconfigurePdMotorCommands(interface_config_file);
+   InitProprioception();
+   std::cout << "Interface BASE initialized successfully." << std::endl;
+}
 void InterfaceBase::InitMotorCommands()
 {
    if (pd_motor_indices_.size() + loco_motor_indices_.size() != total_motor_dof_)
    {
       throw std::runtime_error("Motor command sizes do not match total DOF");
    }
+   std::cout << "size pd_motor_indices_: " << pd_motor_indices_.size() << std::endl;
+   std::cout << "size loco_motor_indices_: " << loco_motor_indices_.size() << std::endl;
+
    pd_motor_commands_.ZeroAll(pd_motor_indices_.size());
    loco_motor_commands_.ZeroAll(loco_motor_indices_.size());
    final_motor_commands_.ZeroAll(total_motor_dof_);
@@ -52,7 +102,14 @@ std::vector<int> InterfaceBase::GetJointIndicesFromSubset(
 BipedProprioception InterfaceBase::Update(const BipedMotorCommands &loco_cmd)
 {
    ReadAndEstimate();
+   
    loco_motor_commands_ = loco_cmd;
+   return loco_proprioception_;
+}
+
+BipedProprioception InterfaceBase::Update()
+{
+   ReadAndEstimate();
    return loco_proprioception_;
 }
 
@@ -64,6 +121,18 @@ void InterfaceBase::ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const 
    pd_motor_commands_.joint_velocities.setZero();
    pd_motor_commands_.joint_kp = Kp;
    pd_motor_commands_.joint_kd = Kd;
+   pd_motor_commands_.joint_torques_ff.setZero();
+   final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
+}
+
+void InterfaceBase::ReconfigurePdMotorCommands(std::string &config_file)
+{
+   //must be called after InitMotorCommands()
+   YAMLParser yaml_parser(config_file);
+   pd_motor_commands_.joint_positions = yaml_parser.get_VectorXd("qdes_locked_joints");
+   pd_motor_commands_.joint_velocities.setZero();
+   pd_motor_commands_.joint_kp = yaml_parser.get_VectorXd("Kp_locked_joints");
+   pd_motor_commands_.joint_kd = yaml_parser.get_VectorXd("Kd_locked_joints");
    pd_motor_commands_.joint_torques_ff.setZero();
    final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
 }

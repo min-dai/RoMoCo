@@ -24,7 +24,7 @@ void TorqueSolverInvDyn::Init(const std::string &config_file)
     OutputKPing_ = OutputKP_;
     OutputKDing_ = OutputKD_;
 
-    motor_commands_.ResizeTorque(robot_->nv());
+    motor_commands_.ZeroAll(robot_->nv());
 }
 
 BipedMotorCommands TorqueSolverInvDyn::Solve()
@@ -99,7 +99,7 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
 
     std::cout << "u_id =[ " << u_full.transpose() << "];" << std::endl;
 
-    motor_commands_.joint_torques = u_full;
+    motor_commands_.joint_torques_ff = u_full;
 
     // Implement the solver
     return motor_commands_;
