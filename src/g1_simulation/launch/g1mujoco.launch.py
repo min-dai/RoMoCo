@@ -5,8 +5,8 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription([
         Node(
             package="g1_simulation",
-            executable="g1_interface_node_main",
-            name="g1_interface_node_main",
+            executable="g1_mujoco_interface_node_main",
+            name="g1_mujoco_interface_node_main",
             output="screen",
             emulate_tty=True
         ),

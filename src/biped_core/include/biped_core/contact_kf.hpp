@@ -10,10 +10,10 @@ class ContactKf
 {
 
 public:
-   ContactKf(const std::string &config_file, int n_encoders);
+   ContactKf(const std::string &config_folder, int n_encoders);
 
 
-   void Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input);
+   Eigen::Vector3d Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input);
 
    void InitContact(double t, double lC, double rC, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf);
 
@@ -43,7 +43,7 @@ public:
 
       // Initialized std estimate for covariance
       double init_position_std = 0.01;
-      double init_velocity_std = 0.01;
+      double init_velocity_std = 0.1;
       double init_acc_bias_std = 0.1;
       double init_foothold_std = 0.025;
 

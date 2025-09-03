@@ -4,15 +4,24 @@
 #include "mujoco_sim/mujoco_sim.hpp"
 #include "biped_core/mujoco_interface_base.hpp"
 
+
+#include "biped_core/robot_base_pinocchio.hpp"
+#include "biped_core/contact_kf.hpp"
+#include "biped_core/prep_proprioception.hpp"
+
+
+
 class G1MujocoInterface : public MujocoInterfaceBase
 {
 public:
    G1MujocoInterface();
-   G1MujocoInterface(const std::string &config_file);
+   G1MujocoInterface(const std::string &config_file, const std::string &log_path);
+   G1MujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot);
    ~G1MujocoInterface() override;
 
 
-
+   void ReadAndEstimate() override;
+   void SendPacket() override;
 
    bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) override;
 
@@ -24,10 +33,16 @@ public:
    double sim_time() const override { return mujoco_.time(); }
 
 private:
-   void Init(const std::string &config_folder) override;
+   void Init(const std::string &config_folder, const std::string &log_path) override;
 
 
    MujocoSim mujoco_;
+
+   void UpdateMujocoTrueSensorData();
+
+   void HandleRendering();
+
+   void Estimate();
 
    void set_base_pos(const Eigen::Vector3d &pos) { mujoco_.set_base_pos(pos); }
    void set_base_quaternion(const Eigen::Vector4d &quat) { mujoco_.set_base_quaternion(quat); }
@@ -36,7 +51,7 @@ private:
    const std::vector<std::string> accelerometer_name = {"imu-pelvis-linear-acceleration"};
    const std::vector<std::string> framequat_name = {"imu-pelvis-orientation"};
 
-
+   
 
    
    // for joint position and velocities
@@ -51,6 +66,17 @@ private:
    std::vector<int> accelerometer_mj_ids; // Accelerometer sensor IDs
    std::vector<int> framequat_mj_ids;     // Frame quaternion sensor IDs
 
+
+   // for testing
+   void UpdateHardwareSensorData();
+   std::unique_ptr<RobotBasePinocchio> robot_;
+   std::unique_ptr<ContactKf> contact_kf_;
+   Eigen::Vector3d true_lin_vel_;
+   Eigen::Vector3d est_lin_vel_;
+
+      // for Log files
+   std::fstream logFile_;
+   std::string logFilePath_;
 };
 
 #endif // G1_MUJOCO_SIM_HPP

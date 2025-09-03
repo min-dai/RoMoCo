@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     auto getUpper = [](const VectorXd &q)
     { return VectorXd::Zero(0); };
 
-    std::unique_ptr<CassieMujocoSim> mujocosim = std::make_unique<CassieMujocoSim>(config_folder);
+    std::unique_ptr<CassieMujocoSim> mujocosim = std::make_unique<CassieMujocoSim>(config_folder, log_path);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 

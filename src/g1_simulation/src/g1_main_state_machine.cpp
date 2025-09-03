@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     //     return q.tail(n_locked_joints);
     // };
 
-    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder);
+    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder, log_path);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 

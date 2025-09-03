@@ -109,11 +109,6 @@ BipedProprioception InterfaceBase::Update(const BipedMotorCommands &loco_cmd)
    return loco_proprioception_;
 }
 
-BipedProprioception InterfaceBase::Update()
-{
-   ReadAndEstimate();
-   return loco_proprioception_;
-}
 
 
 void InterfaceBase::ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const Eigen::VectorXd &Kd, const Eigen::VectorXd &qd)
@@ -168,4 +163,24 @@ void InterfaceBase::PrintDebugInfo() const
     }
     std::cout << std::endl;
     std::cout << "=========================" << std::endl;
+}
+
+
+Eigen::VectorXf InterfaceBase::CollectLog(const double t, const std::vector<VectorXd> &vectors)
+{
+   int logsize = 1; // Start with 1 for the time
+   for (const auto &vec : vectors)
+   {
+      logsize += vec.size();
+   }
+
+   Eigen::VectorXf log(logsize);
+   log(0) = static_cast<float>(t);
+   int offset = 1; // Start after the constant
+   for (const auto &vec : vectors)
+   {
+      log.segment(offset, vec.size()) = vec.cast<float>();
+      offset += vec.size();
+   }
+   return log;
 }

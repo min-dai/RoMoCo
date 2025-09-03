@@ -31,7 +31,15 @@ friction:
   Fz_lb: 100.
   Rot_frictionCoef: 1
 
-  
+contact_kf:
+  base_process_std: 0.1
+  foothold_std: 0.05
+  encoder_std: 0.01
+  acceleration_bias_std: 0.25
+  init_position_std: 0.01
+  init_velocity_std: 0.1
+  init_acc_bias_std: 0.1
+  init_foothold_std: 0.025
 
 
 qp:

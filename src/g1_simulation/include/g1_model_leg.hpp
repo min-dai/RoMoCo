@@ -31,7 +31,7 @@ public:
     ~G1ModelLeg() override = default;
 
     void ComputeContactClassifierInput() override;
-    void ComputeEstimationKinematicsInput() override;
+    BipedEstimationKinematicsInput ComputeEstimationKinematicsInput() override;
 
     std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
     std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;

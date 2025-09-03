@@ -1,9 +1,10 @@
 #include <biped_core/contact_kf.hpp>
-
+#include <iostream>
 using namespace std;
 
-ContactKf::ContactKf(const std::string &config_file, int n_encoders)
+ContactKf::ContactKf(const std::string &config_folder, int n_encoders)
 {
+    std::string config_file = config_folder + "/walking_config.yaml";
    config.yaml_parser.Init(config_file);
    config.Init();
 
@@ -17,7 +18,7 @@ ContactKf::ContactKf(const std::string &config_file, int n_encoders)
    Qc.block(12, 12, 3, 3) = config.acceleration_bias_std * config.acceleration_bias_std * I3;
 
    Rc = Eigen::MatrixXd::Zero(n_encoders, n_encoders);
-
+   Renc = Eigen::MatrixXd::Identity(n_encoders, n_encoders) * config.encoder_std * config.encoder_std;
 
    Fk_ = Eigen::MatrixXd::Identity(15,15);
 
@@ -30,16 +31,23 @@ ContactKf::ContactKf(const std::string &config_file, int n_encoders)
 
    Sk_ = Eigen::MatrixXd::Zero(6, 6);
    Kk_ = Eigen::MatrixXd::Zero(15, 6);
+
+   x_hat = Eigen::MatrixXd::Zero(3, 5);
 }
 
 void ContactKf::Config::Init(){
-    base_process_std = yaml_parser.get_double("base_process_std");
-    foothold_std = yaml_parser.get_double("foothold_std");
-    encoder_std = yaml_parser.get_double("encoder_std");
-    acceleration_bias_std = yaml_parser.get_double("acceleration_bias_std");
+    base_process_std = yaml_parser.get_double("contact_kf/base_process_std");
+    foothold_std = yaml_parser.get_double("contact_kf/foothold_std");
+    encoder_std = yaml_parser.get_double("contact_kf/encoder_std");
+    acceleration_bias_std = yaml_parser.get_double("contact_kf/acceleration_bias_std");
+
+    init_position_std = yaml_parser.get_double("contact_kf/init_position_std");
+    init_velocity_std = yaml_parser.get_double("contact_kf/init_velocity_std");
+    init_acc_bias_std = yaml_parser.get_double("contact_kf/init_acc_bias_std");
+    init_foothold_std = yaml_parser.get_double("contact_kf/init_foothold_std");
 }
 
-void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input) {
+Eigen::Vector3d ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input) {
 
     Eigen::MatrixXd R = q.toRotationMatrix();
 
@@ -61,8 +69,10 @@ void ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quater
             // Compute the measurement
             UpdateStep(input.p_left_foot, input.p_right_foot, input.J_left_foot, input.J_right_foot);
         }
-    } 
-
+        return getvel();
+    } else{
+        return Eigen::Vector3d::Zero();
+    }
 
 }
 
@@ -73,6 +83,8 @@ void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorX
    {
       if (lC > 0.2 && rC > 0.2)
       {
+        std::cout << "Initializing contact at time: " << t << std::endl;
+
          this->x_hat(2, 0) = -(plf(2) + prf(2)) / 2.0;
          this->x_hat.col(2) = this->x_hat.col(0) + plf;
          this->x_hat.col(3) = this->x_hat.col(0) + prf;

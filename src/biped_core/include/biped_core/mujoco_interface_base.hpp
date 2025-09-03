@@ -14,8 +14,8 @@ public:
       return !paused();
    }
 
-   void ReadAndEstimate() override;
-   void SendPacket() override;
+   virtual void ReadAndEstimate() override;
+   virtual SendPacket() override;
 
 
    void GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot);

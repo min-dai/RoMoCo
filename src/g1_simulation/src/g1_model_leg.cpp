@@ -190,16 +190,19 @@ void G1ModelLeg::ComputeContactClassifierInput()
 }
 
 
-void G1ModelLeg::ComputeEstimationKinematicsInput()
+BipedEstimationKinematicsInput G1ModelLeg::ComputeEstimationKinematicsInput()
 {
+    ComputeContactClassifierInput();
+    std::cout << "Contact Classifier Input: " << contact_classifier_input_ << std::endl;
     ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
-
-    biped_estimation_kinematics_input_.p_left_foot = left_ankle_.kinematics.position;
-    biped_estimation_kinematics_input_.p_right_foot = right_ankle_.kinematics.position;
-    biped_estimation_kinematics_input_.J_left_foot = contact_classifier_input_.Jleft_active;
-    biped_estimation_kinematics_input_.J_right_foot = contact_classifier_input_.Jright_active;
-    biped_estimation_kinematics_input_.left_contact_prob = contact_classifier_output_.left_contact_prob;
-    biped_estimation_kinematics_input_.right_contact_prob = contact_classifier_output_.right_contact_prob;
+    BipedEstimationKinematicsInput biped_estimation_kinematics_input;
+    biped_estimation_kinematics_input.p_left_foot = left_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.p_right_foot = right_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.J_left_foot = contact_classifier_input_.Jleft_active;
+    biped_estimation_kinematics_input.J_right_foot = contact_classifier_input_.Jright_active;
+    biped_estimation_kinematics_input.left_contact_prob = contact_classifier_output_.left_contact_prob;
+    biped_estimation_kinematics_input.right_contact_prob = contact_classifier_output_.right_contact_prob;
+    return biped_estimation_kinematics_input;
 }
 
 

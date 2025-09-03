@@ -34,6 +34,32 @@ classdef G1Log < handle
     methods
         function  obj =   G1Log()
         end
+
+        function plotInterface(obj)
+
+            fileID = fopen( [obj.path, 'logInterface.bin']);
+            raw = fread(fileID,'float');
+            
+   
+            LengthVec = [1,3,3];
+            
+            N = floor(length(raw) / sum(LengthVec));  % Number of samples
+            
+            [t, est_v, true_v] = obj.readRaw(raw, N, LengthVec);
+            
+
+            output_list = {'x','y','z'};
+
+
+            %plot ya yd
+            figure
+            tiledlayout(1,3);
+            for i=1:3
+                nexttile; plot(t, est_v(i,:));  hold on; plot(t, true_v(i,:),'k-'); title(output_list{i}); legend('est','true'); grid on;
+            end
+
+
+        end
         
         function plotInAir(obj)
             

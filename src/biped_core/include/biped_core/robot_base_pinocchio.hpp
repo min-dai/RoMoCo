@@ -51,11 +51,13 @@ public:
     // if robot class need estimation, prepare contact classifier, otherwise do nothing
     bool need_estimation() const { return need_estimation_; }
     void set_need_estimation(bool need_estimation) { need_estimation_ = need_estimation; }
-    //TODO: make pure virutal
-    virtual void ComputeContactClassifierInput(){};
-    //TODO: add toe, heel version as well
-    virtual void ComputeEstimationKinematicsInput(){};
 
+    void SetComputedTorque(const VectorXd &torque) { computed_torque_ = torque; }
+    void ReconfigureContactClassifier(double dt) { contact_classifier_.Reconfigure(dt); }
+    // TODO: make pure virutal
+    virtual void ComputeContactClassifierInput() {};
+    // TODO: add toe, heel version as well
+    virtual BipedEstimationKinematicsInput ComputeEstimationKinematicsInput() { return BipedEstimationKinematicsInput(); };
 
     double mass() const { return mass_; }
     int nq() const { return model_.nq; }
@@ -197,7 +199,7 @@ protected:
     pinocchio::Model model_; // Pinocchio model
     pinocchio::Data data_;   // Pinocchio data
 
-    //contact classifier
+    // contact classifier
     ContactClassifier contact_classifier_;
     bool need_estimation_ = false;
     ContactClassifierInput contact_classifier_input_;

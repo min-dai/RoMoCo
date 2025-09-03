@@ -1,6 +1,8 @@
 #include <biped_core/prep_proprioception.hpp>
 #include <biped_utils/geometry.hpp>
 
+
+
 BipedProprioception GetBipedProprioceptionFromSensorDataPostEstimation(const SensorDataPostEstimation &sensor_data)
 {
    RawSensorDataHardware raw_sensor_data;
@@ -30,4 +32,11 @@ BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSen
 
 
    return proprioception;
+}
+
+BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSensorDataHardware &raw_sensor_data)
+{
+   //set an zero estimation
+   BipedEstimation estimation;
+   return GetBipedProprioceptionFromRawSensorDataHardware(raw_sensor_data, estimation);
 }

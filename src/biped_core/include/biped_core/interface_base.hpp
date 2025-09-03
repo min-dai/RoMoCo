@@ -24,15 +24,13 @@ public:
     // return loco_proprioception_
     BipedProprioception Update(const BipedMotorCommands &loco_cmd);
 
-    BipedProprioception Update();
-
     // Send control commands to the robot
     // Internally update sensor_ (type depends on HW/SIM)
     virtual void SendPacket() = 0;
 
     virtual bool IsInterfaceRunning() const  = 0;
 
-    virtual void Init(const std::string &config_folder) = 0;
+    virtual void Init(const std::string &config_folder, const std::string &log_path) = 0;
 
 protected:
 
@@ -73,6 +71,9 @@ protected:
     BipedMotorCommands pd_motor_commands_;
     BipedMotorCommands loco_motor_commands_;
     BipedMotorCommands final_motor_commands_;
+
+
+    Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
 
 
 };

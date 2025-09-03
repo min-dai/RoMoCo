@@ -16,6 +16,14 @@ struct ContactClassifierInput
     Eigen::MatrixXd Jright_active;
     Eigen::VectorXd torque_left;
     Eigen::VectorXd torque_right;
+    friend std::ostream &operator<<(std::ostream &os, const ContactClassifierInput &input)
+    {
+        os << "Jleft_active: " << input.Jleft_active << "\n";
+        os << "Jright_active: " << input.Jright_active << "\n";
+        os << "torque_left: " << input.torque_left << "\n";
+        os << "torque_right: " << input.torque_right << "\n";
+        return os;
+    }
 };
 
 class ContactClassifier
@@ -27,7 +35,7 @@ public:
     ~ContactClassifier() = default;
 
     ContactClassifierOutput Update(const ContactClassifierInput &input);
-    void Reconfigure();
+    void Reconfigure(double dt);
     void Reconfigure(double dt, double lowpass_dt_cutoff, double linear_lb, double linear_ub);
 
 private:
@@ -38,8 +46,8 @@ private:
     {
         double dt;
         double lowpass_dt_cutoff = 0.005;
-        double linear_lb = 60.0;
-        double linear_ub = 110.0;
+        double linear_lb = 100.0;
+        double linear_ub = 200.0;
 
         void Init(double dt){
             this->dt = dt;

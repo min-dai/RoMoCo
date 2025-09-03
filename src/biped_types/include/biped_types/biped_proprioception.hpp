@@ -27,6 +27,7 @@ struct RawSensorData
 struct BipedEstimation
 {
    Eigen::Vector3d base_lin_vel;
+   BipedEstimation() : base_lin_vel(Eigen::Vector3d::Zero()) {}
 };
 
 struct RawSensorDataHardware : RawSensorData

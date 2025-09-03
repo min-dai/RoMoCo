@@ -1,24 +1,24 @@
 
 #include <biped_utils/contact_classifier.hpp>
-
+#include <iostream>
 using namespace std;
 
 ContactClassifier::ContactClassifier(double dt)
 {
-    config.Init(dt);
-    Reconfigure();
+    Reconfigure(dt);
 }
 
-void ContactClassifier::Reconfigure()
+void ContactClassifier::Reconfigure(double dt)
 {
-    LowPassLeft.Reconfigure(config.dt, config.lowpass_dt_cutoff);
-    LowPassRight.Reconfigure(config.dt, config.lowpass_dt_cutoff);
+    config.Init(dt);
+    LowPassLeft.Reconfigure(dt, config.lowpass_dt_cutoff);
+    LowPassRight.Reconfigure(dt, config.lowpass_dt_cutoff);
     grf_ = Eigen::VectorXd::Zero(6);
 }
 void ContactClassifier::Reconfigure(double dt, double lowpass_dt_cutoff, double linear_lb, double linear_ub)
 {
     config.Init(dt, lowpass_dt_cutoff, linear_lb, linear_ub);
-    Reconfigure();
+    Reconfigure(dt);
 }
 
 ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &input)
@@ -28,6 +28,7 @@ ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &
     // torque = J^T * F, assuming J in world frame, F is also in world frame
     grf_.segment(0, 3) = -(input.Jleft_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_left);
     grf_.segment(3, 3) = -(input.Jright_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_right);
+
     // Update vertical grf lowpass
     LowPassLeft.Update(grf_(2));
     LowPassRight.Update(grf_(5));
@@ -35,6 +36,5 @@ ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &
     // Linear classifier
     output.left_contact_prob = std::clamp((LowPassLeft.getValue() - config.linear_lb) / (config.linear_ub - config.linear_lb), 0.0, 1.0);
     output.right_contact_prob = std::clamp((LowPassRight.getValue() - config.linear_lb) / (config.linear_ub - config.linear_lb), 0.0, 1.0);
-
     return output;
 }

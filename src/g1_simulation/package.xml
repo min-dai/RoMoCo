@@ -26,6 +26,7 @@
   <depend>biped_utils</depend>
   <depend>screen_radio</depend>
   <depend>biped_state_machine</depend>
+  <depend>biped_ros</depend>
 
   <!-- <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend> -->

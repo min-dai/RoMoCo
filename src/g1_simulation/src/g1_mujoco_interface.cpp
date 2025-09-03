@@ -1,20 +1,29 @@
 #include "g1_mujoco_interface.hpp"
 
-G1MujocoInterface::G1MujocoInterface(const std::string &config_file)
+G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path)
 {
-   Init(config_file);
+   Init(config_folder, log_path);
+}
+G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot)
+    : robot_(std::move(robot)), contact_kf_(std::make_unique<ContactKf>(config_folder, 6))
+{
+   Init(config_folder, log_path);
 }
 G1MujocoInterface::~G1MujocoInterface()
 {
+   if (logFile_.is_open())
+   {
+      logFile_.close();
+   }
    std::cout << "G1 Mujoco interface destructor called." << std::endl;
 }
 
-
-
-
-void G1MujocoInterface::Init(const std::string &config_folder)
+void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-      all_encoder_names_pinocchio_order_ = {
+   logFilePath_ = log_path + "/logInterface.bin";
+   logFile_.open(logFilePath_, std::ios::out | std::ios::binary);
+
+   all_encoder_names_pinocchio_order_ = {
        "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
        "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint",
        "right_hip_pitch_joint", "right_hip_roll_joint", "right_hip_yaw_joint",
@@ -25,10 +34,8 @@ void G1MujocoInterface::Init(const std::string &config_folder)
        "right_shoulder_pitch_joint", "right_shoulder_roll_joint", "right_shoulder_yaw_joint",
        "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint", "right_wrist_yaw_joint"};
 
-
    InitDofAndIndicesFromConfigFile(config_folder);
 
-      
    InitMotorCommands();
    std::cout << "Init Motor Commands" << std::endl;
    std::string interface_config_file = config_folder + "/interface_config.yaml";
@@ -43,8 +50,8 @@ void G1MujocoInterface::Init(const std::string &config_folder)
    videoSetting.InitVideoSetting(config_file);
 
    const std::string model_path = config_folder + "/../model_files/" + model_name;
-    
-    mujoco_.Init(model_path.c_str(), videoSetting.video_width, videoSetting.video_height);
+
+   mujoco_.Init(model_path.c_str(), videoSetting.video_width, videoSetting.video_height);
 
    gyro_mj_ids = mujoco_.GetSensorIdsByName(gyro_name);
    accelerometer_mj_ids = mujoco_.GetSensorIdsByName(accelerometer_name);
@@ -87,7 +94,10 @@ void G1MujocoInterface::Init(const std::string &config_folder)
    {
       throw std::runtime_error("Initial simulation step failed");
    }
-   std::cout << "sensor" << sensor_ << std::endl;
+   std::cout << "sensor" << sensor_hw_ << std::endl;
+   robot_->ReconfigureContactClassifier(0.0005);
+
+
 }
 
 bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input)
@@ -102,15 +112,37 @@ bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eig
    if (!mujoco_.paused())
    {
 
-
       mujoco_.UpdateControlInput(leg_control_input, locomotion_actuator_mj_ids_);
       if (locked_actuator_mj_ids_.size() > 0)
       {
          mujoco_.UpdateControlInput(upper_control_input, locked_actuator_mj_ids_);
       }
       mujoco_.Sim1StepForward();
+
+      Eigen::VectorXf LogData;
+
+      std::vector<Eigen::VectorXd> log_vectors = {est_lin_vel_, true_lin_vel_};
+      LogData = CollectLog(sim_time(), log_vectors);
+      if (logFile_.is_open())
+      {
+         logFile_.write(reinterpret_cast<char *>(LogData.data()), LogData.size() * sizeof(float));
+      }
    }
 
+   if (robot_ != nullptr)
+   {
+      UpdateHardwareSensorData();
+   }else{
+      UpdateMujocoTrueSensorData();
+   }
+
+   HandleRendering();
+
+   return 1;
+}
+
+void G1MujocoInterface::UpdateMujocoTrueSensorData()
+{
    sensor_.encoders_pos_pinocchio_order = mujoco_.GetJointPositionsByIds(all_encoder_mj_ids_pinocchio_order);
    sensor_.encoders_vel_pinocchio_order = mujoco_.GetJointVelocitiesByIds(all_encoder_mj_ids_pinocchio_order);
 
@@ -128,7 +160,53 @@ bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eig
    sensor_.base_ang_quat.z() = qpos[6];
 
    sensor_.base_ang_vel << qvel[3], qvel[4], qvel[5];
+}
 
+void G1MujocoInterface::UpdateHardwareSensorData()
+{
+
+   sensor_hw_.encoders_pos_pinocchio_order = mujoco_.GetJointPositionsByIds(all_encoder_mj_ids_pinocchio_order);
+   sensor_hw_.encoders_vel_pinocchio_order = mujoco_.GetJointVelocitiesByIds(all_encoder_mj_ids_pinocchio_order);
+   Eigen::VectorXd quat = mujoco_.GetSensorDataByIds(framequat_mj_ids);
+   sensor_hw_.base_ang_quat.w() = quat[0];
+   sensor_hw_.base_ang_quat.x() = quat[1];
+   sensor_hw_.base_ang_quat.y() = quat[2];
+   sensor_hw_.base_ang_quat.z() = quat[3];
+   sensor_hw_.base_ang_vel = mujoco_.GetSensorDataByIds(gyro_mj_ids);
+   sensor_hw_.base_lin_acc = mujoco_.GetSensorDataByIds(accelerometer_mj_ids);
+   //todo: remove gravity
+   sensor_hw_.base_lin_acc(2) -= 9.81;
+   const auto *qvel = mujoco_.qvel();
+   true_lin_vel_ << qvel[0], qvel[1], qvel[2];
+}
+
+void G1MujocoInterface::Estimate()
+{
+   BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
+
+   robot_->UpdateKinematics(proprioception.q(loco_proprio_indices_), proprioception.qdot(loco_proprio_indices_));
+
+   BipedEstimationKinematicsInput biped_estimation_kinematics_input = robot_->ComputeEstimationKinematicsInput();
+   est_lin_vel_ = contact_kf_->Update(sim_time(), sensor_hw_.base_lin_acc, sensor_hw_.base_ang_quat, biped_estimation_kinematics_input);
+   std::cout << "Est  linear velocity: " << est_lin_vel_.transpose() << std::endl;
+   std::cout << "True linear velocity: " << true_lin_vel_.transpose() << std::endl;
+   proprioception.qdot.head(3) << est_lin_vel_;
+   full_proprioception_ = proprioception;
+}
+
+void G1MujocoInterface::ReadAndEstimate(){
+   Estimate();
+   loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
+   pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+}
+void G1MujocoInterface::SendPacket()
+{
+   MujocoInterfaceBase::SendPacket();
+   robot_->SetComputedTorque(torque_loco_);
+}
+
+void G1MujocoInterface::HandleRendering()
+{
    render_loop_counter_++;
    if (render_loop_counter_ % render_loop_counter_threshold_ == 0)
    {
@@ -140,6 +218,6 @@ bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eig
          mujoco_.RecordVideoFrame();
       }
    }
-
-   return 1;
 }
+
+

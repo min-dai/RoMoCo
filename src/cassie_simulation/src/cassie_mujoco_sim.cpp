@@ -4,9 +4,9 @@ CassieMujocoSim::CassieMujocoSim() : sim(nullptr), vis(nullptr), timeMujoP(nullp
 {
 }
 
-CassieMujocoSim::CassieMujocoSim(const std::string &config_file) : sim(nullptr), vis(nullptr), timeMujoP(nullptr)
+CassieMujocoSim::CassieMujocoSim(const std::string &config_file, const std::string &log_path) : sim(nullptr), vis(nullptr), timeMujoP(nullptr)
 {
-    Init(config_file);
+    Init(config_file, log_path);
 }
 
 CassieMujocoSim::~CassieMujocoSim()
@@ -14,7 +14,7 @@ CassieMujocoSim::~CassieMujocoSim()
     Close();
 }
 
-void CassieMujocoSim::Init(const std::string &config_folder)
+void CassieMujocoSim::Init(const std::string &config_folder, const std::string &log_path)
 {
     total_motor_dof_ = 10;
     total_proprio_dof_ = 18;

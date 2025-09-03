@@ -19,10 +19,10 @@ class CassieMujocoSim : public MujocoInterfaceBase
 {
 public:
     CassieMujocoSim();
-    CassieMujocoSim(const std::string &config_file);
+    CassieMujocoSim(const std::string &config_file, const std::string &log_path);
     ~CassieMujocoSim() override;
 
-    void Init(const std::string& config_file) override;
+    void Init(const std::string& config_file, const std::string& log_path) override;
     bool Step(const Eigen::VectorXd& leg_control_input, const Eigen::VectorXd& upper_control_input) override;
 
     void SimHoldPelvis() override {cassie_sim_hold(sim);}
