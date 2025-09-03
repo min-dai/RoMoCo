@@ -49,7 +49,6 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
 
 BipedMotorCommands TorqueSolverPOSIK::Solve()
 {
-    std::cout << "qIK = " << robot_->q().transpose() << std::endl;
 
     SolveIk();
 

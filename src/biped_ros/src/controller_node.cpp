@@ -37,7 +37,7 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
 
       //TODO: load time from YAML
   // Timer: control loop
-  timer_ = create_wall_timer(0.5ms, std::bind(&RosControllerNode::Loop, this));
+  timer_ = create_wall_timer(std::chrono::duration<double>(0.0005), std::bind(&RosControllerNode::Loop, this));
 }
 
 void RosControllerNode::ProprioCallback(
