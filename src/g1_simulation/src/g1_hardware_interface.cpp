@@ -46,6 +46,14 @@ G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, c
 
     simple_timer_.Reset();
 
+
+
+    if (!robot_){
+        throw std::runtime_error("G1HardwareInterface: Robot model is not provided.");
+    }else{
+        robot_->ReconfigureContactClassifier(0.0005);
+    }
+
     std::cout << "G1 Hardware Interface initialized on " << network_interface << std::endl;
 }
 
@@ -53,7 +61,7 @@ G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, c
 
 void G1HardwareInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-    InitLogFile(log_path);
+    InitLogFile(log_path, false);
     all_encoder_names_pinocchio_order_ = {
        "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
        "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint",
@@ -74,7 +82,8 @@ void G1HardwareInterface::Init(const std::string &config_folder, const std::stri
    ReconfigurePdMotorCommands(interface_config_file);
    InitProprioception();
     
-    
+    sensor_hw_.encoders_pos_pinocchio_order.resize(G1_NUM_MOTOR);
+    sensor_hw_.encoders_vel_pinocchio_order.resize(G1_NUM_MOTOR);
 }
 
 
@@ -82,6 +91,13 @@ void G1HardwareInterface::Init(const std::string &config_folder, const std::stri
 void G1HardwareInterface::LowStateHandler(const void* message)
 {
     LowState_ low_state = *(const LowState_*)message;
+
+    // Size validation
+    if (low_state.motor_state().size() < G1_NUM_MOTOR) {
+        std::cerr << "ERROR: motor_state size " << low_state.motor_state().size() 
+                  << " < expected " << G1_NUM_MOTOR << std::endl;
+        return;
+    }
     
     // Verify CRC
     if (low_state.crc() != Crc32Core((uint32_t *)&low_state, (sizeof(LowState_) >> 2) - 1)) {
@@ -108,50 +124,22 @@ void G1HardwareInterface::LowStateHandler(const void* message)
     pelvis_imu_buffer_.SetData(pelvis_imu);
 
     // update gamepad
-    memcpy(rx_.buff, &low_state.wireless_remote()[0], 40);
+    // Add bounds checking before memcpy
+    if (low_state.wireless_remote().size() >= 40 && sizeof(rx_.buff) >= 40)
+    {
+        memcpy(rx_.buff, &low_state.wireless_remote()[0], 40);
+    }
+    else
+    {
+        std::cerr << "Buffer size mismatch!" << std::endl;
+    }
     gamepad_.update(rx_.RF_RX);
-    
+
     // update mode machine
     if (mode_machine_ != low_state.mode_machine()) {
       if (mode_machine_ == 0) std::cout << "G1 type: " << unsigned(low_state.mode_machine()) << std::endl;
       mode_machine_ = low_state.mode_machine();
     }
-    // // report robot status every second
-    // if (++counter_ % 500 == 0) {
-    //   counter_ = 0;
-    //   // IMU
-    //   auto &rpy = low_state.imu_state().rpy();
-    //   printf("IMU.pelvis.rpy: %.2f %.2f %.2f\n", rpy[0], rpy[1], rpy[2]);
-
-    //   // RC
-    //   printf("gamepad_.A.pressed: %d\n", static_cast<int>(gamepad_.A.pressed));
-    //   printf("gamepad_.B.pressed: %d\n", static_cast<int>(gamepad_.B.pressed));
-    //   printf("gamepad_.X.pressed: %d\n", static_cast<int>(gamepad_.X.pressed));
-    //   printf("gamepad_.Y.pressed: %d\n", static_cast<int>(gamepad_.Y.pressed));
-
-    //   // Motor
-    //   auto &ms = low_state.motor_state();
-    //   printf("All %d Motors:", G1_NUM_MOTOR);
-    //   printf("\nmode: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,", ms[i].mode());
-    //   printf("\npos: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].q());
-    //   printf("\nvel: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].dq());
-    //   printf("\ntau_est: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].tau_est());
-    //   printf("\ntemperature: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%d,%d;", ms[i].temperature()[0], ms[i].temperature()[1]);
-    //   printf("\nvol: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].vol());
-    //   printf("\nsensor: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,%u;", ms[i].sensor()[0], ms[i].sensor()[1]);
-    //   printf("\nmotorstate: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,", ms[i].motorstate());
-    //   printf("\nreserve: ");
-    //   for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,%u,%u,%u;", ms[i].reserve()[0], ms[i].reserve()[1], ms[i].reserve()[2], ms[i].reserve()[3]);
-    //   printf("\n");
-    // }
 }
 
 void G1HardwareInterface::TorsoImuHandler(const void* message)
@@ -169,10 +157,9 @@ void G1HardwareInterface::TorsoImuHandler(const void* message)
 void G1HardwareInterface::ReadAndEstimate()
 {
     // Get latest state from buffers
-    auto motor_state = motor_state_buffer_.GetData();
-    auto pelvis_imu = pelvis_imu_buffer_.GetData();
+    const std::shared_ptr<const MotorState> motor_state = motor_state_buffer_.GetData();
+    const std::shared_ptr<const ImuState> pelvis_imu = pelvis_imu_buffer_.GetData();
 
-    
     if (!motor_state || !pelvis_imu) {
         return;  // No data available yet
     }
@@ -193,20 +180,30 @@ void G1HardwareInterface::ConvertG1StateToProprioception(
     const MotorState& motor_state,
     const ImuState& pelvis_imu)
 {
-    // Fill joint states
     for (int i = 0; i < G1_NUM_MOTOR; ++i) {
-        sensor_hw_.encoders_pos_pinocchio_order(i) = motor_state.q[i];
-        sensor_hw_.encoders_vel_pinocchio_order(i) = motor_state.dq[i];
+        sensor_hw_.encoders_pos_pinocchio_order(i) = static_cast<double>(motor_state.q[i]);
+        sensor_hw_.encoders_vel_pinocchio_order(i) = static_cast<double>(motor_state.dq[i]);
     }
-    //todo::check quaternion order
-    sensor_hw_.base_ang_quat.w() = pelvis_imu.quat[0];
-    sensor_hw_.base_ang_quat.x() = pelvis_imu.quat[1];
-    sensor_hw_.base_ang_quat.y() = pelvis_imu.quat[2];
-    sensor_hw_.base_ang_quat.z() = pelvis_imu.quat[3];
-    sensor_hw_.base_ang_vel << pelvis_imu.omega[0], pelvis_imu.omega[1], pelvis_imu.omega[2];
-    sensor_hw_.base_lin_acc << pelvis_imu.acc[0], pelvis_imu.acc[1], pelvis_imu.acc[2];
+
+    sensor_hw_.base_ang_quat.w() = static_cast<double>(pelvis_imu.quat[0]);
+    sensor_hw_.base_ang_quat.x() = static_cast<double>(pelvis_imu.quat[1]);
+    sensor_hw_.base_ang_quat.y() = static_cast<double>(pelvis_imu.quat[2]);
+    sensor_hw_.base_ang_quat.z() = static_cast<double>(pelvis_imu.quat[3]);
+
+    sensor_hw_.base_ang_vel << static_cast<double>(pelvis_imu.omega[0]),
+                               static_cast<double>(pelvis_imu.omega[1]),
+                               static_cast<double>(pelvis_imu.omega[2]);
+
+    sensor_hw_.base_lin_acc << static_cast<double>(pelvis_imu.acc[0]),
+                               static_cast<double>(pelvis_imu.acc[1]),
+                               static_cast<double>(pelvis_imu.acc[2]);
+
 
     BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
+
+    std::cout << "proprioception q: " << proprioception.q(loco_proprio_indices_).transpose() << std::endl;
+    std::cout << "proprioception qdot: " << proprioception.qdot(loco_proprio_indices_).transpose() << std::endl;
+
     robot_->UpdateKinematics(proprioception.q(loco_proprio_indices_), proprioception.qdot(loco_proprio_indices_));
 
     simple_timer_.Tick();
@@ -224,6 +221,9 @@ void G1HardwareInterface::ConvertG1StateToProprioception(
 void G1HardwareInterface::SendPacket()
 {
     // Convert final motor commands to G1 format
+    final_motor_commands_.ZeroAll();
+    loco_motor_commands_.ZeroAll();
+    pd_motor_commands_.ZeroAll();
     ConvertMotorCommandsToG1(final_motor_commands_);
 
     torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(motored_loco_proprio_indices_), loco_proprioception_.qdot(motored_loco_proprio_indices_));

@@ -81,7 +81,7 @@ void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorX
    // We initialize if time has passed and if both feet are in contact with the ground
    if (!is_initialized_)
    {
-      if (lC > 0.2 && rC > 0.2)
+      if (lC > 0.5 && rC > 0.5)
       {
         std::cout << "Initializing contact at time: " << t << std::endl;
 

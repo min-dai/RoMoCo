@@ -50,6 +50,8 @@ const int G1_NUM_MOTOR = 29;
 struct ImuState {
   std::array<float, 3> rpy = {};
   std::array<float, 3> omega = {};
+  std::array<float, 3> acc = {};
+  std::array<float, 4> quat = {};
 };
 struct MotorCommand {
   std::array<float, G1_NUM_MOTOR> q_target = {};
@@ -249,6 +251,11 @@ class G1Example {
       // IMU
       auto &rpy = low_state.imu_state().rpy();
       printf("IMU.pelvis.rpy: %.2f %.2f %.2f\n", rpy[0], rpy[1], rpy[2]);
+      auto &quat = low_state.imu_state().quaternion();
+      printf("IMU.pelvis.quat: %.2f %.2f %.2f %.2f\n", quat[0], quat[1], quat[2], quat[3]);
+      // accel
+      auto &acc = low_state.imu_state().accelerometer();
+      printf("IMU.pelvis.acc: %.2f %.2f %.2f\n", acc[0], acc[1], acc[2]);
 
       // RC
       printf("gamepad_.A.pressed: %d\n", static_cast<int>(gamepad_.A.pressed));

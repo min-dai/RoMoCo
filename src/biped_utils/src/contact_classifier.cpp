@@ -29,6 +29,8 @@ ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &
     grf_.segment(0, 3) = -(input.Jleft_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_left);
     grf_.segment(3, 3) = -(input.Jright_active.transpose()).completeOrthogonalDecomposition().solve(input.torque_right);
 
+    std::cout << "grf: " << grf_.transpose() << std::endl;
+
     // Update vertical grf lowpass
     LowPassLeft.Update(grf_(2));
     LowPassRight.Update(grf_(5));

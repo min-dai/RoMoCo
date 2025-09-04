@@ -9,7 +9,7 @@ InterfaceBase::~InterfaceBase()
    }
 }
 
-void InterfaceBase::InitLogFile(const std::string &log_path)
+void InterfaceBase::InitLogFile(const std::string &log_path, bool isSim)
 {
    // Check if the log directory exists, if not, create it
    if (!std::filesystem::exists(log_path))
@@ -23,7 +23,11 @@ void InterfaceBase::InitLogFile(const std::string &log_path)
          std::cerr << "Failed to create log directory: " << log_path<< std::endl;
       }
    }
-   logFilePath_ = log_path + "/logInterface.bin";
+   if (isSim)
+       logFilePath_ = log_path + "/logSimInterface.bin";
+   else
+       logFilePath_ = log_path + "/logInterface.bin";
+       
    logFile_.open(logFilePath_, std::ios::out | std::ios::binary);
 }
 
@@ -50,6 +54,7 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
    total_proprio_dof_ = 6 + total_motor_dof_;
 
    // proprio indices = base + shifted motors
+   // {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}
    loco_proprio_indices_ = {0, 1, 2, 3, 4, 5};
    loco_proprio_indices_.reserve(6 + loco_motor_indices_.size());
 
@@ -66,6 +71,14 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
    {
       x += 6;
    }
+   //print for debug
+   std::cout << "motored_loco_proprio_indices_: "; 
+   for (const auto &idx : motored_loco_proprio_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
+
    // simply offset by 6 for PD joints               
    pd_proprio_indices_ = pd_motor_indices_;
 
@@ -97,6 +110,27 @@ void InterfaceBase::InitProprioception()
    full_proprioception_.ZeroAll(total_proprio_dof_);
    loco_proprioception_.ZeroAll(loco_proprio_indices_.size());
    pd_proprioception_.ZeroAll(pd_proprio_indices_.size());
+}
+
+void InterfaceBase::CheckInitialization() const
+{
+   if (pd_motor_indices_.empty() || loco_motor_indices_.empty())
+   {
+      throw std::runtime_error("Motor indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
+   }
+   if (pd_proprio_indices_.empty() || loco_proprio_indices_.empty())
+   {
+      throw std::runtime_error("Proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
+   }
+   if (total_motor_dof_ <= 0 || total_proprio_dof_ <= 0)
+   {
+      throw std::runtime_error("Total DOF not initialized. Call InitDofAndIndicesFromConfigFile first.");
+   }
+   if (motored_loco_proprio_indices_.empty())
+   {
+      throw std::runtime_error("Motored loco proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
+   }
+
 }
 
 std::vector<int> InterfaceBase::GetJointIndicesFromSubset(

@@ -35,9 +35,10 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
   motor_pub_ = create_publisher<biped_msgs::msg::BipedMotorCommands>(
       "controller_cmds", 1);
 
-      //TODO: load time from YAML
+  YAMLParser parser(config_folder + "/interface_config.yaml");
+  dt_ = parser.get_double("dt");
   // Timer: control loop
-  timer_ = create_wall_timer(std::chrono::duration<double>(0.0005), std::bind(&RosControllerNode::Loop, this));
+  timer_ = create_wall_timer(std::chrono::duration<double>(dt_), std::bind(&RosControllerNode::Loop, this));
 }
 
 void RosControllerNode::ProprioCallback(
@@ -90,13 +91,9 @@ void RosControllerNode::Loop()
   Eigen::VectorXd q_loco = current_proprio.q;
   Eigen::VectorXd dq_loco = current_proprio.qdot;
 
-
-
   // Run state machine controller
   BipedMotorCommands motor_cmd = controller_->UpdateControl(current_cmd, robot_, output_,
                                                             torque_solver_, q_loco, dq_loco);
-
-
 
   // Publish ROS message
   motor_pub_->publish(toRosMsg(motor_cmd));

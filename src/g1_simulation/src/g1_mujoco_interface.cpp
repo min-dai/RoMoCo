@@ -18,7 +18,7 @@ G1MujocoInterface::~G1MujocoInterface()
 
 void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-   InitLogFile(log_path);
+   InitLogFile(log_path,true);
 
    all_encoder_names_pinocchio_order_ = {
        "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",

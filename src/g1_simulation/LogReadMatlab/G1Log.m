@@ -51,6 +51,34 @@ classdef G1Log < handle
         function plotInterface(obj)
             newestFolderName = obj.getNewestG1LogFolderNameOnly();
             full_path = [obj.path, newestFolderName, '/'];
+            % fileID = fopen( [full_path, 'logInterface.bin']);
+            fileID = fopen( [obj.path, 'logInterface.bin']);
+            raw = fread(fileID,'float');
+            
+   
+            LengthVec = [1,3];
+            
+            N = floor(length(raw) / sum(LengthVec));  % Number of samples
+            
+            [t, est_v] = obj.readRaw(raw, N, LengthVec);
+            
+
+            output_list = {'x','y','z'};
+
+
+            %plot ya yd
+            figure
+            tiledlayout(1,3);
+            for i=1:3
+                nexttile; plot(t, est_v(i,:));  ; title(output_list{i});  grid on;
+            end
+
+
+        end
+
+        function plotSimInterface(obj)
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
             fileID = fopen( [full_path, 'logInterface.bin']);
             raw = fread(fileID,'float');
             

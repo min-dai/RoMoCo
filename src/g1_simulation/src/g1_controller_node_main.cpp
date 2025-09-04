@@ -4,7 +4,7 @@
 
 #include "biped_ros/controller_node.hpp"
 #include "g1_model_leg.hpp"
-#include "biped_utils/log_utils.hpp"
+
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);

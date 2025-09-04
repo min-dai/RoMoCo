@@ -25,6 +25,8 @@ private:
 
    std::unique_ptr<BasicControllerStateMachine> controller_;
 
+   double dt_ = 0.0005; // default, will be overwritten by YAML
+
    rclcpp::Publisher<biped_msgs::msg::BipedMotorCommands>::SharedPtr motor_pub_;
    rclcpp::Subscription<biped_msgs::msg::BipedProprioception>::SharedPtr proprio_sub_;
    rclcpp::TimerBase::SharedPtr timer_;

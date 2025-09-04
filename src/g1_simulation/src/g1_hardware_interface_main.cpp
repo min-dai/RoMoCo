@@ -7,16 +7,12 @@
 
 #include "g1_model_leg.hpp"
 
-#include "biped_utils/log_utils.hpp"
+
 int main(int argc, char *argv[])
 {
 
-   if (argc < 2)
-   {
-      std::cout << "Usage: g1_ankle_swing_example network_interface" << std::endl;
-      exit(0);
-   }
-   std::string networkInterface = argv[1];
+
+   std::string networkInterface = "enp4s0";
 
    rclcpp::init(argc, argv);
 
@@ -24,7 +20,7 @@ int main(int argc, char *argv[])
    std::string package_folder = ament_index_cpp::get_package_share_directory("g1_simulation");
    std::string config_folder = package_folder + "/config_18dof";
    std::string home = std::string(getenv("HOME"));
-   std::string log_path = home + "/ROBOTLOG/G1/" + getCurrentTimeString();
+   std::string log_path = home + "/ROBOTLOG/G1/";
 
    std::string mujoco_config_file = config_folder + "/interface_config.yaml";
    YAMLParser yaml_parser(mujoco_config_file);
@@ -40,7 +36,7 @@ int main(int argc, char *argv[])
    std::shared_ptr<InterfaceBase> interface = std::make_shared<G1HardwareInterface>(networkInterface, config_folder, log_path, std::move(robot_ptr));
 
    // Wrap in ROS interface node
-   auto node = std::make_shared<RosInterfaceNode>(interface);
+   auto node = std::make_shared<RosInterfaceNode>(config_folder, log_path, interface);
 
    // Spin
    rclcpp::spin(node);

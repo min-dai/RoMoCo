@@ -46,8 +46,8 @@ private:
     {
         double dt;
         double lowpass_dt_cutoff = 0.005;
-        double linear_lb = 100.0;
-        double linear_ub = 200.0;
+        double linear_lb = 60.0;
+        double linear_ub = 110.0;
 
         void Init(double dt){
             this->dt = dt;

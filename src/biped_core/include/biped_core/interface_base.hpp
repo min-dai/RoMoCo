@@ -38,7 +38,9 @@ protected:
 
     void InitProprioception();
 
-    void InitLogFile(const std::string &log_path);
+    void CheckInitialization() const;
+
+    void InitLogFile(const std::string &log_path, bool isSim = false);
 
     std::vector<int> GetJointIndicesFromSubset(
         const std::vector<std::string> &all_encoder_names_pinocchio_order,

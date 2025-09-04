@@ -6,30 +6,29 @@
 #include "biped_msgs/msg/biped_motor_commands.hpp"
 #include "biped_msgs/msg/biped_proprioception.hpp"
 
+class RosInterfaceNode : public rclcpp::Node
+{
+public:
+  explicit RosInterfaceNode(const std::string &config_folder,
+                            const std::string &log_path,
+                            std::shared_ptr<InterfaceBase> interface);
 
-class RosInterfaceNode : public rclcpp::Node {
- public:
-  explicit RosInterfaceNode(std::shared_ptr<InterfaceBase> interface);
-
- private:
-
+private:
   void Init();
   void Loop();
 
   std::shared_ptr<InterfaceBase> interface_;
+  double dt_ = 0.0005; // default, will be overwritten by YAML
   rclcpp::Subscription<biped_msgs::msg::BipedMotorCommands>::SharedPtr ctrl_sub_;
   rclcpp::Publisher<biped_msgs::msg::BipedProprioception>::SharedPtr proprio_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   rclcpp::TimerBase::SharedPtr init_timer_;
 
-
   BipedMotorCommands ctrl_cmd_;
   bool has_ctrl_cmd_{false};
 
   BipedProprioception loco_proprioception_;
-
-
 };
 
-#endif  // BIPED_ROS_INTERFACE_NODE_HPP
+#endif // BIPED_ROS_INTERFACE_NODE_HPP

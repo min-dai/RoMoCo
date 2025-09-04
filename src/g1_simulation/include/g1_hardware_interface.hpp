@@ -77,7 +77,7 @@ private:
     void Init(const std::string &config_folder, const std::string &log_path) override;
 
     static constexpr int G1_NUM_MOTOR = 29;
-    static constexpr double CONTROL_DT = 0.0005; // 2000Hz
+
 
     // // G1 joint indices
     // enum G1JointIndex {
@@ -187,8 +187,8 @@ private:
 
     // Helper functions
     void InitializeJointMapping(const std::string &config_folder);
-    void ConvertG1StateToProprioception(const MotorState &motor_state,
-                                        const ImuState &pelvis_imu);
+    void ConvertG1StateToProprioception(const MotorState& motor_state,
+                                        const ImuState& pelvis_imu);
     void ConvertMotorCommandsToG1(const BipedMotorCommands &commands);
     uint32_t Crc32Core(uint32_t *ptr, uint32_t len);
 

@@ -7,6 +7,7 @@ G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::stri
     : PlaneFootRobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
     Init();
+    
 }
 
 std::vector<int> G1ModelLeg::actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const
@@ -193,7 +194,6 @@ void G1ModelLeg::ComputeContactClassifierInput()
 BipedEstimationKinematicsInput G1ModelLeg::ComputeEstimationKinematicsInput()
 {
     ComputeContactClassifierInput();
-
     ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
     BipedEstimationKinematicsInput biped_estimation_kinematics_input;
     biped_estimation_kinematics_input.p_left_foot = left_ankle_.kinematics.position;

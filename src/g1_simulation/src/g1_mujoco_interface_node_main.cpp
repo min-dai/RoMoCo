@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   // std::shared_ptr<InterfaceBase> interface = std::make_shared<G1MujocoInterface>(config_folder, log_path);
 
   // Wrap in ROS interface node
-  auto node = std::make_shared<RosInterfaceNode>(interface);
+  auto node = std::make_shared<RosInterfaceNode>(config_folder, log_path, interface);
 
   // Spin
   rclcpp::spin(node);
