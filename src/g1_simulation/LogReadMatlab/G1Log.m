@@ -2,8 +2,10 @@ classdef G1Log < handle
     
     properties
         nConfigSpace = 18+17;
+        nLoco = 18;
         nContactF = 6;
         path = [getenv('HOME') '/ROBOTLOG/G1/']
+        folder_name = 'logs_2025-09-03_20-03-28'
         
         inair_output_list = {'LeftFootx','LeftFooty','LeftFootz','LeftFootPitch','LeftFootYaw','RightFootx','RightFooty','RightFootz','RightFootPitch','RightFootYaw'};
         
@@ -32,12 +34,24 @@ classdef G1Log < handle
     end
     
     methods
+        function newestFolderName = getNewestG1LogFolderNameOnly(obj)
+
+            d = dir(obj.path);
+            d = d([d.isdir] & ~ismember({d.name}, {'.', '..'}));
+            if isempty(d)
+                newestFolderName = '';
+                return;
+            end
+            [~, idx] = max([d.datenum]);
+            newestFolderName = d(idx).name;
+        end
         function  obj =   G1Log()
         end
 
         function plotInterface(obj)
-
-            fileID = fopen( [obj.path, 'logInterface.bin']);
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logInterface.bin']);
             raw = fread(fileID,'float');
             
    
@@ -62,8 +76,10 @@ classdef G1Log < handle
         end
         
         function plotInAir(obj)
-            
-            fileID = fopen( [obj.path, 'logInAir.bin']);
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logInAir.bin']);
+
             raw = fread(fileID,'float');
             
             nY = 12;
@@ -99,16 +115,17 @@ classdef G1Log < handle
         
 
         function plotStand(obj)
-
-            fileID = fopen( [obj.path, 'logStand.bin']);
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logStand.bin']);
             raw = fread(fileID,'float');
             
             nY = 6;
-            LengthVec = [1,obj.nConfigSpace, obj.nConfigSpace,12,17,nY,nY,nY,nY,nY];
+            LengthVec = [1,obj.nLoco, obj.nLoco,12,nY,nY,nY,nY,nY];
             
             N = floor(length(raw) / sum(LengthVec));  % Number of samples
             
-            [t, q,dq,u_leg,u_arm, ya,dya,yd,dyd,d2yd] = obj.readRaw(raw, N, LengthVec);
+            [t, q,dq,u_leg,ya,dya,yd,dyd,d2yd] = obj.readRaw(raw, N, LengthVec);
             
 
             output_list = {'COMx','COMy','COMz','PelvisYawDiff','PelvisPitch','PelvisRoll'};
@@ -132,15 +149,19 @@ classdef G1Log < handle
         end
 
         function plotWalk(obj)
-            fileID = fopen( [obj.path, 'logWalk.bin']);
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logWalk.bin']);
+
             raw = fread(fileID,'float');
             
             nY = 10;
-            LengthVec = [1,obj.nConfigSpace, obj.nConfigSpace,12,17,nY,nY,nY,nY,nY, 3,3,3,3,1,1];
+            LengthVec = [1,obj.nLoco, obj.nLoco,12,nY,nY,nY,nY,nY, 3,3,3,3,1,1];
+
             
             N = floor(length(raw) / sum(LengthVec));  % Number of samples
             
-            [t, q,dq,u_leg,u_arm, ya,dya,yd,dyd,d2yd, pCOM, vCOM, Lcom, Lpivot,vdx,vdy] = obj.readRaw(raw, N, LengthVec);
+            [t, q,dq,u_leg, ya,dya,yd,dyd,d2yd, pCOM, vCOM, Lcom, Lpivot,vdx,vdy] = obj.readRaw(raw, N, LengthVec);
             
 
             output_list = {'zCOM',...
@@ -325,20 +346,20 @@ classdef G1Log < handle
             nexttile; plot(t, base_pos(3,:)); title('Base Position Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
             nexttile; plot(t, base_rot(3,:)); title('Base Rotation X'); xlabel('Time (s)'); ylabel('Roll (rad)'); grid on;
 
-            figure
-            tiledlayout(2,6);
-            nexttile; plot(t, q(7,:)); title('Left Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(8,:)); title('Left Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(9,:)); title('Left Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(10,:)); title('Left Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(11,:)); title('Left Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(12,:)); title('Left Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(13,:)); title('Right Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(14,:)); title('Right Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(15,:)); title('Right Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(16,:)); title('Right Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(17,:)); title('Right Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            nexttile; plot(t, q(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % figure
+            % tiledlayout(2,6);
+            % nexttile; plot(t, q(7,:)); title('Left Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(8,:)); title('Left Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(9,:)); title('Left Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(10,:)); title('Left Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(11,:)); title('Left Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(12,:)); title('Left Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(13,:)); title('Right Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(14,:)); title('Right Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(15,:)); title('Right Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(16,:)); title('Right Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(17,:)); title('Right Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            % nexttile; plot(t, q(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
 
                         % 
             % figure

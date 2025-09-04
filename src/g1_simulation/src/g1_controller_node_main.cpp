@@ -4,7 +4,7 @@
 
 #include "biped_ros/controller_node.hpp"
 #include "g1_model_leg.hpp"
-
+#include "biped_utils/log_utils.hpp"
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
    std::string config_folder = package_folder + "/config_18dof";
    // TODO: get time and save it as string so log folder include time
    std::string home = std::string(getenv("HOME"));
-   std::string log_path = home + "/ROBOTLOG/G1";
+   std::string timestamp = std::string(getenv("LOG_FOLDER_TIMESTAMP"));
+   std::string log_path = home + "/ROBOTLOG/G1/" + timestamp;
 
    std::string mujoco_config_file = config_folder + "/interface_config.yaml";
    YAMLParser yaml_parser(mujoco_config_file);

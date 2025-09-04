@@ -96,15 +96,15 @@ target_link_libraries(g1_state_machine
 
 
 
-# ## Ros Node
-# add_executable(g1_hardware_interface_main 
-#   src/g1_hardware_interface_main.cpp
-#   src/g1_hardware_interface.cpp
-# )
-# target_link_libraries(g1_hardware_interface_main
-#   ${PROJECT_NAME}
-#   unitree_sdk2
-# )
+## Ros Node
+add_executable(g1_hardware_interface_main 
+  src/g1_hardware_interface_main.cpp
+  src/g1_hardware_interface.cpp
+)
+target_link_libraries(g1_hardware_interface_main
+  ${PROJECT_NAME}
+  unitree_sdk2
+)
 
 
 
@@ -129,7 +129,7 @@ target_link_libraries(g1_controller_node_main
 # )
 
 install(
-  TARGETS g1_state_machine  g1_mujoco_interface_node_main g1_controller_node_main
+  TARGETS g1_state_machine  g1_mujoco_interface_node_main g1_controller_node_main g1_hardware_interface_main
   DESTINATION lib/${PROJECT_NAME}
 )
 

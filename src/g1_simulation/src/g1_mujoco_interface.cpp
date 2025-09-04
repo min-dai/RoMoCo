@@ -1,4 +1,6 @@
 #include "g1_mujoco_interface.hpp"
+#include "biped_core/prep_proprioception.hpp"
+
 
 G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path)
 {
@@ -11,17 +13,12 @@ G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std
 }
 G1MujocoInterface::~G1MujocoInterface()
 {
-   if (logFile_.is_open())
-   {
-      logFile_.close();
-   }
    std::cout << "G1 Mujoco interface destructor called." << std::endl;
 }
 
 void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-   logFilePath_ = log_path + "/logInterface.bin";
-   logFile_.open(logFilePath_, std::ios::out | std::ios::binary);
+   InitLogFile(log_path);
 
    all_encoder_names_pinocchio_order_ = {
        "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
@@ -94,8 +91,15 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    {
       throw std::runtime_error("Initial simulation step failed");
    }
-   std::cout << "sensor" << sensor_hw_ << std::endl;
-   robot_->ReconfigureContactClassifier(0.0005);
+   if (robot_ != nullptr)
+   {
+      robot_->ReconfigureContactClassifier(0.0005);
+      std::cout << "Initial Sensor Data :" << sensor_hw_ << std::endl;
+
+   }else{
+      std::cout << "Initial Sensor Data :" << sensor_ << std::endl;
+   }
+   
 
 
 }
@@ -188,8 +192,7 @@ void G1MujocoInterface::Estimate()
 
    BipedEstimationKinematicsInput biped_estimation_kinematics_input = robot_->ComputeEstimationKinematicsInput();
    est_lin_vel_ = contact_kf_->Update(sim_time(), sensor_hw_.base_lin_acc, sensor_hw_.base_ang_quat, biped_estimation_kinematics_input);
-   std::cout << "Est  linear velocity: " << est_lin_vel_.transpose() << std::endl;
-   std::cout << "True linear velocity: " << true_lin_vel_.transpose() << std::endl;
+
    proprioception.qdot.head(3) << est_lin_vel_;
    full_proprioception_ = proprioception;
 }

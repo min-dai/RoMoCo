@@ -193,7 +193,7 @@ void G1ModelLeg::ComputeContactClassifierInput()
 BipedEstimationKinematicsInput G1ModelLeg::ComputeEstimationKinematicsInput()
 {
     ComputeContactClassifierInput();
-    std::cout << "Contact Classifier Input: " << contact_classifier_input_ << std::endl;
+
     ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
     BipedEstimationKinematicsInput biped_estimation_kinematics_input;
     biped_estimation_kinematics_input.p_left_foot = left_ankle_.kinematics.position;

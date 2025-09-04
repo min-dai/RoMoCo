@@ -153,7 +153,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
          if (output && torque_solver)
          {
             robot_ptr->UpdateAll(q_loco, dq_loco);
-            output->UpdateOutput(command, timer_.t_now(), timer_.t_old());
+            output->UpdateOutput(command, timer_.ElapsedSinceStart(), timer_.t_old());
 
 
             motor_commands_ = torque_solver->Solve();
@@ -166,7 +166,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
             std::vector<Eigen::VectorXd> log_vectors = {q_loco, dq_loco, locomotion_input_, output->ya, output->dya, output->yd, output->dyd, output->d2yd};
             std::vector<Eigen::VectorXd> logOutput = output->CollectLog();
             log_vectors.insert(log_vectors.end(), logOutput.begin(), logOutput.end());
-            LogData = CollectLog(timer_.t_now(), log_vectors);
+            LogData = CollectLog(timer_.ElapsedSinceStart(), log_vectors);
 
             if (logFile_.is_open())
             {

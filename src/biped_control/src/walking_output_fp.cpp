@@ -85,6 +85,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          active_y_idx = OutputBase::generate_full_y_idx(nY);
 
          com_rel_to_below_ankle.Reset();
+         com_rel_to_ankle.Reset();
 
          updated.tNstep0 = t;
          updated.PhaseRange << 0, updated.TSS;
@@ -260,6 +261,9 @@ Eigen::Vector2d WalkingOutputFp::computeFPwithROmodel()
    // swing x and y
    Eigen::Vector4d x_now;
    x_now << com_rel_to_below_ankle.states.pCOM.x(), com_rel_to_below_ankle.states.Lpivot.y(), com_rel_to_below_ankle.states.pCOM.y(), com_rel_to_below_ankle.states.Lpivot.x();
+
+   // x_now << com_rel_to_ankle.states.pCOM.x(), com_rel_to_ankle.states.Lpivot.y(), com_rel_to_ankle.states.pCOM.y(), com_rel_to_ankle.states.Lpivot.x();
+
    double T2imp = (updated.PhaseRange(1) - phase.time_passed());
    planner_input_.UpdateInputLIP(x_now, domain.stance, T2imp);
    planner_output_ = ROplanner->UpdatePlan(planner_input_);
@@ -343,6 +347,9 @@ void WalkingOutputFp::updateCOMstates() // in target yaw frame
    Eigen::Vector3d Lcom = robot_->ComputeCentroidalAngularMomentum() / robot_->mass();
 
    com_rel_to_below_ankle.compute(robot_->com_kinematics().position, robot_->com_kinematics().velocity, p_stance.position, Lcom, updated.target_yaw, updated.dt);
+   
+   Kinematics3D p_ankle = (domain.isLeftStance()) ? robot_->left_ankle_kinematics() : robot_->right_ankle_kinematics();
+   com_rel_to_ankle.compute(robot_->com_kinematics().position, robot_->com_kinematics().velocity, p_ankle.position, Lcom, 0, updated.dt);
 }
 
 std::vector<Eigen::VectorXd> WalkingOutputFp::CollectLog() const

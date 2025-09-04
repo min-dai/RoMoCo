@@ -1,6 +1,31 @@
 #include "biped_core/interface_base.hpp"
 #include "biped_utils/yaml_parser.hpp"
+#include <filesystem> //for create_directories
+InterfaceBase::~InterfaceBase()
+{
+   if (logFile_.is_open())
+   {
+      logFile_.close();
+   }
+}
 
+void InterfaceBase::InitLogFile(const std::string &log_path)
+{
+   // Check if the log directory exists, if not, create it
+   if (!std::filesystem::exists(log_path))
+   {
+      if (std::filesystem::create_directories(log_path))
+      {
+         std::cout << "Log directory created: " << log_path << std::endl;
+      }
+      else
+      {
+         std::cerr << "Failed to create log directory: " << log_path<< std::endl;
+      }
+   }
+   logFilePath_ = log_path + "/logInterface.bin";
+   logFile_.open(logFilePath_, std::ios::out | std::ios::binary);
+}
 
 void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_folder)
 {
@@ -106,6 +131,7 @@ BipedProprioception InterfaceBase::Update(const BipedMotorCommands &loco_cmd)
    ReadAndEstimate();
    
    loco_motor_commands_ = loco_cmd;
+   final_motor_commands_.UpdatePartialWithIndices(loco_motor_commands_);
    return loco_proprioception_;
 }
 

@@ -7,7 +7,7 @@
 
 #include "biped_core/robot_base_pinocchio.hpp"
 #include "biped_core/contact_kf.hpp"
-#include "biped_core/prep_proprioception.hpp"
+
 
 
 
@@ -74,9 +74,7 @@ private:
    Eigen::Vector3d true_lin_vel_;
    Eigen::Vector3d est_lin_vel_;
 
-      // for Log files
-   std::fstream logFile_;
-   std::string logFilePath_;
+
 };
 
 #endif // G1_MUJOCO_SIM_HPP

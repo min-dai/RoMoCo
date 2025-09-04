@@ -11,14 +11,13 @@ class InterfaceBase
 public:
     explicit InterfaceBase() {}
 
-    virtual ~InterfaceBase() = default;
+    virtual ~InterfaceBase();
 
     // Use internal sensor_ to update internal estimation to update
     // full_proprioception_, loco_proprioception_, and pd_proprioception_
     virtual void ReadAndEstimate() = 0;
 
     int loco_motor_dof() const { return loco_motor_indices_.size(); }
-
 
     // update loco_motor_commands, pd_motor_commands are constants
     // return loco_proprioception_
@@ -28,17 +27,18 @@ public:
     // Internally update sensor_ (type depends on HW/SIM)
     virtual void SendPacket() = 0;
 
-    virtual bool IsInterfaceRunning() const  = 0;
+    virtual bool IsInterfaceRunning() const = 0;
 
     virtual void Init(const std::string &config_folder, const std::string &log_path) = 0;
 
 protected:
-
     void InitDofAndIndicesFromConfigFile(const std::string &config_folder);
 
     void InitMotorCommands();
 
     void InitProprioception();
+
+    void InitLogFile(const std::string &log_path);
 
     std::vector<int> GetJointIndicesFromSubset(
         const std::vector<std::string> &all_encoder_names_pinocchio_order,
@@ -52,7 +52,6 @@ protected:
     std::vector<std::string> pd_encoder_names_;
     std::vector<std::string> loco_encoder_names_;
     std::vector<std::string> all_encoder_names_pinocchio_order_;
-    
 
     int total_proprio_dof_;
     std::vector<int> pd_proprio_indices_;
@@ -72,10 +71,11 @@ protected:
     BipedMotorCommands loco_motor_commands_;
     BipedMotorCommands final_motor_commands_;
 
-
     Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
 
-
+    // for Log files
+    std::fstream logFile_;
+    std::string logFilePath_;
 };
 
 #endif // INTERFACE_BASE_HPP

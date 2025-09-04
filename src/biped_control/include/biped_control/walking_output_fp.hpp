@@ -96,6 +96,7 @@ private:
 
       double tau_DS;
       ComStatesRelToStance com_rel_to_below_ankle;
+      ComStatesRelToStance com_rel_to_ankle;
 
       // todo can be moved to based with input stance & contact status
       void updateCOMstates();
