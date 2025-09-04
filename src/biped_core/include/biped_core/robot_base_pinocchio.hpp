@@ -53,7 +53,7 @@ public:
     void set_need_estimation(bool need_estimation) { need_estimation_ = need_estimation; }
 
     void SetComputedTorque(const VectorXd &torque) { computed_torque_ = torque; }
-    void ReconfigureContactClassifier(double dt) { contact_classifier_.Reconfigure(dt); }
+    void ReconfigureContactClassifier(const std::string &config_folder) { contact_classifier_.Reconfigure(config_folder); }
     // TODO: make pure virutal
     virtual void ComputeContactClassifierInput() {};
     // TODO: add toe, heel version as well

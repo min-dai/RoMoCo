@@ -398,7 +398,7 @@ double MLIP::solve_Ts()
 {
     double Ts = 0;
 
-    ///////// TODO: what is this?
+
     // double xcdes = this->param.xratio * this->param.ldes;
     // double lam = sqrt(this->config.g / this->cache.z0LIP);
     // double a = this->cache.xcLIP;

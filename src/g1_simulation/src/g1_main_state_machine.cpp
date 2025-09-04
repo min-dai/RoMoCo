@@ -69,7 +69,14 @@ int main(int argc, char *argv[])
     //     return q.tail(n_locked_joints);
     // };
 
-    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder, log_path);
+    //with estimation
+    std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<G1ModelLeg>(urdf_path, locked_encoder_names, locked_joints_q);
+
+    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder, log_path, std::move(robot_ptr_estimation));
+
+
+    // //no estimation
+    // std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(config_folder, log_path);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 

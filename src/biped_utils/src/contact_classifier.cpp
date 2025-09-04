@@ -1,25 +1,36 @@
 
 #include <biped_utils/contact_classifier.hpp>
 #include <iostream>
-using namespace std;
 
-ContactClassifier::ContactClassifier(double dt)
+
+ContactClassifier::ContactClassifier(const std::string &config_folder)
 {
-    Reconfigure(dt);
+    
+    Reconfigure(config_folder);
 }
 
-void ContactClassifier::Reconfigure(double dt)
+
+
+void ContactClassifier::Reconfigure(const std::string &config_folder)
 {
-    config.Init(dt);
-    LowPassLeft.Reconfigure(dt, config.lowpass_dt_cutoff);
-    LowPassRight.Reconfigure(dt, config.lowpass_dt_cutoff);
+    std::string config_file = config_folder + "/interface_config.yaml";
+    config.yaml_parser.Init(config_file);
+    config.Init();
+    LowPassLeft.Reconfigure(config.dt, config.lowpass_dt_cutoff);
+    LowPassRight.Reconfigure(config.dt, config.lowpass_dt_cutoff);
     grf_ = Eigen::VectorXd::Zero(6);
 }
-void ContactClassifier::Reconfigure(double dt, double lowpass_dt_cutoff, double linear_lb, double linear_ub)
+
+void ContactClassifier::Config::Init()
 {
-    config.Init(dt, lowpass_dt_cutoff, linear_lb, linear_ub);
-    Reconfigure(dt);
+    dt = yaml_parser.get_double("dt");
+    lowpass_dt_cutoff = yaml_parser.get_double("contact_kf/contact_classifier/lowpass_dt_cutoff");
+    linear_lb = yaml_parser.get_double("contact_kf/contact_classifier/linear_lb");
+    linear_ub = yaml_parser.get_double("contact_kf/contact_classifier/linear_ub");
+
 }
+
+
 
 ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &input)
 {

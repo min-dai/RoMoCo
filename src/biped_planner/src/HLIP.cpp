@@ -46,7 +46,7 @@ void HLIP::updateHLIP(double z0, double Ts, double Td)
 
     Klqr = -SolveDlqrGain(params.A_S2S, params.B_S2S, Eigen::MatrixXd::Identity(2, 2), Eigen::MatrixXd::Identity(1, 1) * 20, 0.00000001);
 
-    //TODO:division by zero when Td=0
+
     params.a_DCM = exp(params.lambda * params.T);
     if (params.Td != 0)
     {

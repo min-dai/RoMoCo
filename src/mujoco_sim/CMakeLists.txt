@@ -47,7 +47,7 @@ ament_target_dependencies(${PROJECT_NAME}
   ${dependencies}
 )
 
-#todo
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
   INSTALL_RPATH "$ENV{HOME}/repos/mujoco-3.2.6/lib"
 )

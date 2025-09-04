@@ -96,5 +96,11 @@ void RosControllerNode::Loop()
                                                             torque_solver_, q_loco, dq_loco);
 
   // Publish ROS message
+  if (motor_cmd.joint_positions.size() == 0)
+  {
+    RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
+                         "Motor command is empty, skipping publish.");
+    return;
+  }
   motor_pub_->publish(toRosMsg(motor_cmd));
 }

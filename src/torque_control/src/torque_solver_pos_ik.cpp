@@ -61,9 +61,7 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 
     Eigen::VectorXd u_full = MapU2FullIdx(u_fb+u_ff, output_->actuated_u_idx, robot_->nu());
 
-
-
-    motor_commands_.joint_torques_ff = u_full;
+    motor_commands_.joint_torques_ff = MapU2FullIdx(u_ff, output_->actuated_u_idx, robot_->nu());
     motor_commands_.joint_positions = MapU2FullIdx(output_->qDes_actuated, output_->actuated_u_idx, robot_->nu());
     motor_commands_.joint_velocities = MapU2FullIdx(output_->dqDes_actuated, output_->actuated_u_idx, robot_->nu());
     motor_commands_.joint_kp = MapU2FullIdx(JointKPing_, output_->actuated_u_idx, robot_->nu());
@@ -109,6 +107,7 @@ void TorqueSolverPOSIK::SolveIk()
     if (iter >= max_iter_)
     {
         std::cerr << "[IK Warning] Did not converge after " << max_iter_ << " iterations. " << std::endl;
+        return;
     }
 
     unactuated_idx_ = get_unactuated_indices(output_->actuated_q_idx, robot_->nv());

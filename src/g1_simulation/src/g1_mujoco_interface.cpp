@@ -93,7 +93,7 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    }
    if (robot_ != nullptr)
    {
-      robot_->ReconfigureContactClassifier(0.0005);
+      robot_->ReconfigureContactClassifier(config_folder);
       std::cout << "Initial Sensor Data :" << sensor_hw_ << std::endl;
 
    }else{
@@ -197,15 +197,28 @@ void G1MujocoInterface::Estimate()
    full_proprioception_ = proprioception;
 }
 
-void G1MujocoInterface::ReadAndEstimate(){
-   Estimate();
-   loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
-   pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+void G1MujocoInterface::ReadAndEstimate()
+{
+   if (robot_ != nullptr)
+   {
+      Estimate();
+      loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
+      pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+   }
+   else
+   {
+      MujocoInterfaceBase::ReadAndEstimate();
+   }
 }
 void G1MujocoInterface::SendPacket()
 {
    MujocoInterfaceBase::SendPacket();
-   robot_->SetComputedTorque(torque_loco_);
+   std::cout << "Loco Torque Command: " << torque_loco_.transpose() << std::endl;
+   if (robot_ != nullptr)
+   {
+      robot_->SetComputedTorque(torque_loco_);
+   }
+   
 }
 
 void G1MujocoInterface::HandleRendering()

@@ -4,6 +4,7 @@
 
 #include <biped_utils/filters.hpp>
 #include <Eigen/Dense>
+#include "biped_utils/yaml_parser.hpp"
 
 struct ContactClassifierOutput
 {
@@ -31,12 +32,11 @@ class ContactClassifier
 
 public:
     ContactClassifier() = default;
-    explicit ContactClassifier(double dt);
+    explicit ContactClassifier(const std::string &config_folder);
     ~ContactClassifier() = default;
 
     ContactClassifierOutput Update(const ContactClassifierInput &input);
-    void Reconfigure(double dt);
-    void Reconfigure(double dt, double lowpass_dt_cutoff, double linear_lb, double linear_ub);
+    void Reconfigure(const std::string &config_folder);
 
 private:
     control_utilities::LowPassFilter LowPassLeft = control_utilities::LowPassFilter(NAN, NAN);
@@ -49,15 +49,9 @@ private:
         double linear_lb = 60.0;
         double linear_ub = 110.0;
 
-        void Init(double dt){
-            this->dt = dt;
-        };
-        void Init(double dt, double lowpass_dt_cutoff, double linear_lb, double linear_ub) {
-            this->dt = dt;
-            this->lowpass_dt_cutoff = lowpass_dt_cutoff;
-            this->linear_lb = linear_lb;
-            this->linear_ub = linear_ub;
-        }
+        void Init();
+        YAMLParser yaml_parser;
+
     } config;
 
     Eigen::VectorXd grf_;

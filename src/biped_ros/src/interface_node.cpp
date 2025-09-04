@@ -13,8 +13,10 @@ RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
       "controller_cmds", 1,
       [this](const biped_msgs::msg::BipedMotorCommands::SharedPtr msg)
       {
-        ctrl_cmd_ = fromRosMsg(*msg); // convert to struct
-        has_ctrl_cmd_ = true;
+        std::lock_guard<std::mutex> lock(ctrl_mutex_);
+        loco_ctrl_cmd_ = fromRosMsg(*msg); // convert to struct
+        std::cout << "Received controller commands." << std::endl;
+        std::cout << loco_ctrl_cmd_ << std::endl;
       });
 
   // Publisher: proprioception
@@ -26,39 +28,30 @@ RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
   dt_ = parser.get_double("dt");
   timer_ = create_wall_timer(std::chrono::duration<double>(dt_), std::bind(&RosInterfaceNode::Loop, this));
 
-  init_timer_ = create_wall_timer(
-      std::chrono::milliseconds(100), // Small delay to ensure node is fully ready
-      [this]()
-      {
-        Init();
-        init_timer_->cancel(); // Cancel timer after first execution
-      });
-
   std::cout << "ROS Interface Node created." << std::endl;
 
-  ctrl_cmd_.ZeroAll(interface_->loco_motor_dof());
+  loco_ctrl_cmd_.ZeroAll(interface_->loco_motor_dof());
 }
 
-void RosInterfaceNode::Init()
-{
-  std::cout << "Initializing ROS Interface Node..." << std::endl;
 
-  loco_proprioception_ = interface_->Update(ctrl_cmd_);
-
-  std::cout << "Init Interface proprioception: " << loco_proprioception_ << std::endl;
-
-  proprio_pub_->publish(toRosMsg(loco_proprioception_));
-}
 
 void RosInterfaceNode::Loop()
 {
 
-  loco_proprioception_ = interface_->Update(ctrl_cmd_);
+  BipedMotorCommands loco_ctrl_cmd;
+  {
+    std::lock_guard<std::mutex> lock(ctrl_mutex_);
+    loco_ctrl_cmd = loco_ctrl_cmd_;
+  }
+  std::cout << "Interface Loop Running" << std::endl;
+  std::cout << loco_ctrl_cmd << std::endl;
+  loco_proprioception_ = interface_->Update(loco_ctrl_cmd);
 
   if (interface_->IsInterfaceRunning())
   {
     // Publish proprioception
-    proprio_pub_->publish(toRosMsg(loco_proprioception_));
+    ros_proprio_msg_ = toRosMsg(loco_proprioception_); // Pre-allocate message
+    proprio_pub_->publish(ros_proprio_msg_);
   }
 
   interface_->SendPacket();

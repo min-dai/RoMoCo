@@ -14,21 +14,25 @@ public:
                             std::shared_ptr<InterfaceBase> interface);
 
 private:
-  void Init();
   void Loop();
 
   std::shared_ptr<InterfaceBase> interface_;
   double dt_ = 0.0005; // default, will be overwritten by YAML
+
+  std::mutex ctrl_mutex_;
   rclcpp::Subscription<biped_msgs::msg::BipedMotorCommands>::SharedPtr ctrl_sub_;
   rclcpp::Publisher<biped_msgs::msg::BipedProprioception>::SharedPtr proprio_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   rclcpp::TimerBase::SharedPtr init_timer_;
 
-  BipedMotorCommands ctrl_cmd_;
-  bool has_ctrl_cmd_{false};
+  BipedMotorCommands loco_ctrl_cmd_;
+
 
   BipedProprioception loco_proprioception_;
+
+  biped_msgs::msg::BipedProprioception ros_proprio_msg_;  // Pre-allocated message
+
 };
 
 #endif // BIPED_ROS_INTERFACE_NODE_HPP

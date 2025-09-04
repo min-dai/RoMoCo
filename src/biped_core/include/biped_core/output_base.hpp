@@ -17,10 +17,6 @@ public:
     //virtual destructor
     virtual ~OutputBase() {};
 
-    //TODO: virtual or not
-    virtual void ForwardPosIk(const VectorXd &qk,  VectorXd &fk, MatrixXd &Jk);
-    
-
     virtual void Reset(){};
 
     virtual void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) = 0;
@@ -32,6 +28,8 @@ public:
     virtual std::vector<VectorXd> CollectLog() const { return std::vector<VectorXd>{VectorXd::Zero(0)}; } // Base implementation
 
     virtual VectorXd NaiveUpperJointsDesired(const VectorXd& default_q){return default_q;};
+
+    void ForwardPosIk(const VectorXd &qk,  VectorXd &fk, MatrixXd &Jk);
 
 
 protected:

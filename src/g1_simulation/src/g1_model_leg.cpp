@@ -186,6 +186,10 @@ void G1ModelLeg::ComputeContactClassifierInput()
     contact_classifier_input_.Jleft_active = Jleft_ankle(Eigen::all, {LeftHipPitch, LeftHipRoll, LeftHipYaw, LeftKneePitch, LeftAnklePitch, LeftAnkleRoll});
     contact_classifier_input_.Jright_active = Jright_ankle(Eigen::all, {RightHipPitch, RightHipRoll, RightHipYaw, RightKneePitch, RightAnklePitch, RightAnkleRoll});
 
+    if (computed_torque_.size() != nu_)
+    {
+        throw std::runtime_error("robot class stored computed_torque_ size does not match nu_");
+    }
     contact_classifier_input_.torque_left = computed_torque_({0, 1, 2, 3, 4, 5});
     contact_classifier_input_.torque_right = computed_torque_({6, 7, 8, 9, 10, 11});
 }

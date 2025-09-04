@@ -79,7 +79,7 @@ classdef G1Log < handle
         function plotSimInterface(obj)
             newestFolderName = obj.getNewestG1LogFolderNameOnly();
             full_path = [obj.path, newestFolderName, '/'];
-            fileID = fopen( [full_path, 'logInterface.bin']);
+            fileID = fopen( [full_path, 'logSimInterface.bin']);
             raw = fread(fileID,'float');
             
    
@@ -111,11 +111,11 @@ classdef G1Log < handle
             raw = fread(fileID,'float');
             
             nY = 12;
-            LengthVec = [1,obj.nConfigSpace, obj.nConfigSpace,12,17,nY,nY,nY,nY,nY];
+            LengthVec = [1,obj.nLoco, obj.nLoco,12,nY,nY,nY,nY,nY];
             
             N = floor(length(raw) / sum(LengthVec));  % Number of samples
             
-            [t, q,dq,u_leg,u_arm, ya,dya,yd,dyd,d2yd] = obj.readRaw(raw, N, LengthVec);
+            [t, q,dq,u_leg, ya,dya,yd,dyd,d2yd] = obj.readRaw(raw, N, LengthVec);
             
 
             output_list = {'LeftFootx','LeftFooty','LeftFootz','LeftFootYaw','LeftFootPitch','LeftFootRoll',...

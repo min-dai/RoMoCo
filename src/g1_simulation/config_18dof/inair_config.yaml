@@ -4,7 +4,7 @@ controller: "posik"
 
 
 pose_command: 
-  dt_lowpass: 0.005
+  dt_lowpass: 0.0005
   yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
   swingZ_lb: -0.9
   swingZ_ub: -0.4
@@ -33,4 +33,9 @@ posik:
   JointKD: [3,3,3,3,3,3]
 
 
-
+velik:
+  #for each leg
+  JointKP: [100, 100, 100, 100, 100, 100]
+  #for each leg
+  JointKD: [3,3,3,3,3,3] 
+  ik_gain: [1, 1, 1, 1, 1, 1]

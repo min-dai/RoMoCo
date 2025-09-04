@@ -1,41 +1,41 @@
 #include <biped_core/contact_kf.hpp>
 #include <iostream>
-using namespace std;
 
 ContactKf::ContactKf(const std::string &config_folder, int n_encoders)
 {
-    std::string config_file = config_folder + "/walking_config.yaml";
-   config.yaml_parser.Init(config_file);
-   config.Init();
+    std::string config_file = config_folder + "/interface_config.yaml";
+    config.yaml_parser.Init(config_file);
+    config.Init();
 
-   Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
-   Qc.resize(15, 15);
-   Qc.setZero();
-   Qc.block(0, 0, 3, 3) = config.base_process_std * config.base_process_std * I3;
-   Qc.block(3, 3, 3, 3) = config.base_process_std * config.base_process_std * I3;
-   Qc.block(6, 6, 3, 3) = config.foothold_std * config.foothold_std * I3;
-   Qc.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * I3;
-   Qc.block(12, 12, 3, 3) = config.acceleration_bias_std * config.acceleration_bias_std * I3;
+    Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
+    Qc.resize(15, 15);
+    Qc.setZero();
+    Qc.block(0, 0, 3, 3) = config.base_process_std * config.base_process_std * I3;
+    Qc.block(3, 3, 3, 3) = config.base_process_std * config.base_process_std * I3;
+    Qc.block(6, 6, 3, 3) = config.foothold_std * config.foothold_std * I3;
+    Qc.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * I3;
+    Qc.block(12, 12, 3, 3) = config.acceleration_bias_std * config.acceleration_bias_std * I3;
 
-   Rc = Eigen::MatrixXd::Zero(n_encoders, n_encoders);
-   Renc = Eigen::MatrixXd::Identity(n_encoders, n_encoders) * config.encoder_std * config.encoder_std;
+    Rc = Eigen::MatrixXd::Zero(n_encoders, n_encoders);
+    Renc = Eigen::MatrixXd::Identity(n_encoders, n_encoders) * config.encoder_std * config.encoder_std;
 
-   Fk_ = Eigen::MatrixXd::Identity(15,15);
+    Fk_ = Eigen::MatrixXd::Identity(15, 15);
 
-   // Hk_ is constant
-   Hk_ = Eigen::MatrixXd::Zero(6, 15);
-   Hk_.block(0, 0, 3, 3) = -I3;
-   Hk_.block(3, 0, 3, 3) = -I3;
-   Hk_.block(0, 6, 3, 3) = I3;
-   Hk_.block(3, 9, 3, 3) = I3;
+    // Hk_ is constant
+    Hk_ = Eigen::MatrixXd::Zero(6, 15);
+    Hk_.block(0, 0, 3, 3) = -I3;
+    Hk_.block(3, 0, 3, 3) = -I3;
+    Hk_.block(0, 6, 3, 3) = I3;
+    Hk_.block(3, 9, 3, 3) = I3;
 
-   Sk_ = Eigen::MatrixXd::Zero(6, 6);
-   Kk_ = Eigen::MatrixXd::Zero(15, 6);
+    Sk_ = Eigen::MatrixXd::Zero(6, 6);
+    Kk_ = Eigen::MatrixXd::Zero(15, 6);
 
-   x_hat = Eigen::MatrixXd::Zero(3, 5);
+    x_hat = Eigen::MatrixXd::Zero(3, 5);
 }
 
-void ContactKf::Config::Init(){
+void ContactKf::Config::Init()
+{
     base_process_std = yaml_parser.get_double("contact_kf/base_process_std");
     foothold_std = yaml_parser.get_double("contact_kf/foothold_std");
     encoder_std = yaml_parser.get_double("contact_kf/encoder_std");
@@ -47,7 +47,8 @@ void ContactKf::Config::Init(){
     init_foothold_std = yaml_parser.get_double("contact_kf/init_foothold_std");
 }
 
-Eigen::Vector3d ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input) {
+Eigen::Vector3d ContactKf::Update(double t, const Eigen::VectorXd &aIn, const Eigen::Quaterniond &q, BipedEstimationKinematicsInput &input)
+{
 
     Eigen::MatrixXd R = q.toRotationMatrix();
 
@@ -59,192 +60,182 @@ Eigen::Vector3d ContactKf::Update(double t, const Eigen::VectorXd& aIn, const Ei
     tprev_ = t;
 
     // If filter enabled, run
-    if (is_initialized_){
+    if (is_initialized_)
+    {
         // Update contacts
         // compute the prediction step
-        PredictStep(dt,R,aIn,input.left_contact_prob,input.right_contact_prob);
-        vel_pre =  getvel();
+        PredictStep(dt, R, aIn, input.left_contact_prob, input.right_contact_prob);
+        vel_pre = getvel();
 
-        if (input.left_contact_prob > 0.5 || input.right_contact_prob > 0.5){
-            // Compute the measurement
-            UpdateStep(input.p_left_foot, input.p_right_foot, input.J_left_foot, input.J_right_foot);
-        }
+
+        // Compute the measurement
+        UpdateStep(input.p_left_foot, input.p_right_foot, input.J_left_foot, input.J_right_foot);
+
         return getvel();
-    } else{
+    }
+    else
+    {
         return Eigen::Vector3d::Zero();
     }
-
 }
 
-void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf)
+void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorXd &plf, const Eigen::VectorXd &prf)
 {
-   // We initialize if time has passed and if both feet are in contact with the ground
-   if (!is_initialized_)
-   {
-      if (lC > 0.5 && rC > 0.5)
-      {
-        std::cout << "Initializing contact at time: " << t << std::endl;
+    // We initialize if time has passed and if both feet are in contact with the ground
+    if (!is_initialized_)
+    {
+        if (lC > 0.5 && rC > 0.5)
+        {
+            std::cout << "Initializing contact at time: " << t << std::endl;
 
-         this->x_hat(2, 0) = -(plf(2) + prf(2)) / 2.0;
-         this->x_hat.col(2) = this->x_hat.col(0) + plf;
-         this->x_hat.col(3) = this->x_hat.col(0) + prf;
+            this->x_hat(2, 0) = -(plf(2) + prf(2)) / 2.0;
+            this->x_hat.col(2) = this->x_hat.col(0) + plf;
+            this->x_hat.col(3) = this->x_hat.col(0) + prf;
 
-         Eigen::MatrixXd tmpI = Eigen::MatrixXd::Identity(3, 3);
-         P.resize(15, 15);
-         P.setZero();
-         P.block(0, 0, 3, 3) = config.init_position_std * config.init_position_std * tmpI;
-         P.block(3, 3, 3, 3) = config.init_velocity_std * config.init_velocity_std * tmpI;
-         P.block(6, 6, 3, 3) = config.init_foothold_std * config.init_foothold_std * tmpI;
-         P.block(9, 9, 3, 3) = config.init_foothold_std * config.init_foothold_std * tmpI;
-         P.block(12, 12, 3, 3) = config.init_acc_bias_std * config.init_acc_bias_std * tmpI;
+            Eigen::MatrixXd tmpI = Eigen::MatrixXd::Identity(3, 3);
+            P.resize(15, 15);
+            P.setZero();
+            P.block(0, 0, 3, 3) = config.init_position_std * config.init_position_std * tmpI;
+            P.block(3, 3, 3, 3) = config.init_velocity_std * config.init_velocity_std * tmpI;
+            P.block(6, 6, 3, 3) = config.init_foothold_std * config.init_foothold_std * tmpI;
+            P.block(9, 9, 3, 3) = config.init_foothold_std * config.init_foothold_std * tmpI;
+            P.block(12, 12, 3, 3) = config.init_acc_bias_std * config.init_acc_bias_std * tmpI;
 
-         this->is_initialized_ = true;
-         this->tprev_ = t;
-      }
-      else
-      {
-         // Don't start filter until both feet touch the ground
-         // return;
-      }
-   }
+            this->is_initialized_ = true;
+            this->tprev_ = t;
+        }
+        else
+        {
+            // Don't start filter until both feet touch the ground
+            // return;
+        }
+    }
 }
 
-void ContactKf::PredictStep(double dt, const Eigen::Matrix3d& R, const Eigen::Vector3d& acc_measured, double lC, double rC){
+void ContactKf::PredictStep(double dt, const Eigen::Matrix3d &R, const Eigen::Vector3d &acc_measured, double lC, double rC)
+{
     Eigen::VectorXd pm(3), vm(3), plfm(3), prfm(3), bam(3);
-    this->UnpackState(this->x_hat,pm,vm,plfm,prfm,bam);
+    this->UnpackState(this->x_hat, pm, vm, plfm, prfm, bam);
 
     // Sensor model: a = acc_measured - bam;
 
     // Propagate the state
     Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
-    p = pm + vm*dt + 0.5*(R*(acc_measured - bam) + this->g_)*dt*dt;
-    v = vm + (R*(acc_measured - bam) + this->g_)*dt;
+    p = pm + vm * dt + 0.5 * (R * (acc_measured - bam) + this->g_) * dt * dt;
+    v = vm + (R * (acc_measured - bam) + this->g_) * dt;
     ba = bam;
     plf = plfm;
     prf = prfm;
 
-    // Write as standard form 
+    // Write as standard form
     // xhat_k = Fk * x_k-1 + Bk * uk + wk, wk ~ N(0,Qk)
     //       p             v           plf         prf         ba
-    // Fk = [eye(3),     eye(3)*dt,   zeros(3),   zeros(3),  -Rotm*dt^2/2; 
+    // Fk = [eye(3),     eye(3)*dt,   zeros(3),   zeros(3),  -Rotm*dt^2/2;
     //       zeros(3),   eye(3),      zeros(3),   zeros(3),  -Rotm*dt;
     //       zeros(3),   zeros(3),    eye(3),     zeros(3),  zeros(3);
-    //       zeros(3),   zeros(3),    zeros(3),   eye(3),    zeros(3); 
+    //       zeros(3),   zeros(3),    zeros(3),   eye(3),    zeros(3);
     //       zeros(3),   zeros(3),    zeros(3),   zeros(3),  eye(3)];
-    Eigen::MatrixXd eye3 = Eigen::MatrixXd::Identity(3,3);
-    Fk_.block(0,0,3,3)   = eye3;
-    Fk_.block(0,3,3,3)   = eye3*dt;
-    Fk_.block(0,12,3,3)  = -R*(dt*dt/2.0);
-    Fk_.block(3,12,3,3)  = -R*dt;
+    Eigen::MatrixXd eye3 = Eigen::MatrixXd::Identity(3, 3);
+    Fk_.block(0, 0, 3, 3) = eye3;
+    Fk_.block(0, 3, 3, 3) = eye3 * dt;
+    Fk_.block(0, 12, 3, 3) = -R * (dt * dt / 2.0);
+    Fk_.block(3, 12, 3, 3) = -R * dt;
 
     // MatrixXd Ft = MatrixXd::Identity(12,12);
     // Ft.block(0,3,3,3)   = eye3*dt;
 
     Eigen::MatrixXd Qk_ = this->Qc;
 
-    if (lC < rC){
-        Qk_.block(6,6,3,3) = 1000000.*eye3;
-        Qk_.block(9,9,3,3) = config.foothold_std * config.foothold_std * eye3;
-    } else if (lC > rC){
-        Qk_.block(6,6,3,3) = config.foothold_std * config.foothold_std * eye3;
-        Qk_.block(9,9,3,3) = 1000000.*eye3;
-    } else{
-        Qk_.block(6,6,3,3) = config.foothold_std * config.foothold_std * eye3;
-        Qk_.block(9,9,3,3) = config.foothold_std * config.foothold_std * eye3;
+    if (lC < rC)
+    {
+        Qk_.block(6, 6, 3, 3) = 1000000. * eye3;
+        Qk_.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * eye3;
+    }
+    else if (lC > rC)
+    {
+        Qk_.block(6, 6, 3, 3) = config.foothold_std * config.foothold_std * eye3;
+        Qk_.block(9, 9, 3, 3) = 1000000. * eye3;
+    }
+    else
+    {
+        Qk_.block(6, 6, 3, 3) = config.foothold_std * config.foothold_std * eye3;
+        Qk_.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * eye3;
     }
 
-    this->P = Fk_*this->P*Fk_.transpose() + Qk_;
+    this->P = Fk_ * this->P * Fk_.transpose() + Qk_;
 
     // pack the state to use in Update
-    this->PackState(this->x_hat,p,v,plf,prf,ba);
-
+    this->PackState(this->x_hat, p, v, plf, prf, ba);
 }
 
-
 //@param: plf_enc, prf_enc: 3-by-1 vector, position of left/right foot w.r.t. pelvis, in world frame
-//@param: J_lf, J_rf, 3-by-nlegjoints: Jacobians of left/right foot position w.r.t. left/right joints 
-void ContactKf::UpdateStep(const Eigen::Vector3d& plf_enc, const Eigen::Vector3d& prf_enc, const Eigen::MatrixXd& J_lf, const Eigen::MatrixXd& J_rf){
-   // yk = zk - Hk * xhat_k|k-1
+//@param: J_lf, J_rf, 3-by-nlegjoints: Jacobians of left/right foot position w.r.t. left/right joints
+void ContactKf::UpdateStep(const Eigen::Vector3d &plf_enc, const Eigen::Vector3d &prf_enc, const Eigen::MatrixXd &J_lf, const Eigen::MatrixXd &J_rf)
+{
+    // yk = zk - Hk * xhat_k|k-1
 
-    // Compute h(x,z)
     Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
-    this->UnpackState(this->x_hat,p,v,plf,prf,ba);
+    this->UnpackState(this->x_hat, p, v, plf, prf, ba);
 
-   //  Eigen::MatrixXd JLf(3,18), JRf(3,18);
-   //  SymFunction::J_position_leftFoot(JLf,q_zeroAngle);
-   //  SymFunction::J_position_rightFoot(JRf,q_zeroAngle);
-   //  Eigen::MatrixXd J_computed_lf(3,6), J_computed_rf(3,6);
-   //  J_computed_lf = JLf.block(0,LeftHipRoll,3,6);
-   //  J_computed_rf = JRf.block(0,RightHipRoll,3,6);
-    Eigen::VectorXd y;
-    y.resize(6); y.setZero();
-    y.segment(0,3) = plf_enc - (plf - p);
-    y.segment(3,3) = prf_enc - (prf - p);
+    yk.segment(0, 3) = plf_enc - (plf - p);
+    yk.segment(3, 3) = prf_enc - (prf - p);
 
     // Compute covariance from encoders
     Rc.setZero();
-    Rc.block(0,0,3,3) = J_lf*Renc*J_lf.transpose();
-    Rc.block(3,3,3,3) = J_rf*Renc*J_rf.transpose();
+    Rc.block(0, 0, 3, 3) = J_lf * Renc * J_lf.transpose();
+    Rc.block(3, 3, 3, 3) = J_rf * Renc * J_rf.transpose();
 
-
-    
-   //  MatrixXd eye3 = MatrixXd::Identity(3,3);
-   //  if (lC < .1){
-   //      Rc.block(0,0,3,3) = 1000000.*eye3;
-   //  } else if (rC < .1){
-   //      Rc.block(3,3,3,3) = 1000000.*eye3;
-   //  } 
-
-
+    //  MatrixXd eye3 = MatrixXd::Identity(3,3);
+    //  if (lC < .1){
+    //      Rc.block(0,0,3,3) = 1000000.*eye3;
+    //  } else if (rC < .1){
+    //      Rc.block(3,3,3,3) = 1000000.*eye3;
+    //  }
 
     // Kalman gain
 
     Eigen::VectorXd dx = Eigen::VectorXd::Zero(15);
 
+    Sk_ = Hk_ * P * Hk_.transpose() + Rc;
+    Kk_ = (P * Hk_.transpose()) * Sk_.inverse();
 
-
-    Sk_ = Hk_*P*Hk_.transpose() + Rc;
-    Kk_ = (P*Hk_.transpose())*Sk_.inverse();
-
-    dx = Kk_*y;
-    P = (Eigen::MatrixXd::Identity(15,15) - Kk_*Hk_)*P;
+    dx = Kk_ * yk;
+    P = (Eigen::MatrixXd::Identity(15, 15) - Kk_ * Hk_) * P;
 
     // Pack state
-    this->x_hat.col(0) = this->x_hat.col(0) + dx.segment(0,3);  // p
-    this->x_hat.col(1) = this->x_hat.col(1) + dx.segment(3,3);  // v
-    this->x_hat.col(2) = this->x_hat.col(2) + dx.segment(6,3);  // plf
-    this->x_hat.col(3) = this->x_hat.col(3) + dx.segment(9,3);  // prf
-    this->x_hat.col(4) = this->x_hat.col(4) + dx.segment(12,3); // ba
-
-
-
-
+    this->x_hat.col(0) = this->x_hat.col(0) + dx.segment(0, 3);  // p
+    this->x_hat.col(1) = this->x_hat.col(1) + dx.segment(3, 3);  // v
+    this->x_hat.col(2) = this->x_hat.col(2) + dx.segment(6, 3);  // plf
+    this->x_hat.col(3) = this->x_hat.col(3) + dx.segment(9, 3);  // prf
+    this->x_hat.col(4) = this->x_hat.col(4) + dx.segment(12, 3); // ba
 }
 
-
-void ContactKf::Reset(){
-   is_initialized_ = false;
+void ContactKf::Reset()
+{
+    is_initialized_ = false;
 }
 
-void ContactKf::UnpackState(Eigen::MatrixXd& x, Eigen::VectorXd& p, Eigen::VectorXd& v, Eigen::VectorXd& plf, Eigen::VectorXd& prf, Eigen::VectorXd& ba){
-    p.resize(3); v.resize(3); plf.resize(3); prf.resize(3); ba.resize(3);
-    p   = x.col(0);
-    v   = x.col(1);
+void ContactKf::UnpackState(Eigen::MatrixXd &x, Eigen::VectorXd &p, Eigen::VectorXd &v, Eigen::VectorXd &plf, Eigen::VectorXd &prf, Eigen::VectorXd &ba)
+{
+    p.resize(3);
+    v.resize(3);
+    plf.resize(3);
+    prf.resize(3);
+    ba.resize(3);
+    p = x.col(0);
+    v = x.col(1);
     plf = x.col(2);
     prf = x.col(3);
-    ba  = x.col(4);
-
+    ba = x.col(4);
 }
 
-void ContactKf::PackState(Eigen::MatrixXd& x, const Eigen::VectorXd& p, const Eigen::VectorXd& v, const Eigen::VectorXd& plf, const Eigen::VectorXd& prf, const Eigen::VectorXd& ba){
-    x.resize(3,5); x.setZero();
+void ContactKf::PackState(Eigen::MatrixXd &x, const Eigen::VectorXd &p, const Eigen::VectorXd &v, const Eigen::VectorXd &plf, const Eigen::VectorXd &prf, const Eigen::VectorXd &ba)
+{
+    x.resize(3, 5);
+    x.setZero();
     x.col(0) = p;
     x.col(1) = v;
     x.col(2) = plf;
     x.col(3) = prf;
     x.col(4) = ba;
 }
-
-
-
-

@@ -51,7 +51,7 @@ G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, c
     if (!robot_){
         throw std::runtime_error("G1HardwareInterface: Robot model is not provided.");
     }else{
-        robot_->ReconfigureContactClassifier(0.0005);
+        robot_->ReconfigureContactClassifier(config_folder);
     }
 
     std::cout << "G1 Hardware Interface initialized on " << network_interface << std::endl;
