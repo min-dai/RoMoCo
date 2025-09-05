@@ -20,7 +20,7 @@ public:
    ~G1MujocoInterface() override;
 
 
-   void ReadAndEstimate() override;
+   BipedProprioception ReadAndEstimate() override;
    void SendPacket() override;
 
    bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) override;

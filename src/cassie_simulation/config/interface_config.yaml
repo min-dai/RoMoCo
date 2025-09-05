@@ -22,7 +22,21 @@ passive_encoder_names:
 
 locked_encoder_names:
 
+all_encoder_names:
+  - LeftHipRoll
+  - LeftHipYaw
+  - LeftHipPitch
+  - LeftKneePitch
+  - LeftTarsusPitch
+  - LeftFootPitch
+  - RightHipRoll
+  - RightHipYaw
+  - RightHipPitch
+  - RightKneePitch
+  - RightTarsusPitch
+  - RightFootPitch
 
+qdes_locked_joints:
 
 contact_kf:
   base_process_std: 0.1

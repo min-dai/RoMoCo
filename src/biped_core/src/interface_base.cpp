@@ -37,8 +37,10 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
    std::string interface_config_file = config_folder + "/interface_config.yaml";
    YAMLParser yaml_parser(interface_config_file);
    yaml_parser.Init(interface_config_file);
+   all_encoder_names_pinocchio_order_ = yaml_parser.get_string_vector("all_encoder_names");
    pd_encoder_names_ = yaml_parser.get_string_vector("locked_encoder_names");
    loco_encoder_names_ = yaml_parser.get_string_vector("pinocchio_encoder_names");
+
 
    std::vector<std::string> passive_encoder_names = yaml_parser.get_string_vector("passive_encoder_names");
 
@@ -154,13 +156,11 @@ std::vector<int> InterfaceBase::GetJointIndicesFromSubset(
    return subset_indices;
 }
 
-BipedProprioception InterfaceBase::Update(const BipedMotorCommands &loco_cmd)
+
+void InterfaceBase::ProcessMotorCommands(const BipedMotorCommands &loco_cmd)
 {
-   ReadAndEstimate();
-   
    loco_motor_commands_ = loco_cmd;
    final_motor_commands_.UpdatePartialWithIndices(loco_motor_commands_);
-   return loco_proprioception_;
 }
 
 

@@ -114,7 +114,6 @@ add_executable(g1_mujoco_interface_node_main
 )
 target_link_libraries(g1_mujoco_interface_node_main
   ${PROJECT_NAME}
-  unitree_sdk2
 )
 
 add_executable(g1_dds

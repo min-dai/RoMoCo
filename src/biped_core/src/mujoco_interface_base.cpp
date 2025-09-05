@@ -8,11 +8,12 @@ void MujocoInterfaceBase::GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, E
    qdot = full_proprioception_.qdot;
 }
 
-void MujocoInterfaceBase::ReadAndEstimate()
+BipedProprioception MujocoInterfaceBase::ReadAndEstimate()
 {
    full_proprioception_ = GetBipedProprioceptionFromSensorDataPostEstimation(sensor_);
    loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
    pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+   return loco_proprioception_;
 }
 
 void MujocoInterfaceBase::SendPacket()

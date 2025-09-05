@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
   // Create the robot-specific interface
   std::string package_folder = ament_index_cpp::get_package_share_directory("cassie_simulation");
-  std::string config_folder = package_folder;
+  std::string config_folder = package_folder + "/config";
 
   std::string home = std::string(getenv("HOME"));
   
@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
   std::string urdf_path = package_folder + "/model_files/" + urdf_name;
   std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
 
-  VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
 
-  std::unique_ptr<RobotBasePinocchio> robot_ptr = std::make_unique<CassieModel>(urdf_path, locked_encoder_names, locked_joints_q);
+
+  std::unique_ptr<RobotBasePinocchio> robot_ptr = std::make_unique<CassieModel>(urdf_path, locked_encoder_names);
 
   std::shared_ptr<InterfaceBase> interface = std::make_shared<CassieMujocoInterface>(config_folder, log_path, std::move(robot_ptr));
   // std::shared_ptr<InterfaceBase> interface = std::make_shared<CassieMujocoInterface>(config_folder, log_path);

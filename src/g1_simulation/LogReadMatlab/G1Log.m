@@ -51,8 +51,8 @@ classdef G1Log < handle
         function plotInterface(obj)
             newestFolderName = obj.getNewestG1LogFolderNameOnly();
             full_path = [obj.path, newestFolderName, '/'];
-            % fileID = fopen( [full_path, 'logInterface.bin']);
-            fileID = fopen( [obj.path, 'logInterface.bin']);
+            fileID = fopen( [full_path, 'logInterface.bin']);
+            % fileID = fopen( [obj.path, 'logInterface.bin']);
             raw = fread(fileID,'float');
             
    

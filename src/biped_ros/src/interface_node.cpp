@@ -6,22 +6,24 @@ RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
                                    std::shared_ptr<InterfaceBase> interface)
     : Node("ros_interface_node"), interface_(interface)
 {
-  using namespace std::chrono_literals;
+  if (!interface_)
+  {
+    throw std::invalid_argument("RosInterfaceNode: interface is null");
+  }
 
+  auto qos = rclcpp::QoS(rclcpp::KeepLast(1));
   // Subscriber: controller motor commands
   ctrl_sub_ = create_subscription<biped_msgs::msg::BipedMotorCommands>(
-      "controller_cmds", 1,
+      "controller_cmds", qos,
       [this](const biped_msgs::msg::BipedMotorCommands::SharedPtr msg)
       {
         std::lock_guard<std::mutex> lock(ctrl_mutex_);
         loco_ctrl_cmd_ = fromRosMsg(*msg); // convert to struct
-        std::cout << "Received controller commands." << std::endl;
-        std::cout << loco_ctrl_cmd_ << std::endl;
+        RCLCPP_DEBUG(this->get_logger(), "Received controller commands");
       });
 
   // Publisher: proprioception
-  proprio_pub_ =
-      create_publisher<biped_msgs::msg::BipedProprioception>("proprioception", 1);
+  proprio_pub_ = create_publisher<biped_msgs::msg::BipedProprioception>("proprioception", qos);
 
   // Timer: control loop
   YAMLParser parser(config_folder + "/interface_config.yaml");
@@ -33,26 +35,29 @@ RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
   loco_ctrl_cmd_.ZeroAll(interface_->loco_motor_dof());
 }
 
-
-
+RosInterfaceNode::~RosInterfaceNode()
+{
+  timer_.reset();
+  ctrl_sub_.reset();
+  proprio_pub_.reset();
+}
 void RosInterfaceNode::Loop()
 {
-
   BipedMotorCommands loco_ctrl_cmd;
   {
     std::lock_guard<std::mutex> lock(ctrl_mutex_);
     loco_ctrl_cmd = loco_ctrl_cmd_;
   }
-  std::cout << "Interface Loop Running" << std::endl;
-  std::cout << loco_ctrl_cmd << std::endl;
-  loco_proprioception_ = interface_->Update(loco_ctrl_cmd);
+
+  loco_proprioception_ = interface_->ReadAndEstimate();
+  interface_->ProcessMotorCommands(loco_ctrl_cmd);
 
   if (interface_->IsInterfaceRunning())
   {
     // Publish proprioception
-    ros_proprio_msg_ = toRosMsg(loco_proprioception_); // Pre-allocate message
-    proprio_pub_->publish(ros_proprio_msg_);
+    auto ros_proprio_msg = toRosMsg(loco_proprioception_); // Pre-allocate message
+    proprio_pub_->publish(ros_proprio_msg);
   }
-
   interface_->SendPacket();
+  std::cout << "Interface Loop End" << std::endl;
 }

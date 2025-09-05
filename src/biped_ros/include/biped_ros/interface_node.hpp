@@ -12,6 +12,7 @@ public:
   explicit RosInterfaceNode(const std::string &config_folder,
                             const std::string &log_path,
                             std::shared_ptr<InterfaceBase> interface);
+  ~RosInterfaceNode() override;
 
 private:
   void Loop();
@@ -24,14 +25,8 @@ private:
   rclcpp::Publisher<biped_msgs::msg::BipedProprioception>::SharedPtr proprio_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
-  rclcpp::TimerBase::SharedPtr init_timer_;
-
   BipedMotorCommands loco_ctrl_cmd_;
-
-
   BipedProprioception loco_proprioception_;
-
-  biped_msgs::msg::BipedProprioception ros_proprio_msg_;  // Pre-allocated message
 
 };
 

@@ -12,6 +12,12 @@ struct RawSensorData
    Eigen::VectorXd encoders_pos_pinocchio_order;
    Eigen::VectorXd encoders_vel_pinocchio_order;
 
+   void ResizeAll(int dof)
+   {
+       encoders_pos_pinocchio_order.resize(dof);
+       encoders_vel_pinocchio_order.resize(dof);
+   }
+
    //overload <<
    friend std::ostream &operator<<(std::ostream &os, const RawSensorData &data)
    {
@@ -33,7 +39,7 @@ struct BipedEstimation
 struct RawSensorDataHardware : RawSensorData
 {
    Eigen::Vector3d base_lin_acc;
-   // overload <<
+
    friend std::ostream &operator<<(std::ostream &os, const RawSensorDataHardware &data)
    {
        os << static_cast<const RawSensorData &>(data);

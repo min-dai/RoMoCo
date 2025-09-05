@@ -25,8 +25,6 @@ void CassieMujocoInterface::Init(const std::string &config_folder, const std::st
 {
     InitLogFile(log_path, true);
 
-    all_encoder_names_pinocchio_order_ = {"LeftHipRoll", "LeftHipYaw", "LeftHipPitch", "LeftKneePitch", "LeftTarsusPitch", "LeftFootPitch",
-                                          "RightHipRoll", "RightHipYaw", "RightHipPitch", "RightKneePitch", "RightTarsusPitch", "RightFootPitch"};
 
     InitDofAndIndicesFromConfigFile(config_folder);
     InitMotorCommands();
@@ -230,14 +228,10 @@ void CassieMujocoInterface::Estimate()
 
     BipedEstimationKinematicsInput biped_estimation_kinematics_input = robot_->ComputeEstimationKinematicsInput();
 
-    std::cout << "estimation input" << std::endl;
-    std::cout << biped_estimation_kinematics_input << std::endl;
     est_lin_vel_ = contact_kf_->Update(sim_time(), sensor_hw_.base_lin_acc, sensor_hw_.base_ang_quat, biped_estimation_kinematics_input);
 
     proprioception.qdot.head(3) << est_lin_vel_;
 
-    std::cout << "proprioception" << std::endl;
-    std::cout << proprioception << std::endl;
 
     if (torque_loco_.hasNaN())
     {
@@ -249,23 +243,24 @@ void CassieMujocoInterface::Estimate()
     full_proprioception_ = proprioception;
 }
 
-void CassieMujocoInterface::ReadAndEstimate()
+BipedProprioception CassieMujocoInterface::ReadAndEstimate()
 {
     if (robot_ != nullptr)
     {
         Estimate();
         loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
         pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+        return loco_proprioception_;
     }
     else
     {
-        MujocoInterfaceBase::ReadAndEstimate();
+        return MujocoInterfaceBase::ReadAndEstimate();
     }
 }
 void CassieMujocoInterface::SendPacket()
 {
     MujocoInterfaceBase::SendPacket();
-    std::cout << "Loco Torque Command: " << torque_loco_.transpose() << std::endl;
+
     if (robot_ != nullptr)
     {
         robot_->SetComputedTorque(torque_loco_);

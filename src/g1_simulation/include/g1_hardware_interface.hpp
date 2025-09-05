@@ -29,9 +29,9 @@ using namespace unitree::common;
 using namespace unitree::robot;
 using namespace unitree_hg::msg::dds_;
 
-    static const std::string HG_CMD_TOPIC = "rt/lowcmd";
-    static const std::string HG_IMU_TORSO = "rt/secondary_imu";
-    static const std::string HG_STATE_TOPIC = "rt/lowstate";
+static const std::string HG_CMD_TOPIC = "rt/lowcmd";
+static const std::string HG_IMU_TORSO = "rt/secondary_imu";
+static const std::string HG_STATE_TOPIC = "rt/lowstate";
 template <typename T>
 class DataBuffer
 {
@@ -67,18 +67,17 @@ public:
 
     ~G1HardwareInterface() override = default;
 
-    void ReadAndEstimate() override;
+    BipedProprioception ReadAndEstimate() override;
     void SendPacket() override;
 
-    bool IsInterfaceRunning() const override{return true;}
-
+    bool IsInterfaceRunning() const override { return true; }
 
 private:
     void Init(const std::string &config_folder, const std::string &log_path) override;
+    void InitDDS(const std::string &network_interface);
 
-    static constexpr int G1_NUM_MOTOR = 29;
-
-
+    void Estimate();
+    
     // // G1 joint indices
     // enum G1JointIndex {
     //     LeftHipPitch = 0,
@@ -132,7 +131,9 @@ private:
         std::array<float, 3> acc = {};
         std::array<float, 4> quat = {};
     };
-
+    static constexpr int G1_NUM_MOTOR = 29;
+    std::array<int, G1_NUM_MOTOR> g1_motor_mode;
+    
     struct MotorState
     {
         std::array<float, G1_NUM_MOTOR> q = {};
@@ -149,13 +150,11 @@ private:
         std::array<float, G1_NUM_MOTOR> tau_ff = {};
     };
 
-
-
     G1Mode mode_pr_;
     uint8_t mode_machine_;
 
-      Gamepad gamepad_;
-  REMOTE_DATA_RX rx_;
+    Gamepad gamepad_;
+    REMOTE_DATA_RX rx_;
 
     // Thread-safe data buffers
     DataBuffer<MotorState> motor_state_buffer_;
@@ -163,41 +162,35 @@ private:
     DataBuffer<ImuState> pelvis_imu_buffer_;
     DataBuffer<MotorCommand> motor_command_buffer_;
 
-    // Default PD gains
-    std::array<float, G1_NUM_MOTOR> default_kp_;
-    std::array<float, G1_NUM_MOTOR> default_kd_;
-
     // DDS communication
     ChannelPublisherPtr<LowCmd_> lowcmd_publisher_;
     ChannelSubscriberPtr<LowState_> lowstate_subscriber_;
     ChannelSubscriberPtr<IMUState_> torso_imu_subscriber_;
-    // Thread for command writer
-    ThreadPtr command_writer_ptr_, control_thread_ptr_;
+
+
+    // // Thread for command writer
+    // ThreadPtr command_writer_ptr_, control_thread_ptr_;
 
     // Motion switcher
     std::shared_ptr<unitree::robot::b2::MotionSwitcherClient> motion_switcher_;
-
-    
-    
 
     // Callbacks
     void LowStateHandler(const void *message);
     void TorsoImuHandler(const void *message);
     void LowCommandWriter();
 
+    void LowCommandWriterDebug();
+
     // Helper functions
     void InitializeJointMapping(const std::string &config_folder);
-    void ConvertG1StateToProprioception(const MotorState& motor_state,
-                                        const ImuState& pelvis_imu);
+    void ConvertG1StateToProprioception();
     void ConvertMotorCommandsToG1(const BipedMotorCommands &commands);
     uint32_t Crc32Core(uint32_t *ptr, uint32_t len);
 
-
-
     // Raw sensor data
     std::unique_ptr<RobotBasePinocchio> robot_;
-   std::unique_ptr<ContactKf> contact_kf_;
-   Eigen::Vector3d est_lin_vel_;
+    std::unique_ptr<ContactKf> contact_kf_;
+    Eigen::Vector3d est_lin_vel_;
     RawSensorDataHardware sensor_hw_;
     Eigen::VectorXd torque_loco_;
 

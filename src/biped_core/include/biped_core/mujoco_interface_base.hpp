@@ -14,7 +14,7 @@ public:
       return !paused();
    }
 
-   virtual void ReadAndEstimate() override;
+   virtual BipedProprioception ReadAndEstimate() override;
    virtual void SendPacket() override;
 
 

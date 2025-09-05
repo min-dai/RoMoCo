@@ -23,8 +23,7 @@ find_package(biped_control REQUIRED)
 find_package(biped_utils REQUIRED)
 find_package(screen_radio REQUIRED)
 find_package(biped_state_machine REQUIRED)
-
-
+find_package(biped_ros REQUIRED)
 
 set(dependencies
   rclcpp
@@ -36,6 +35,7 @@ set(dependencies
   screen_radio
   biped_state_machine
   Eigen3
+  biped_ros
 )
 
 

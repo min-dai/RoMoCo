@@ -138,6 +138,20 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
          {
             SelectControllers(command.mode, config_file, robot_ptr, output, torque_solver);
             cur_mode_ = command.mode;
+            switch (cur_mode_)
+            {
+            case Mode::Standing:
+               std::cout << "Switched to STANDING mode." << std::endl;
+               break;
+            case Mode::InAir:
+               std::cout << "Switched to IN-AIR mode." << std::endl;
+               break;
+            case Mode::Walking:
+               std::cout << "Switched to WALKING mode." << std::endl;
+               break;
+            default:
+               break;
+            }
 
             if (logFile_.is_open())
             {

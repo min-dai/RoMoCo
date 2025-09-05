@@ -15,13 +15,13 @@ public:
 
     // Use internal sensor_ to update internal estimation to update
     // full_proprioception_, loco_proprioception_, and pd_proprioception_
-    virtual void ReadAndEstimate() = 0;
+    virtual BipedProprioception ReadAndEstimate() = 0;
 
     int loco_motor_dof() const { return loco_motor_dof_; }
 
     // update loco_motor_commands, pd_motor_commands are constants
     // return loco_proprioception_
-    BipedProprioception Update(const BipedMotorCommands &loco_cmd);
+    void ProcessMotorCommands(const BipedMotorCommands &loco_cmd);
 
     // Send control commands to the robot
     // Internally update sensor_ (type depends on HW/SIM)

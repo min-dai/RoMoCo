@@ -22,7 +22,7 @@ public:
     CassieMujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot);
     ~CassieMujocoInterface() override;
 
-    void ReadAndEstimate() override;
+    BipedProprioception ReadAndEstimate() override;
     void SendPacket() override;
 
 

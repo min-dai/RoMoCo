@@ -1,13 +1,13 @@
 #include "g1_mujoco_interface.hpp"
 #include "biped_core/prep_proprioception.hpp"
 
-
 G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path)
 {
    Init(config_folder, log_path);
 }
 G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot)
-    : robot_(std::move(robot)), contact_kf_(std::make_unique<ContactKf>(config_folder, 6))
+    : robot_(std::move(robot)),
+      contact_kf_(std::make_unique<ContactKf>(config_folder, 6))
 {
    Init(config_folder, log_path);
 }
@@ -19,17 +19,6 @@ G1MujocoInterface::~G1MujocoInterface()
 void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
    InitLogFile(log_path,true);
-
-   all_encoder_names_pinocchio_order_ = {
-       "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
-       "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint",
-       "right_hip_pitch_joint", "right_hip_roll_joint", "right_hip_yaw_joint",
-       "right_knee_joint", "right_ankle_pitch_joint", "right_ankle_roll_joint",
-       "waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
-       "left_shoulder_pitch_joint", "left_shoulder_roll_joint", "left_shoulder_yaw_joint",
-       "left_elbow_joint", "left_wrist_roll_joint", "left_wrist_pitch_joint", "left_wrist_yaw_joint",
-       "right_shoulder_pitch_joint", "right_shoulder_roll_joint", "right_shoulder_yaw_joint",
-       "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint", "right_wrist_yaw_joint"};
 
    InitDofAndIndicesFromConfigFile(config_folder);
    InitMotorCommands();
@@ -81,6 +70,9 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    }
    std::cout << "G1 Mujoco simulation initialized successfully." << std::endl;
 
+
+   // Initialize torques
+
    torque_loco_ = Eigen::VectorXd::Zero(locomotion_actuator_mj_ids_.size());
    torque_pd_ = Eigen::VectorXd::Zero(locked_actuator_mj_ids_.size());
 
@@ -92,6 +84,7 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    if (robot_ != nullptr)
    {
       robot_->ReconfigureContactClassifier(config_folder);
+      sensor_hw_.ResizeAll(total_motor_dof_);
       std::cout << "Initial Sensor Data :" << sensor_hw_ << std::endl;
 
    }else{
@@ -200,17 +193,18 @@ void G1MujocoInterface::Estimate()
    full_proprioception_ = proprioception;
 }
 
-void G1MujocoInterface::ReadAndEstimate()
+BipedProprioception G1MujocoInterface::ReadAndEstimate()
 {
    if (robot_ != nullptr)
    {
       Estimate();
       loco_proprioception_ = full_proprioception_.GetIndex(loco_proprio_indices_);
       pd_proprioception_ = full_proprioception_.GetIndex(pd_proprio_indices_);
+      return loco_proprioception_;
    }
    else
    {
-      MujocoInterfaceBase::ReadAndEstimate();
+      return MujocoInterfaceBase::ReadAndEstimate();
    }
 }
 void G1MujocoInterface::SendPacket()

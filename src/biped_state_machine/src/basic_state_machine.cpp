@@ -179,7 +179,8 @@ double BasicStateMachine::Update(const DesiredCommand &command,
       {
          control_counter_ = 0;
 
-         sim_->Update(motor_commands_);
+         BipedProprioception loco_proprioception = sim_->ReadAndEstimate();
+         sim_->ProcessMotorCommands(motor_commands_);
          sim_->SendPacket();
          sim_->GetAllJointStateFromSensorMujoco(qfull_, dqfull_);
 

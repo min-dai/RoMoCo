@@ -322,44 +322,44 @@ class G1Example {
     }
 
     if (ms) {
-      time_ += control_dt_;
-      if (time_ < duration_) {
-        // [Stage 1]: set robot to zero posture
-        for (int i = 0; i < G1_NUM_MOTOR; ++i) {
-          double ratio = std::clamp(time_ / duration_, 0.0, 1.0);
-          motor_command_tmp.q_target.at(i) = (1.0 - ratio) * ms->q.at(i);
-        }
-      } else if (time_ < duration_ * 2) {
-        // [Stage 2]: swing ankle using PR mode
-        mode_pr_ = Mode::PR;
-        double max_P = M_PI * 30.0 / 180.0;
-        double max_R = M_PI * 10.0 / 180.0;
-        double t = time_ - duration_;
-        double L_P_des = max_P * std::sin(2.0 * M_PI * t);
-        double L_R_des = max_R * std::sin(2.0 * M_PI * t);
-        double R_P_des = max_P * std::sin(2.0 * M_PI * t);
-        double R_R_des = -max_R * std::sin(2.0 * M_PI * t);
+      // time_ += control_dt_;
+      // if (time_ < duration_) {
+      //   // [Stage 1]: set robot to zero posture
+      //   for (int i = 0; i < G1_NUM_MOTOR; ++i) {
+      //     double ratio = std::clamp(time_ / duration_, 0.0, 1.0);
+      //     motor_command_tmp.q_target.at(i) = (1.0 - ratio) * ms->q.at(i);
+      //   }
+      // } else if (time_ < duration_ * 2) {
+      //   // [Stage 2]: swing ankle using PR mode
+      //   mode_pr_ = Mode::PR;
+      //   double max_P = M_PI * 30.0 / 180.0;
+      //   double max_R = M_PI * 10.0 / 180.0;
+      //   double t = time_ - duration_;
+      //   double L_P_des = max_P * std::sin(2.0 * M_PI * t);
+      //   double L_R_des = max_R * std::sin(2.0 * M_PI * t);
+      //   double R_P_des = max_P * std::sin(2.0 * M_PI * t);
+      //   double R_R_des = -max_R * std::sin(2.0 * M_PI * t);
 
-        motor_command_tmp.q_target.at(LeftAnklePitch) = L_P_des;
-        motor_command_tmp.q_target.at(LeftAnkleRoll) = L_R_des;
-        motor_command_tmp.q_target.at(RightAnklePitch) = R_P_des;
-        motor_command_tmp.q_target.at(RightAnkleRoll) = R_R_des;
-      } else {
-        // [Stage 3]: swing ankle using AB mode
-        mode_pr_ = Mode::AB;
-        double max_A = M_PI * 30.0 / 180.0;
-        double max_B = M_PI * 10.0 / 180.0;
-        double t = time_ - duration_ * 2;
-        double L_A_des = +max_A * std::sin(M_PI * t);
-        double L_B_des = +max_B * std::sin(M_PI * t + M_PI);
-        double R_A_des = -max_A * std::sin(M_PI * t);
-        double R_B_des = -max_B * std::sin(M_PI * t + M_PI);
+      //   motor_command_tmp.q_target.at(LeftAnklePitch) = L_P_des;
+      //   motor_command_tmp.q_target.at(LeftAnkleRoll) = L_R_des;
+      //   motor_command_tmp.q_target.at(RightAnklePitch) = R_P_des;
+      //   motor_command_tmp.q_target.at(RightAnkleRoll) = R_R_des;
+      // } else {
+      //   // [Stage 3]: swing ankle using AB mode
+      //   mode_pr_ = Mode::AB;
+      //   double max_A = M_PI * 30.0 / 180.0;
+      //   double max_B = M_PI * 10.0 / 180.0;
+      //   double t = time_ - duration_ * 2;
+      //   double L_A_des = +max_A * std::sin(M_PI * t);
+      //   double L_B_des = +max_B * std::sin(M_PI * t + M_PI);
+      //   double R_A_des = -max_A * std::sin(M_PI * t);
+      //   double R_B_des = -max_B * std::sin(M_PI * t + M_PI);
 
-        motor_command_tmp.q_target.at(LeftAnkleA) = L_A_des;
-        motor_command_tmp.q_target.at(LeftAnkleB) = L_B_des;
-        motor_command_tmp.q_target.at(RightAnkleA) = R_A_des;
-        motor_command_tmp.q_target.at(RightAnkleB) = R_B_des;
-      }
+      //   motor_command_tmp.q_target.at(LeftAnkleA) = L_A_des;
+      //   motor_command_tmp.q_target.at(LeftAnkleB) = L_B_des;
+      //   motor_command_tmp.q_target.at(RightAnkleA) = R_A_des;
+      //   motor_command_tmp.q_target.at(RightAnkleB) = R_B_des;
+      // }
 
       motor_command_buffer_.SetData(motor_command_tmp);
     }
