@@ -12,7 +12,6 @@
 #include "screen_radio/screen_radio.hpp"
 #include <cstdlib> // For getenv()
 
-
 // need to set up sim
 #include "cassie_mujoco_interface.hpp"
 
@@ -21,11 +20,10 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     auto node = std::make_shared<RadioSubscriber>("cassie_sim_node");
 
-
     std::string home = std::string(getenv("HOME"));
 
     std::string package_folder = ament_index_cpp::get_package_share_directory("cassie_simulation");
-    
+
     std::string config_folder = package_folder + "/config";
     std::string log_path = home + "/ROBOTLOG/Cassie";
 
@@ -43,11 +41,10 @@ int main(int argc, char *argv[])
     auto getUpper = [](const VectorXd &q)
     { return VectorXd::Zero(0); };
 
-        //with estimation
+    // with estimation
     std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<CassieModel>(urdf_path);
 
     std::unique_ptr<CassieMujocoInterface> mujocosim = std::make_unique<CassieMujocoInterface>(config_folder, log_path, std::move(robot_ptr_estimation));
-
 
     // //no estimation
     // std::unique_ptr<CassieMujocoInterface> mujocosim = std::make_unique<CassieMujocoInterface>(config_folder, log_path);

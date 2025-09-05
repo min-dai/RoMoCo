@@ -113,10 +113,30 @@ add_executable(cassie_state_machine src/cassie_main_state_machine.cpp)
 target_link_libraries(cassie_state_machine
   ${PROJECT_NAME}
 )
+
+## Ros Node
+add_executable(cassie_controller_node_main 
+  src/cassie_controller_node_main.cpp
+)
+target_link_libraries(cassie_controller_node_main
+  ${PROJECT_NAME}
+)
+
+## Ros Node
+add_executable(cassie_mujoco_interface_node_main 
+  src/cassie_mujoco_interface_node_main.cpp
+)
+target_link_libraries(cassie_mujoco_interface_node_main
+  ${PROJECT_NAME}
+)
+
 install(
-  TARGETS cassie_state_machine
+  TARGETS cassie_state_machine cassie_controller_node_main cassie_mujoco_interface_node_main
   DESTINATION lib/${PROJECT_NAME}
 )
+
+
+
 
 ## config files
 install(DIRECTORY config/

@@ -56,18 +56,15 @@ void CassieMujocoInterface::Init(const std::string &config_folder, const std::st
         cassie_user_in.torque[i] = 0.;
     }
 
-
     sensor_.encoders_pos_pinocchio_order.resize(all_encoder_names_pinocchio_order_.size());
     sensor_.encoders_vel_pinocchio_order.resize(all_encoder_names_pinocchio_order_.size());
     sensor_hw_.encoders_pos_pinocchio_order.resize(all_encoder_names_pinocchio_order_.size());
     sensor_hw_.encoders_vel_pinocchio_order.resize(all_encoder_names_pinocchio_order_.size());
 
-
     cassie_sim_step(sim, &cassie_out, &cassie_user_in);
 
     torque_loco_ = Eigen::VectorXd::Zero(loco_motor_dof_);
     torque_pd_ = Eigen::VectorXd::Zero(pd_motor_dof_);
-    
 
     if (robot_ != nullptr)
     {
@@ -223,15 +220,11 @@ void CassieMujocoInterface::UpdateHardwareSensorData()
     sensor_hw_.base_lin_acc << cassie_out.pelvis.vectorNav.linearAcceleration[0],
         cassie_out.pelvis.vectorNav.linearAcceleration[1],
         cassie_out.pelvis.vectorNav.linearAcceleration[2];
-
-
-        
 }
 
 void CassieMujocoInterface::Estimate()
 {
     BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
-
 
     robot_->UpdateKinematics(proprioception.q(loco_proprio_indices_), proprioception.qdot(loco_proprio_indices_));
 
@@ -243,13 +236,13 @@ void CassieMujocoInterface::Estimate()
 
     proprioception.qdot.head(3) << est_lin_vel_;
 
-        std::cout << "proprioception" << std::endl;
+    std::cout << "proprioception" << std::endl;
     std::cout << proprioception << std::endl;
 
     if (torque_loco_.hasNaN())
     {
         std::cerr << "Error: torque_loco_ contains NaN values!" << std::endl;
-        //terminate sim
+        // terminate sim
         exit(EXIT_FAILURE);
     }
 
