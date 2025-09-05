@@ -17,7 +17,7 @@ void MujocoInterfaceBase::ReadAndEstimate()
 
 void MujocoInterfaceBase::SendPacket()
 {
-   torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(motored_loco_proprio_indices_), loco_proprioception_.qdot(motored_loco_proprio_indices_));
+   torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(loco_proprio_motor_indices_), loco_proprioception_.qdot(loco_proprio_motor_indices_));
    torque_pd_ = pd_motor_commands_.SolveFullTorque(pd_proprioception_.q, pd_proprioception_.qdot);
 
    Step(torque_loco_, torque_pd_);

@@ -16,7 +16,7 @@ struct RawSensorData
    friend std::ostream &operator<<(std::ostream &os, const RawSensorData &data)
    {
        os << "Base Linear Position: " << data.base_lin_pos.transpose() << "\n";
-       os << "Base Angular Quaternion: " << data.base_ang_quat.coeffs().transpose() << "\n";
+       os << "Base Angular Quaternion: " << data.base_ang_quat.w() << " " << data.base_ang_quat.x() << " " << data.base_ang_quat.y() << " " << data.base_ang_quat.z() << "\n";
        os << "Base Angular Velocity: " << data.base_ang_vel.transpose() << "\n";
        os << "Encoders Position (Pinocchio Order): " << data.encoders_pos_pinocchio_order.transpose() << "\n";
        os << "Encoders Velocity (Pinocchio Order): " << data.encoders_vel_pinocchio_order.transpose() << "\n";

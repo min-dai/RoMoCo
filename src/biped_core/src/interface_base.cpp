@@ -39,6 +39,9 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
    yaml_parser.Init(interface_config_file);
    pd_encoder_names_ = yaml_parser.get_string_vector("locked_encoder_names");
    loco_encoder_names_ = yaml_parser.get_string_vector("pinocchio_encoder_names");
+
+   std::vector<std::string> passive_encoder_names = yaml_parser.get_string_vector("passive_encoder_names");
+
    //verify they add up to all
    if (pd_encoder_names_.size() + loco_encoder_names_.size() != all_encoder_names_pinocchio_order_.size())
    {
@@ -47,57 +50,52 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
 
    // Initialize MotorCommands and Proprioception
 
-   total_motor_dof_ = all_encoder_names_pinocchio_order_.size();
-   loco_motor_indices_ = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, loco_encoder_names_);
-   pd_motor_indices_ = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, pd_encoder_names_);
+   int total_encoder_dof = all_encoder_names_pinocchio_order_.size();
+   total_proprio_dof_ = 6 + total_encoder_dof;
+   pd_motor_dof_ = pd_encoder_names_.size();
+   loco_motor_dof_ = loco_encoder_names_.size() - passive_encoder_names.size();
+   total_motor_dof_ = pd_motor_dof_ + loco_motor_dof_;
 
-   total_proprio_dof_ = 6 + total_motor_dof_;
+   std::vector<int> loco_encoder_indices = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, loco_encoder_names_);
+   std::vector<int> pd_encoder_indices = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, pd_encoder_names_);
 
-   // proprio indices = base + shifted motors
-   // {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}
+   std::vector<int> passive_encoder_indices = GetJointIndicesFromSubset(all_encoder_names_pinocchio_order_, passive_encoder_names);
+
+   // proprio indices = base + shifted encoders
    loco_proprio_indices_ = {0, 1, 2, 3, 4, 5};
-   loco_proprio_indices_.reserve(6 + loco_motor_indices_.size());
-
-   // append shifted motor indices
-   std::transform(loco_motor_indices_.begin(),
-                  loco_motor_indices_.end(),
+   loco_proprio_indices_.reserve(6 + loco_encoder_indices.size());
+   std::transform(loco_encoder_indices.begin(),
+                  loco_encoder_indices.end(),
                   std::back_inserter(loco_proprio_indices_),
                   [](int idx)
                   { return idx + 6; });
 
-   // offset 
-   motored_loco_proprio_indices_  = loco_motor_indices_;
-   for (int &x : motored_loco_proprio_indices_)
-   {
-      x += 6;
+   // loco_proprio_motor_indices_ are actuated joint indices in full proprio
+   for (int idx : loco_encoder_indices) {
+    if (std::find(passive_encoder_indices.begin(), passive_encoder_indices.end(), idx) == passive_encoder_indices.end()) {
+        loco_proprio_motor_indices_.push_back(idx+6);
+    }
    }
-   //print for debug
-   std::cout << "motored_loco_proprio_indices_: "; 
-   for (const auto &idx : motored_loco_proprio_indices_)
-   {
-      std::cout << idx << " ";
-   }
-   std::cout << std::endl;
 
    // simply offset by 6 for PD joints               
-   pd_proprio_indices_ = pd_motor_indices_;
-
+   pd_proprio_indices_ = pd_encoder_indices;
    for (int &x : pd_proprio_indices_)
    {
       x += 6;
    }
 
+   PrintDebugInfo();
 
 }
 void InterfaceBase::InitMotorCommands()
 {
-   if (pd_motor_indices_.size() + loco_motor_indices_.size() != total_motor_dof_)
+   if (total_motor_dof_ <= 0 || loco_motor_dof_ <= 0)
    {
-      throw std::runtime_error("Motor command sizes do not match total DOF");
+      throw std::runtime_error("motor DOF not initialized. Call InitDofAndIndicesFromConfigFile first.");
    }
 
-   pd_motor_commands_.ZeroAll(pd_motor_indices_.size());
-   loco_motor_commands_.ZeroAll(loco_motor_indices_.size());
+   pd_motor_commands_.ZeroAll(pd_motor_dof_);
+   loco_motor_commands_.ZeroAll(loco_motor_dof_);
    final_motor_commands_.ZeroAll(total_motor_dof_);
   }
 
@@ -114,10 +112,6 @@ void InterfaceBase::InitProprioception()
 
 void InterfaceBase::CheckInitialization() const
 {
-   if (pd_motor_indices_.empty() || loco_motor_indices_.empty())
-   {
-      throw std::runtime_error("Motor indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
-   }
    if (pd_proprio_indices_.empty() || loco_proprio_indices_.empty())
    {
       throw std::runtime_error("Proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
@@ -126,7 +120,7 @@ void InterfaceBase::CheckInitialization() const
    {
       throw std::runtime_error("Total DOF not initialized. Call InitDofAndIndicesFromConfigFile first.");
    }
-   if (motored_loco_proprio_indices_.empty())
+   if (loco_proprio_motor_indices_.empty())
    {
       throw std::runtime_error("Motored loco proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
    }
@@ -198,33 +192,29 @@ void InterfaceBase::ReconfigurePdMotorCommands(std::string &config_file)
 
 void InterfaceBase::PrintDebugInfo() const
 {
-    std::cout << "=== Interface Debug Info ===" << std::endl;
-    std::cout << "PD proprio indices: ";
-    for (const auto idx : pd_proprio_indices_) {
-        std::cout << idx << " ";
-    }
-    std::cout << std::endl;
+   std::cout << "=== Interface Debug Info ===" << std::endl;
+   std::cout << "PD proprio indices: ";
+   for (const auto idx : pd_proprio_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
 
-    std::cout << "Loco proprio indices: ";
-    for (const auto idx : loco_proprio_indices_) {
-        std::cout << idx << " ";
-    }
-    std::cout << std::endl;
+   std::cout << "Loco proprio indices: ";
+   for (const auto idx : loco_proprio_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
 
-    std::cout << "PD motor indices: ";
-    for (const auto idx : pd_motor_indices_) {
-        std::cout << idx << " ";
-    }
-    std::cout << std::endl;
-    
-    std::cout << "Loco motor indices: ";
-    for (const auto idx : loco_motor_indices_) {
-        std::cout << idx << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "=========================" << std::endl;
+   std::cout << "Loco proprio motor indices: ";
+   for (const auto idx : loco_proprio_motor_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
+   std::cout << "=========================" << std::endl;
 }
-
 
 Eigen::VectorXf InterfaceBase::CollectLog(const double t, const std::vector<VectorXd> &vectors)
 {

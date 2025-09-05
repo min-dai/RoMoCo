@@ -32,9 +32,7 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
        "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint", "right_wrist_yaw_joint"};
 
    InitDofAndIndicesFromConfigFile(config_folder);
-
    InitMotorCommands();
-   std::cout << "Init Motor Commands" << std::endl;
    std::string interface_config_file = config_folder + "/interface_config.yaml";
    ReconfigurePdMotorCommands(interface_config_file);
    InitProprioception();
@@ -179,15 +177,20 @@ void G1MujocoInterface::UpdateHardwareSensorData()
    sensor_hw_.base_ang_vel = mujoco_.GetSensorDataByIds(gyro_mj_ids);
    sensor_hw_.base_lin_acc = mujoco_.GetSensorDataByIds(accelerometer_mj_ids);
    //todo: remove gravity
-   sensor_hw_.base_lin_acc(2) -= 9.81;
+   // sensor_hw_.base_lin_acc(2) -= 9.81;
    const auto *qvel = mujoco_.qvel();
    true_lin_vel_ << qvel[0], qvel[1], qvel[2];
 }
 
 void G1MujocoInterface::Estimate()
 {
-   BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
 
+
+   BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
+   std::cout << "sensor_hw" << std::endl;
+        std::cout << sensor_hw_ << std::endl;
+   std::cout << "proprioception" << std::endl;
+    std::cout << proprioception << std::endl;
    robot_->UpdateKinematics(proprioception.q(loco_proprio_indices_), proprioception.qdot(loco_proprio_indices_));
 
    BipedEstimationKinematicsInput biped_estimation_kinematics_input = robot_->ComputeEstimationKinematicsInput();

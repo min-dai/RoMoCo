@@ -17,6 +17,14 @@ struct ContactClassifierInput
     Eigen::MatrixXd Jright_active;
     Eigen::VectorXd torque_left;
     Eigen::VectorXd torque_right;
+
+    void ResizeAll(int n_left, int n_right)
+    {
+        Jleft_active.resize(3, n_left);
+        Jright_active.resize(3, n_right);
+        torque_left.resize(n_left);
+        torque_right.resize(n_right);
+    }
     friend std::ostream &operator<<(std::ostream &os, const ContactClassifierInput &input)
     {
         os << "Jleft_active: " << input.Jleft_active << "\n";

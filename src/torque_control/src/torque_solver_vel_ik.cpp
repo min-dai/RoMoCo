@@ -92,8 +92,6 @@ void TorqueSolverVELIK::SolveIk()
 
     output_->qDes_actuated += delta_q_output(output_->actuated_q_idx);
     output_->dqDes_actuated = dq_output(output_->actuated_q_idx);
-    std::cout << "qDes_actuated = " << output_->qDes_actuated.transpose() << std::endl;
-    std::cout << "dqDes_actuated = " << output_->dqDes_actuated.transpose() << std::endl;
 
 
 }

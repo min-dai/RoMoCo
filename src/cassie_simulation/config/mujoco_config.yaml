@@ -4,6 +4,7 @@ robot_name: "cassie"          # The name of the robot
 mujoco_settings:
   # model_name: "/model_files/xml/cassieRigidMultiDomain.xml" 
   model_name: "xml/cassieRigid.xml"
+  pin_pelvis: False
 
 
 video_settings:                  # Video recording settings

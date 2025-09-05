@@ -86,6 +86,7 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
    qfull_ = Eigen::VectorXd::Zero(robot_ptr->nq() + n_locked_joints_);
    dqfull_ = Eigen::VectorXd::Zero(robot_ptr->nv() + n_locked_joints_);
    locomotion_input_ = Eigen::VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
+   motor_commands_ = BipedMotorCommands(robot_ptr->nu());
 }
 
 double BasicStateMachine::Update(const DesiredCommand &command,
@@ -178,7 +179,8 @@ double BasicStateMachine::Update(const DesiredCommand &command,
       {
          control_counter_ = 0;
 
-         sim_->ReadAndEstimate();
+         sim_->Update(motor_commands_);
+         sim_->SendPacket();
          sim_->GetAllJointStateFromSensorMujoco(qfull_, dqfull_);
 
          std::cout << "qfull_: " << qfull_.transpose() << std::endl;
@@ -198,8 +200,8 @@ double BasicStateMachine::Update(const DesiredCommand &command,
             output->UpdateOutput(command, sim_->sim_time(), t_old_);
             t_old_ = sim_->sim_time();
 
-            BipedMotorCommands motor_commands = torque_solver->Solve();
-            Eigen::VectorXd u_leg = motor_commands.joint_torques;
+            motor_commands_ = torque_solver->Solve();
+            Eigen::VectorXd u_leg = motor_commands_.joint_torques;
 
             locomotion_input_ = u_leg;
 

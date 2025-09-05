@@ -1,10 +1,10 @@
 # qp, id, velik
-controller: "qp"
+controller: "velik"
 
 
 
 pose_command: 
-  dt_lowpass: 0.001
+  dt_lowpass: 0.0005
   yd_lowpass_dt_cutoff: [.5, .5, .25, .5, .5, .5]
   stand2step_y_offset: 0.04
   x_offset: 0

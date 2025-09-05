@@ -17,7 +17,7 @@ public:
     // full_proprioception_, loco_proprioception_, and pd_proprioception_
     virtual void ReadAndEstimate() = 0;
 
-    int loco_motor_dof() const { return loco_motor_indices_.size(); }
+    int loco_motor_dof() const { return loco_motor_dof_; }
 
     // update loco_motor_commands, pd_motor_commands are constants
     // return loco_proprioception_
@@ -58,18 +58,21 @@ protected:
     int total_proprio_dof_;
     std::vector<int> pd_proprio_indices_;
     std::vector<int> loco_proprio_indices_;
+    std::vector<int> loco_proprio_motor_indices_;
 
-    std::vector<int> motored_loco_proprio_indices_;
-
+    //interface recieves sensor data and parse to full proprioception
+    //then ros node publish loco proprioception for controller
     BipedProprioception full_proprioception_;
     BipedProprioception loco_proprioception_;
     BipedProprioception pd_proprioception_;
 
     int total_motor_dof_;
-    std::vector<int> pd_motor_indices_;
-    std::vector<int> loco_motor_indices_;
+    int pd_motor_dof_;
+    int loco_motor_dof_;
 
+    //set at beginning, constant after
     BipedMotorCommands pd_motor_commands_;
+    //updated every cycle
     BipedMotorCommands loco_motor_commands_;
     BipedMotorCommands final_motor_commands_;
 

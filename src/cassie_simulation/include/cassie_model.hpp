@@ -33,10 +33,14 @@ public:
 
     CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {});
 
+    void ComputeContactClassifierInput() override;
+    BipedEstimationKinematicsInput ComputeEstimationKinematicsInput() override;
+
     std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
     std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
 
     void UpdateDynamics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq) override;
+    
     void AddFrames() override;
 
     void InitActuation() override;

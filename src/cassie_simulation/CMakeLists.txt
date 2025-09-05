@@ -55,9 +55,8 @@ set(include_dirs
 
 # Declare a C++ library
 add_library(${PROJECT_NAME}
-   src/cassie_mujoco_sim.cpp
+   src/cassie_mujoco_interface.cpp
    src/cassie_model.cpp
-   src/cassie_sensor.cpp
    src/cassie_interface/cassiemujoco.c
 )
 target_include_directories(${PROJECT_NAME} PUBLIC

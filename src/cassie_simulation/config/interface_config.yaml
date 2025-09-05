@@ -1,2 +1,39 @@
+dt: 0.0005
+
 urdf_name: "urdf/cassieRigid_new.urdf"
+
+pinocchio_encoder_names:
+  - LeftHipRoll
+  - LeftHipYaw
+  - LeftHipPitch
+  - LeftKneePitch
+  - LeftTarsusPitch
+  - LeftFootPitch
+  - RightHipRoll
+  - RightHipYaw
+  - RightHipPitch
+  - RightKneePitch
+  - RightTarsusPitch
+  - RightFootPitch
+
+passive_encoder_names:
+  - LeftTarsusPitch
+  - RightTarsusPitch
+
 locked_encoder_names:
+
+
+
+contact_kf:
+  base_process_std: 0.1
+  foothold_std: 0.05
+  encoder_std: 0.01
+  acceleration_bias_std: 0.25
+  init_position_std: 0.01
+  init_velocity_std: 0.1
+  init_acc_bias_std: 0.1
+  init_foothold_std: 0.025
+  contact_classifier:
+    lowpass_dt_cutoff: 0.005
+    linear_lb: 60.0
+    linear_ub: 110.0

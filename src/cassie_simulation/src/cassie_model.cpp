@@ -29,7 +29,7 @@ std::vector<int> CassieModel::actuated_q_idx(AnkleMotorStatus left_ankle_status,
             break; // do not include ankle joints
         case AnkleMotorStatus::ActivePitch:
             q_idx.push_back(ankle_pitch);
-            break; 
+            break;
         case AnkleMotorStatus::ActiveAll:
             q_idx.push_back(ankle_pitch);
             break;
@@ -51,7 +51,6 @@ std::vector<int> CassieModel::actuated_u_idx(AnkleMotorStatus left_ankle_status,
         int knee = is_left ? 3 : 8;
         int ankle_pitch = is_left ? 4 : 9;
 
-
         u_idx.push_back(hip_roll);
         u_idx.push_back(hip_yaw);
         u_idx.push_back(hip_pitch);
@@ -62,7 +61,7 @@ std::vector<int> CassieModel::actuated_u_idx(AnkleMotorStatus left_ankle_status,
             break; // do not include ankle joints
         case AnkleMotorStatus::ActivePitch:
             u_idx.push_back(ankle_pitch);
-            break; 
+            break;
         case AnkleMotorStatus::ActiveAll:
             u_idx.push_back(ankle_pitch);
             break;
@@ -77,12 +76,10 @@ void CassieModel::AddFrames()
 {
     pinocchio::SE3 placement = pinocchio::SE3::Identity();
 
-    
     std::vector<std::pair<std::string, pinocchio::JointIndex>> frame_data = {
         {"left_hip", model_.getJointId("LeftHipYaw")},
         {"right_hip", model_.getJointId("RightHipYaw")},
         {"base", model_.getJointId("root_joint")}};
-        
 
     for (const auto &frame : frame_data)
     {
@@ -90,12 +87,12 @@ void CassieModel::AddFrames()
     }
 
     Matrix3d Rfoot, Rtoworld;
-    Rfoot << cos(50/180.*M_PI), -sin(50/180.*M_PI), 0,
-    sin(50/180.*M_PI), cos(50/180.*M_PI), 0,
-    0, 0, 1;
+    Rfoot << cos(50 / 180. * M_PI), -sin(50 / 180. * M_PI), 0,
+        sin(50 / 180. * M_PI), cos(50 / 180. * M_PI), 0,
+        0, 0, 1;
     Rtoworld << 0, 0, -1,
-                1, 0, 0,
-                0, -1, 0;
+        1, 0, 0,
+        0, -1, 0;
 
     placement.rotation() << Rfoot * Rtoworld;
 
@@ -105,22 +102,21 @@ void CassieModel::AddFrames()
     std::string base_joint_name = "root_joint";
 
     std::vector<std::tuple<std::string, Eigen::Vector3d, pinocchio::JointIndex>> foot_frame_data = {
-        {"left_foot_F", {-0.0399655505597651,0.107943294226436,0}, left_ankle_joint_id},
-        {"left_foot_B", {0.0826015603392714,0.00509727667658939,0}, left_ankle_joint_id},
-        {"left_below_ankle", {0.0366388937521327,0.0436645332577817,0}, left_ankle_joint_id},
-        {"left_mid_foot", {0.0213180048897532,0.0565202854515125,0}, left_ankle_joint_id},
+        {"left_foot_F", {-0.0399655505597651, 0.107943294226436, 0}, left_ankle_joint_id},
+        {"left_foot_B", {0.0826015603392714, 0.00509727667658939, 0}, left_ankle_joint_id},
+        {"left_below_ankle", {0.0366388937521327, 0.0436645332577817, 0}, left_ankle_joint_id},
+        {"left_mid_foot", {0.0213180048897532, 0.0565202854515125, 0}, left_ankle_joint_id},
         {"left_ankle", {0, 0, 0}, left_ankle_joint_id},
-        {"right_foot_F", {-0.0399655505597651,0.107943294226436,0}, righ_ankle_joint_id},
-        {"right_foot_B", {0.0826015603392714,0.00509727667658939,0}, righ_ankle_joint_id},
-        {"right_below_ankle", {0.0366388937521327,0.0436645332577817,0}, righ_ankle_joint_id},
-        {"right_mid_foot", {0.0213180048897532,0.0565202854515125,0}, righ_ankle_joint_id},
+        {"right_foot_F", {-0.0399655505597651, 0.107943294226436, 0}, righ_ankle_joint_id},
+        {"right_foot_B", {0.0826015603392714, 0.00509727667658939, 0}, righ_ankle_joint_id},
+        {"right_below_ankle", {0.0366388937521327, 0.0436645332577817, 0}, righ_ankle_joint_id},
+        {"right_mid_foot", {0.0213180048897532, 0.0565202854515125, 0}, righ_ankle_joint_id},
         {"right_ankle", {0, 0, 0}, righ_ankle_joint_id},
-        {"base", {0, 0, 0},        model_.getJointId(base_joint_name)},
-        {"baseF", {0.05, 0.0,  0},  model_.getJointId(base_joint_name)},
+        {"base", {0, 0, 0}, model_.getJointId(base_joint_name)},
+        {"baseF", {0.05, 0.0, 0}, model_.getJointId(base_joint_name)},
         {"baseB", {-0.05, 0.0, 0}, model_.getJointId(base_joint_name)},
-        {"baseL", {0.0, 0.05,  0},  model_.getJointId(base_joint_name)},
-        {"baseR", {0.0, -0.05, 0}, model_.getJointId(base_joint_name)}
-    };
+        {"baseL", {0.0, 0.05, 0}, model_.getJointId(base_joint_name)},
+        {"baseR", {0.0, -0.05, 0}, model_.getJointId(base_joint_name)}};
     for (const auto &frame : foot_frame_data)
     {
         placement.translation() = std::get<1>(frame);
@@ -137,8 +133,8 @@ void CassieModel::AddFrames()
 
     MatrixXd R_tarsus2Heel(3, 3);
     R_tarsus2Heel << -0.9121266047, -0.4098716742, 0.005501613619,
-                      0.4082402433, -0.9095420663, -0.07793031078,
-                      0.03694537597, -0.06883632969, 0.9969436288;
+        0.4082402433, -0.9095420663, -0.07793031078,
+        0.03694537597, -0.06883632969, 0.9969436288;
 
     Vector3d rodJoint2heelJoint;
     rodJoint2heelJoint << 0.11877, -0.01, 0;
@@ -147,10 +143,6 @@ void CassieModel::AddFrames()
     model_.addFrame(pinocchio::Frame("left_heel_spring_end", model_.getJointId("LeftTarsusPitch"), 0, placement, pinocchio::OP_FRAME));
     placement.translation() << pHeelRodJoint(0), pHeelRodJoint(1), -pHeelRodJoint(2);
     model_.addFrame(pinocchio::Frame("right_heel_spring_end", model_.getJointId("RightTarsusPitch"), 0, placement, pinocchio::OP_FRAME));
-
-
-
-    
 }
 
 void CassieModel::InitActuation()
@@ -183,9 +175,9 @@ void CassieModel::InitJointKinematics()
 
 void CassieModel::GetInternalHolonomicConstraints(MatrixXd &Jh, VectorXd &dJhdq)
 {
-    Kinematics3D left = left_thigh_connector.kinematics-left_heel_spring_end.kinematics;
-    Kinematics3D right = right_thigh_connector.kinematics-right_heel_spring_end.kinematics;
-    left_achilles = (left).dot(left) ;
+    Kinematics3D left = left_thigh_connector.kinematics - left_heel_spring_end.kinematics;
+    Kinematics3D right = right_thigh_connector.kinematics - right_heel_spring_end.kinematics;
+    left_achilles = (left).dot(left);
     right_achilles = (right).dot(right);
     Jh.resize(2, nv());
     Jh << left_achilles.jacobian,
@@ -193,14 +185,12 @@ void CassieModel::GetInternalHolonomicConstraints(MatrixXd &Jh, VectorXd &dJhdq)
     dJhdq.resize(2);
     dJhdq << left_achilles.dJdq,
         right_achilles.dJdq;
-
-
 }
 
 void CassieModel::UpdateDynamics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq)
 {
-    RobotBasePinocchio::UpdateDynamics(q,dq);
-    
+    RobotBasePinocchio::UpdateDynamics(q, dq);
+
     // Add reflected rotor inertias
     data_.M(LeftHipRoll, LeftHipRoll) += 6.62e-05 * 25 * 25;
     data_.M(RightHipRoll, RightHipRoll) += 6.62e-05 * 25 * 25;
@@ -212,7 +202,6 @@ void CassieModel::UpdateDynamics(const Eigen::VectorXd &q, const Eigen::VectorXd
     data_.M(RightKneePitch, RightKneePitch) += 0.000365 * 16 * 16;
     data_.M(LeftFootPitch, LeftFootPitch) += 4.9e-06 * 50 * 50;
     data_.M(RightFootPitch, RightFootPitch) += 4.9e-06 * 50 * 50;
-
 }
 
 std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> CassieModel::GetAllFrameKinematics()
@@ -234,19 +223,66 @@ std::vector<std::pair<std::reference_wrapper<RobotBasePinocchio::FrameKinematics
 
 Kinematics1D CassieModel::GetLeftFootDeltaPitch()
 {
-    return (left_footB_.kinematics.z() - left_footF_.kinematics.z())/0.14;
+    return (left_footB_.kinematics.z() - left_footF_.kinematics.z()) / 0.14;
 }
 
 Kinematics1D CassieModel::GetRightFootDeltaPitch()
 {
-    return (right_footB_.kinematics.z() - right_footF_.kinematics.z())/0.14;
+    return (right_footB_.kinematics.z() - right_footF_.kinematics.z()) / 0.14;
 }
 Kinematics1D CassieModel::GetBaseDeltaPitch()
 {
     // std::cout << "base pitch: " << baseF.kinematics.position << std::endl;
-    return (baseB_.kinematics.z() - baseF_.kinematics.z())/0.1;
+    return (baseB_.kinematics.z() - baseF_.kinematics.z()) / 0.1;
 }
 Kinematics1D CassieModel::GetBaseDeltaRoll()
 {
-    return (baseL_.kinematics.z() - baseR_.kinematics.z())/0.1;
+    return (baseL_.kinematics.z() - baseR_.kinematics.z()) / 0.1;
+}
+
+void CassieModel::ComputeContactClassifierInput()
+{
+
+    Kinematics3D left = left_thigh_connector.kinematics - left_heel_spring_end.kinematics;
+    Kinematics3D right = right_thigh_connector.kinematics - right_heel_spring_end.kinematics;
+    left_achilles = (left).dot(left);
+    right_achilles = (right).dot(right);
+
+    MatrixXd Jleft_below_ankle = left_below_ankle_.kinematics.jacobian;
+    MatrixXd Jright_below_ankle = right_below_ankle_.kinematics.jacobian;
+
+    MatrixXd Jleft_active = Jleft_below_ankle(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
+    MatrixXd Jright_active = Jright_below_ankle(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
+
+    MatrixXd Jleft_ach = left_achilles.jacobian(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
+    MatrixXd Jright_ach = right_achilles.jacobian(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
+
+    contact_classifier_input_.ResizeAll(Jleft_active.rows(), Jright_active.rows());
+
+    contact_classifier_input_.Jleft_active = Jleft_active - Jleft_below_ankle.block(0, LeftTarsusPitch, 3, 1) / left_achilles.jacobian(0, LeftTarsusPitch) * Jleft_ach;
+    contact_classifier_input_.Jright_active = Jright_active - Jright_below_ankle.block(0, RightTarsusPitch, 3, 1) / right_achilles.jacobian(0, RightTarsusPitch) * Jright_ach;
+
+    if (computed_torque_.size() != nu_)
+    {
+
+        throw std::runtime_error("robot class stored computed_torque_ size does not match nu_");
+    }
+
+    contact_classifier_input_.torque_left = computed_torque_.head(5);
+    contact_classifier_input_.torque_right = computed_torque_.tail(5);
+}
+
+BipedEstimationKinematicsInput CassieModel::ComputeEstimationKinematicsInput()
+{
+    ComputeContactClassifierInput();
+    ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
+
+    BipedEstimationKinematicsInput biped_estimation_kinematics_input;
+    biped_estimation_kinematics_input.p_left_foot = left_below_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.p_right_foot = right_below_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.J_left_foot = left_below_ankle_.kinematics.jacobian.block(0, LeftHipRoll, 3, 6);
+    biped_estimation_kinematics_input.J_right_foot = right_below_ankle_.kinematics.jacobian.block(0, RightHipRoll, 3, 6);
+    biped_estimation_kinematics_input.left_contact_prob = contact_classifier_output_.left_contact_prob;
+    biped_estimation_kinematics_input.right_contact_prob = contact_classifier_output_.right_contact_prob;
+    return biped_estimation_kinematics_input;
 }

@@ -70,7 +70,7 @@ private:
 
 
    Eigen::MatrixXd Renc;
-   bool is_initialized_;
+   bool is_initialized_=false;
 
    double tprev_;
 

@@ -19,6 +19,9 @@ pinocchio_encoder_names:
   - right_ankle_pitch_joint
   - right_ankle_roll_joint  
 
+passive_encoder_names:
+
+
 locked_encoder_names:
   - waist_yaw_joint
   - waist_roll_joint

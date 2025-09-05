@@ -226,7 +226,7 @@ void G1HardwareInterface::SendPacket()
     pd_motor_commands_.ZeroAll();
     ConvertMotorCommandsToG1(final_motor_commands_);
 
-    torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(motored_loco_proprio_indices_), loco_proprioception_.qdot(motored_loco_proprio_indices_));
+    torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(loco_proprio_motor_indices_), loco_proprioception_.qdot(loco_proprio_motor_indices_));
    
     robot_->SetComputedTorque(torque_loco_);
 

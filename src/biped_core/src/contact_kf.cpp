@@ -28,10 +28,16 @@ ContactKf::ContactKf(const std::string &config_folder, int n_encoders)
     Hk_.block(0, 6, 3, 3) = I3;
     Hk_.block(3, 9, 3, 3) = I3;
 
-    Sk_ = Eigen::MatrixXd::Zero(6, 6);
+    Sk_ = Eigen::MatrixXd::Zero(n_encoders, n_encoders);
     Kk_ = Eigen::MatrixXd::Zero(15, 6);
 
     x_hat = Eigen::MatrixXd::Zero(3, 5);
+
+    yk = Eigen::VectorXd::Zero(6);
+
+    P.resize(15, 15);
+
+    g_ << 0, 0, -9.81;
 }
 
 void ContactKf::Config::Init()
@@ -93,7 +99,6 @@ void ContactKf::InitContact(double t, double lC, double rC, const Eigen::VectorX
             this->x_hat.col(3) = this->x_hat.col(0) + prf;
 
             Eigen::MatrixXd tmpI = Eigen::MatrixXd::Identity(3, 3);
-            P.resize(15, 15);
             P.setZero();
             P.block(0, 0, 3, 3) = config.init_position_std * config.init_position_std * tmpI;
             P.block(3, 3, 3, 3) = config.init_velocity_std * config.init_velocity_std * tmpI;
@@ -162,7 +167,9 @@ void ContactKf::PredictStep(double dt, const Eigen::Matrix3d &R, const Eigen::Ve
         Qk_.block(9, 9, 3, 3) = config.foothold_std * config.foothold_std * eye3;
     }
 
+
     this->P = Fk_ * this->P * Fk_.transpose() + Qk_;
+
 
     // pack the state to use in Update
     this->PackState(this->x_hat, p, v, plf, prf, ba);
@@ -174,9 +181,11 @@ void ContactKf::UpdateStep(const Eigen::Vector3d &plf_enc, const Eigen::Vector3d
 {
     // yk = zk - Hk * xhat_k|k-1
 
+
     Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
     this->UnpackState(this->x_hat, p, v, plf, prf, ba);
-
+    std::cout << "plf, prf: " << plf.transpose() << ", " << prf.transpose() << std::endl;
+    std::cout << "p : " << p.transpose() << std::endl;
     yk.segment(0, 3) = plf_enc - (plf - p);
     yk.segment(3, 3) = prf_enc - (prf - p);
 

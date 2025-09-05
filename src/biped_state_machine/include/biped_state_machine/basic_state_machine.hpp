@@ -44,6 +44,8 @@ private:
    int control_counter_ = 0;
    int control_counter_threshold_ = 1;
 
+   BipedMotorCommands motor_commands_;
+
    std::unique_ptr<MujocoInterfaceBase> sim_;
 
    // for Log files

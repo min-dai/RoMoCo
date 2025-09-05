@@ -13,6 +13,20 @@ struct BipedEstimationKinematicsInput
 
     double left_contact_prob = 0.0;
     double right_contact_prob = 0.0;
+
+    friend std::ostream &operator<<(std::ostream &os, const BipedEstimationKinematicsInput &input)
+    {
+        os << "BipedEstimationKinematicsInput: \n";
+        os << "p_left_foot: " << input.p_left_foot.transpose() << "\n";
+        os << "p_right_foot: " << input.p_right_foot.transpose() << "\n";
+        os << "J_left_foot: \n"
+           << input.J_left_foot << "\n";
+        os << "J_right_foot: \n"
+           << input.J_right_foot << "\n";
+        os << "left_contact_prob: " << input.left_contact_prob << "\n";
+        os << "right_contact_prob: " << input.right_contact_prob << "\n";
+        return os;
+    }
 };
 
 #endif // BIPED_ESTIMATION_INPUT_HPP

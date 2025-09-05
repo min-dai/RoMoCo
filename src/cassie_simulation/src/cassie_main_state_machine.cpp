@@ -14,7 +14,7 @@
 
 
 // need to set up sim
-#include "cassie_mujoco_sim.hpp"
+#include "cassie_mujoco_interface.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -33,9 +33,8 @@ int main(int argc, char *argv[])
     YAMLParser yaml_parser(config_file);
     std::string urdf_name = yaml_parser.get_string("urdf_name");
     std::string urdf_path = package_folder + "/model_files/" + urdf_name;
-    std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
 
-    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_encoder_names);
+    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(urdf_path);
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 
@@ -44,7 +43,14 @@ int main(int argc, char *argv[])
     auto getUpper = [](const VectorXd &q)
     { return VectorXd::Zero(0); };
 
-    std::unique_ptr<CassieMujocoSim> mujocosim = std::make_unique<CassieMujocoSim>(config_folder, log_path);
+        //with estimation
+    std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<CassieModel>(urdf_path);
+
+    std::unique_ptr<CassieMujocoInterface> mujocosim = std::make_unique<CassieMujocoInterface>(config_folder, log_path, std::move(robot_ptr_estimation));
+
+
+    // //no estimation
+    // std::unique_ptr<CassieMujocoInterface> mujocosim = std::make_unique<CassieMujocoInterface>(config_folder, log_path);
 
     BasicStateMachine state_machine(config_folder, log_path, robot_ptr, std::move(mujocosim));
 
