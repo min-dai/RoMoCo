@@ -1,5 +1,5 @@
 # qp, id
-controller: "qp"
+controller: "posik"
 
 
 
@@ -54,14 +54,15 @@ velik:
   JointKP: [750, 750, 750, 750, 750]
   #for each leg
   JointKD: [2,2,2,2,2]
-  ik_gain: [1, 1, 1, 1, 1, 1,1,1,1]
+  output_ik_gain: [1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 
 posik:
   tol: 0.0001
   max_iter: 1000
-  JointKP: [600., 100., 500., 1000., 100. ]
-  JointKD: [20., 10., 20., 20., 10. ]
+  # hipRoll hipYaw hipPitch kneePitch toePitch
+  JointKP: [1700, 450, 1200, 800, 250]
+  JointKD: [25,    10,   20, 10, 1]
 
 
 

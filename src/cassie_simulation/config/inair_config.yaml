@@ -35,7 +35,7 @@ velik:
   JointKP: [100, 100, 100, 100, 100]
   #for each leg
   JointKD: [1, 1, 1, 1, 1]
-  ik_gain: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  output_ik_gain: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 posik:
   tol: 0.0001

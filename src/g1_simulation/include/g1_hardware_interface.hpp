@@ -194,6 +194,8 @@ private:
     RawSensorDataHardware sensor_hw_;
     Eigen::VectorXd torque_loco_;
 
+    Eigen::VectorXd default_loco_q_;
+
     SimpleTimer simple_timer_;
 };
 

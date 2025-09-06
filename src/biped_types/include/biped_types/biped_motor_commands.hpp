@@ -2,7 +2,7 @@
 #define BIPED_MOTOR_COMMANDS_HPP
 
 #include <Eigen/Dense>
-
+#include <iostream>
 struct BipedMotorCommands
 {
 
@@ -61,18 +61,40 @@ struct BipedMotorCommands
       joint_torques.resize(dof);
    }
 
+   void Update(const BipedMotorCommands &other)
+   {
+      joint_positions = other.joint_positions;
+      joint_velocities = other.joint_velocities;
+      joint_kp = other.joint_kp;
+      joint_kd = other.joint_kd;
+      joint_torques_ff = other.joint_torques_ff;
+      joint_torques = other.joint_torques;
+   }
+
    void UpdatePartialWithIndices(const BipedMotorCommands &other)
    {
       if (other.joint_indices.size() > 0){
-         for (int i : other.joint_indices)
+         for (int i = 0; i < other.joint_indices.size(); i++)
        {
-           joint_positions[i] = other.joint_positions[i];
-           joint_velocities[i] = other.joint_velocities[i];
-           joint_kp[i] = other.joint_kp[i];
-           joint_kd[i] = other.joint_kd[i];
-           joint_torques_ff[i] = other.joint_torques_ff[i];
-           joint_torques[i] = other.joint_torques[i];
+                       int target_idx = other.joint_indices[i];
+            
+            // Add bounds checking
+            if (target_idx < joint_positions.size()) {
+                joint_positions(target_idx) = other.joint_positions(i);
+                joint_velocities(target_idx) = other.joint_velocities(i);
+                joint_kp(target_idx) = other.joint_kp(i);
+                joint_kd(target_idx) = other.joint_kd(i);
+                joint_torques_ff(target_idx) = other.joint_torques_ff(i);
+                if (other.joint_torques.size() == other.joint_positions.size()){
+                  //since joint_torques is optional, only copy if it has the same size as other
+                     joint_torques(target_idx) = other.joint_torques(i);
+                }
+            } else {
+                std::cerr << "Error: Index " << target_idx << " is out of bounds!" << std::endl;
+            }
        }
+      }else{
+         std::cerr << "Warning: No joint indices specified for partial update. Skipping update." << std::endl;
       }
        
    }

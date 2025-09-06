@@ -36,7 +36,7 @@ velik:
   JointKP: [150, 150, 150, 150, 150]
   #for each leg
   JointKD: [2,2,2,2,2]
-  ik_gain: [1, 1, 1, 1, 1, 1]
+  output_ik_gain: [1, 1, 1, 1, 1, 1]
   
 friction:  
   frictionCoef: 1

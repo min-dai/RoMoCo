@@ -58,5 +58,7 @@ protected:
    int render_loop_counter_ = 0;
    int render_loop_counter_threshold_ = 40;
 
+   bool pin_pelvis_ = false;
+
 };
 #endif // MUJOCO_INTERFACE_BASE_HPP

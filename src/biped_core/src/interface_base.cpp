@@ -159,7 +159,7 @@ std::vector<int> InterfaceBase::GetJointIndicesFromSubset(
 
 void InterfaceBase::ProcessMotorCommands(const BipedMotorCommands &loco_cmd)
 {
-   loco_motor_commands_ = loco_cmd;
+   loco_motor_commands_.Update(loco_cmd);
    final_motor_commands_.UpdatePartialWithIndices(loco_motor_commands_);
 }
 

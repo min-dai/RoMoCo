@@ -5,12 +5,13 @@ controller: "velik"
 
 pose_command: 
   dt_lowpass: 0.0005
-  yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
+  # yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
+  yd_lowpass_dt_cutoff: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
   swingZ_lb: -0.9
   swingZ_ub: -0.4
   swingX_backward: -0.2
   swingX_forward: 0.2
-  swingY_inner: 0.1
+  swingY_inner: 0.04
   swingY_outer: 0.2
   yaw_lb: -0.5
   yaw_ub: 0.5
@@ -25,6 +26,10 @@ qp:
   OutputKP: [ 300, 250, 300, 300, 300, 300,  300, 250, 300, 300, 300, 300]   
   OutputKD: [ 10,   5,   10,  5,    5,   5,  10,   5,   10,    5,  5,   5]
 
+id:
+  threshold: 0.000001
+  OutputKP: [ 300, 250, 300, 300, 300, 300,  300, 250, 300, 300, 300, 300]   
+  OutputKD: [ 10,   5,   10,  5,    5,   5,  10,   5,   10,    5,  5,   5]
 
 posik:
   tol: 0.0001
@@ -37,5 +42,5 @@ velik:
   #for each leg
   JointKP: [100, 100, 100, 100, 100, 100]
   #for each leg
-  JointKD: [3,3,3,3,3,3] 
-  ik_gain: [1, 1, 1, 1, 1, 1]
+  JointKD: [3,3,3,3,3,3]
+  output_ik_gain: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]   #for each output

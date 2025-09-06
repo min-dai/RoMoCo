@@ -18,10 +18,13 @@ G1MujocoInterface::~G1MujocoInterface()
 
 void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-   InitLogFile(log_path,true);
+   InitLogFile(log_path, true);
 
    InitDofAndIndicesFromConfigFile(config_folder);
    InitMotorCommands();
+   // TODO: find a better way to set these indices
+   pd_motor_commands_.joint_indices = {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28}; // waist and arms
+   loco_motor_commands_.joint_indices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};                             // legs
    std::string interface_config_file = config_folder + "/interface_config.yaml";
    ReconfigurePdMotorCommands(interface_config_file);
    InitProprioception();
@@ -37,6 +40,12 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
 
    mujoco_.Init(model_path.c_str(), videoSetting.video_width, videoSetting.video_height);
 
+   pin_pelvis_ = yaml_parser.get_bool("mujoco_settings/pin_pelvis");
+   if (pin_pelvis_)
+   {
+      SimHoldPelvis();
+   }
+
    gyro_mj_ids = mujoco_.GetSensorIdsByName(gyro_name);
    accelerometer_mj_ids = mujoco_.GetSensorIdsByName(accelerometer_name);
    framequat_mj_ids = mujoco_.GetSensorIdsByName(framequat_name);
@@ -50,6 +59,7 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    std::vector<int> modify_joint_mj_ids = mujoco_.GetJointIdsByName(modify_joint_names);
    Eigen::VectorXd modify_joint_pos(6);
    modify_joint_pos << 0.4, 0.4, -0.2, -0.2, -.2, -.2;
+
    mujoco_.set_1dof_joint_qpos(modify_joint_pos, modify_joint_mj_ids);
 
    if (locked_actuator_mj_ids_.size() > 0)
@@ -70,7 +80,6 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
    }
    std::cout << "G1 Mujoco simulation initialized successfully." << std::endl;
 
-
    // Initialize torques
 
    torque_loco_ = Eigen::VectorXd::Zero(locomotion_actuator_mj_ids_.size());
@@ -86,13 +95,11 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
       robot_->ReconfigureContactClassifier(config_folder);
       sensor_hw_.ResizeAll(total_motor_dof_);
       std::cout << "Initial Sensor Data :" << sensor_hw_ << std::endl;
-
-   }else{
+   }
+   else
+   {
       std::cout << "Initial Sensor Data :" << sensor_ << std::endl;
    }
-   
-
-
 }
 
 bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input)
@@ -127,7 +134,9 @@ bool G1MujocoInterface::Step(const Eigen::VectorXd &leg_control_input, const Eig
    if (robot_ != nullptr)
    {
       UpdateHardwareSensorData();
-   }else{
+   }
+   else
+   {
       UpdateMujocoTrueSensorData();
    }
 
@@ -169,8 +178,8 @@ void G1MujocoInterface::UpdateHardwareSensorData()
    sensor_hw_.base_ang_quat.z() = quat[3];
    sensor_hw_.base_ang_vel = mujoco_.GetSensorDataByIds(gyro_mj_ids);
    sensor_hw_.base_lin_acc = mujoco_.GetSensorDataByIds(accelerometer_mj_ids);
-   //todo: remove gravity
-   // sensor_hw_.base_lin_acc(2) -= 9.81;
+   // todo: remove gravity
+   //  sensor_hw_.base_lin_acc(2) -= 9.81;
    const auto *qvel = mujoco_.qvel();
    true_lin_vel_ << qvel[0], qvel[1], qvel[2];
 }
@@ -178,12 +187,11 @@ void G1MujocoInterface::UpdateHardwareSensorData()
 void G1MujocoInterface::Estimate()
 {
 
-
    BipedProprioception proprioception = GetBipedProprioceptionFromRawSensorDataHardware(sensor_hw_);
    std::cout << "sensor_hw" << std::endl;
-        std::cout << sensor_hw_ << std::endl;
+   std::cout << sensor_hw_ << std::endl;
    std::cout << "proprioception" << std::endl;
-    std::cout << proprioception << std::endl;
+   std::cout << proprioception << std::endl;
    robot_->UpdateKinematics(proprioception.q(loco_proprio_indices_), proprioception.qdot(loco_proprio_indices_));
 
    BipedEstimationKinematicsInput biped_estimation_kinematics_input = robot_->ComputeEstimationKinematicsInput();
@@ -215,7 +223,6 @@ void G1MujocoInterface::SendPacket()
    {
       robot_->SetComputedTorque(torque_loco_);
    }
-   
 }
 
 void G1MujocoInterface::HandleRendering()
@@ -232,5 +239,3 @@ void G1MujocoInterface::HandleRendering()
       }
    }
 }
-
-

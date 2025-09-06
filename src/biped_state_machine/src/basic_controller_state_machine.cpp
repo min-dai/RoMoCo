@@ -127,6 +127,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
                std::cout << "Resetting state machine to NULL mode." << std::endl;
                output.reset();        // Remove output
                torque_solver.reset(); // Remove Torque Solver
+               motor_commands_.ZeroAll(); // Zero out motor commands
             }
             cur_mode_ = Mode::Null;
             if (logFile_.is_open())

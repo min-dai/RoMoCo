@@ -7,7 +7,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderSB = new QSlider(Qt::Horizontal);
     sliderSB->setMinimum(0);
     sliderSB->setMaximum(3);
-    sliderSB->setValue(2);
+    sliderSB->setValue(1);
     layout->addWidget(sliderSB);
     labelSB = new QLabel("SB Value");
     layout->addWidget(labelSB);

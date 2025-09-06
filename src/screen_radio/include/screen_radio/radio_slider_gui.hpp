@@ -58,7 +58,7 @@ private:
     // QTimer *rosTimer;
 
 
-    int sliderSB_value = 0;
+    int sliderSB_value = -1;
 
 
     double sliderLV_value = 0;

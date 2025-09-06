@@ -3,7 +3,7 @@ robot_name: "g1"          # The name of the robot
 
 mujoco_settings:
   model_name: "g1_29_withsensor.xml" 
-  pin_pelvis: False
+  pin_pelvis: True          # Pin the pelvis in the simulation
 
 
 video_settings:                  # Video recording settings

@@ -218,7 +218,7 @@ classdef G1Log < handle
                 nexttile; plot(t, u_leg(i,:)); title(obj.motor_list{i}); xlabel('Time (s)'); ylabel('Torque (Nm)'); grid on;
             end
 
-            % plotJointPos(obj, t, q)
+            plotJointPos(obj, t, q)
             % plotJointVel(obj, t, dq)
 
             %plot COM
@@ -374,20 +374,20 @@ classdef G1Log < handle
             nexttile; plot(t, base_pos(3,:)); title('Base Position Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
             nexttile; plot(t, base_rot(3,:)); title('Base Rotation X'); xlabel('Time (s)'); ylabel('Roll (rad)'); grid on;
 
-            % figure
-            % tiledlayout(2,6);
-            % nexttile; plot(t, q(7,:)); title('Left Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(8,:)); title('Left Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(9,:)); title('Left Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(10,:)); title('Left Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(11,:)); title('Left Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(12,:)); title('Left Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(13,:)); title('Right Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(14,:)); title('Right Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(15,:)); title('Right Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(16,:)); title('Right Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(17,:)); title('Right Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            figure
+            tiledlayout(2,6);
+            nexttile; plot(t, q(7,:)); title('Left Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(8,:)); title('Left Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(9,:)); title('Left Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(10,:)); title('Left Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(11,:)); title('Left Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(12,:)); title('Left Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(13,:)); title('Right Hip Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(14,:)); title('Right Hip Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(15,:)); title('Right Hip Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(16,:)); title('Right Knee Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(17,:)); title('Right Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
 
                         % 
             % figure

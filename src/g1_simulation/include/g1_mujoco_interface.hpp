@@ -35,6 +35,8 @@ public:
 private:
    void Init(const std::string &config_folder, const std::string &log_path) override;
 
+   void CheckSafeMotorCommands(const BipedMotorCommands &commands);
+
 
    MujocoSim mujoco_;
 
@@ -60,6 +62,7 @@ private:
    // for leg and upper body control
    std::vector<int> locomotion_actuator_mj_ids_;   // Actuator IDs
    std::vector<int> locked_actuator_mj_ids_; // Actuator IDs
+   
 
    // for sensor data
    std::vector<int> gyro_mj_ids;          // IMU sensor IDs

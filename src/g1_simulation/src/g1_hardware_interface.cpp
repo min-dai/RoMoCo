@@ -31,6 +31,22 @@ void G1HardwareInterface::Init(const std::string &config_folder, const std::stri
 
     // Initialize base class structures
     InitMotorCommands();
+    //todo: find a better way to set these indices
+    pd_motor_commands_.joint_indices = {12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28}; // waist and arms
+    loco_motor_commands_.joint_indices = {0,1,2,3,4,5,6,7,8,9,10,11}; // legs
+
+    if (loco_motor_commands_.joint_indices.size() != loco_motor_dof_)
+    {
+        throw std::runtime_error("G1HardwareInterface: Mismatch in loco_motor_dof_ and loco_motor_commands_ size.");
+    }
+    if (pd_motor_commands_.joint_indices.size() != pd_motor_dof_)
+    {
+        throw std::runtime_error("G1HardwareInterface: Mismatch in pd_motor_dof_ and pd_motor_commands_ size.");
+    }
+    if (loco_motor_commands_.joint_indices.size() + pd_motor_commands_.joint_indices.size() != total_motor_dof_)
+    {
+        throw std::runtime_error("G1HardwareInterface: Mismatch in total_motor_dof_ and sum of loco and pd motor commands size.");
+    }
     std::string interface_config_file = config_folder + "/interface_config.yaml";
     ReconfigurePdMotorCommands(interface_config_file);
     InitProprioception();
@@ -222,7 +238,7 @@ void G1HardwareInterface::SendPacket()
     ConvertMotorCommandsToG1(final_motor_commands_);
 
     // Send commands to robot
-    LowCommandWriterDebug();
+    LowCommandWriter();
 
 
     // Update torque in robot model for contact classifier by compute motored joints PD control
@@ -238,17 +254,26 @@ void G1HardwareInterface::ConvertMotorCommandsToG1(const BipedMotorCommands &com
     // Convert from proprioception space to G1 space
     for (int i = 0; i < total_motor_dof_; ++i)
     {
-        mc_tmp.q_target[i] = commands.joint_positions(i);
-        mc_tmp.dq_target[i] = commands.joint_velocities(i);
-        mc_tmp.kp[i] = commands.joint_kp(i);
-        mc_tmp.kd[i] = commands.joint_kd(i);
-        mc_tmp.tau_ff[i] = commands.joint_torques_ff(i);
+        //need to cast to float for G1
+        mc_tmp.q_target[i] = static_cast<float>(commands.joint_positions(i));
+        mc_tmp.dq_target[i] = static_cast<float>(commands.joint_velocities(i));
+        mc_tmp.kp[i] = static_cast<float>(commands.joint_kp(i));
+        mc_tmp.kd[i] = static_cast<float>(commands.joint_kd(i));
+        mc_tmp.tau_ff[i] = static_cast<float>(commands.joint_torques_ff(i));
     }
 
     // Store in buffer for command writer thread
     motor_command_buffer_.SetData(mc_tmp);
 }
 
+// void G1HardwareInterface::CheckSafeMotorCommands(const BipedMotorCommands &commands)
+// {
+    
+// }
+
+void G1HardwareInterface::InitializeBendKneePos(){
+    loco_motor_commands_.joint_positions = Eigen::VectorXf::Zero(loco_motor_dof_);
+}
 void G1HardwareInterface::LowCommandWriter()
 {
     LowCmd_ dds_low_command;
@@ -258,9 +283,10 @@ void G1HardwareInterface::LowCommandWriter()
     const std::shared_ptr<const MotorCommand> mc = motor_command_buffer_.GetData();
     if (mc)
     {
+        
         for (int i = 0; i < total_motor_dof_; i++)
         {
-            dds_low_command.motor_cmd().at(i).mode() = g1_motor_mode.at(i); // 1:Enable, 0:Disable
+            dds_low_command.motor_cmd().at(i).mode() = 1; // 1:Enable, 0:Disable
             dds_low_command.motor_cmd().at(i).tau() = mc->tau_ff.at(i);
             dds_low_command.motor_cmd().at(i).q() = mc->q_target.at(i);
             dds_low_command.motor_cmd().at(i).dq() = mc->dq_target.at(i);
@@ -282,18 +308,28 @@ void G1HardwareInterface::LowCommandWriterDebug()
     const std::shared_ptr<const MotorCommand> mc = motor_command_buffer_.GetData();
     if (mc)
     {
+        std::cout << "buffer q: " << std::endl;
         for (int i = 0; i < total_motor_dof_; i++)
         {
-            dds_low_command.motor_cmd().at(i).mode() = 1; // 1:Enable, 0:Disable
-            dds_low_command.motor_cmd().at(i).tau() = 0.0; //mc->tau_ff.at(i);
-            dds_low_command.motor_cmd().at(i).q() = 0.0; //mc->q_target.at(i);
-            dds_low_command.motor_cmd().at(i).dq() = 0.0; //mc->dq_target.at(i);
-            dds_low_command.motor_cmd().at(i).kp() = 100.0; //mc->kp.at(i);
-            dds_low_command.motor_cmd().at(i).kd() = 1.0; //1mc->kd.at(i);
+            std::cout << mc->q_target.at(i) << " ";
         }
+        std::cout << std::endl;
 
-        dds_low_command.crc() = Crc32Core((uint32_t *)&dds_low_command, (sizeof(dds_low_command) >> 2) - 1);
-        lowcmd_publisher_->Write(dds_low_command);
+        std::cout << "final_motor_commands_.q: " << final_motor_commands_.joint_positions.transpose() << std::endl;
+
+
+        // for (int i = 0; i < total_motor_dof_; i++)
+        // {
+        //     dds_low_command.motor_cmd().at(i).mode() = 1; // 1:Enable, 0:Disable
+        //     dds_low_command.motor_cmd().at(i).tau() = 0.0; //mc->tau_ff.at(i);
+        //     dds_low_command.motor_cmd().at(i).q() = 0.0; //mc->q_target.at(i);
+        //     dds_low_command.motor_cmd().at(i).dq() = 0.0; //mc->dq_target.at(i);
+        //     dds_low_command.motor_cmd().at(i).kp() = 10.0; //mc->kp.at(i);
+        //     dds_low_command.motor_cmd().at(i).kd() = 1.0; //1mc->kd.at(i);
+        // }
+
+        // dds_low_command.crc() = Crc32Core((uint32_t *)&dds_low_command, (sizeof(dds_low_command) >> 2) - 1);
+        // lowcmd_publisher_->Write(dds_low_command);
     }
 }
 
