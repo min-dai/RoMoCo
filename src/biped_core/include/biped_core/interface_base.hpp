@@ -17,6 +17,8 @@ public:
     // full_proprioception_, loco_proprioception_, and pd_proprioception_
     virtual BipedProprioception ReadAndEstimate() = 0;
 
+    virtual bool is_sim() const = 0;
+
     int loco_motor_dof() const { return loco_motor_dof_; }
 
     // update loco_motor_commands, pd_motor_commands are constants
@@ -32,6 +34,8 @@ public:
     virtual void Init(const std::string &config_folder, const std::string &log_path) = 0;
 
 protected:
+    void InitLogFile(const std::string &log_path);
+
     void InitDofAndIndicesFromConfigFile(const std::string &config_folder);
 
     void InitMotorCommands();
@@ -40,7 +44,7 @@ protected:
 
     void CheckInitialization() const;
 
-    void InitLogFile(const std::string &log_path, bool isSim = false);
+    
 
     std::vector<int> GetJointIndicesFromSubset(
         const std::vector<std::string> &all_encoder_names_pinocchio_order,
@@ -69,6 +73,8 @@ protected:
     int total_motor_dof_;
     int pd_motor_dof_;
     int loco_motor_dof_;
+
+    bool is_sim_;
 
     //set at beginning, constant after
     BipedMotorCommands pd_motor_commands_;

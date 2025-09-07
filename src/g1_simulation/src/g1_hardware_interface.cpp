@@ -20,12 +20,14 @@ G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, c
     
 
     simple_timer_.Reset();
+
+    InitBendKneePos(config_folder);
     std::cout << "G1 Hardware Interface initialized on " << network_interface << std::endl;
 }
 
 void G1HardwareInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-    InitLogFile(log_path, false);
+    InitLogFile(log_path);
 
     InitDofAndIndicesFromConfigFile(config_folder);
 
@@ -89,12 +91,25 @@ void G1HardwareInterface::InitDDS(const std::string &network_interface)
     // create subscriber
     lowstate_subscriber_.reset(new ChannelSubscriber<LowState_>(HG_STATE_TOPIC));
     lowstate_subscriber_->InitChannel(std::bind(&G1HardwareInterface::LowStateHandler, this, std::placeholders::_1), 1);
-    torso_imu_subscriber_.reset(new ChannelSubscriber<IMUState_>(HG_IMU_TORSO));
-    torso_imu_subscriber_->InitChannel(std::bind(&G1HardwareInterface::TorsoImuHandler, this, std::placeholders::_1), 1);
-    // create threads for command writing
-    //convert dt_ to uint64_t intervalMicrosec
-    // uint64_t intervalMicrosec = static_cast<uint64_t>(dt_ * 1e6);
-    // command_writer_ptr_ = CreateRecurrentThreadEx("command_writer", UT_CPU_ID_NONE, intervalMicrosec, &G1HardwareInterface::LowCommandWriter, this);
+    // torso_imu_subscriber_.reset(new ChannelSubscriber<IMUState_>(HG_IMU_TORSO));
+    // torso_imu_subscriber_->InitChannel(std::bind(&G1HardwareInterface::TorsoImuHandler, this, std::placeholders::_1), 1);
+    
+}
+
+void G1HardwareInterface::InitBendKneePos(const std::string &config_folder)
+{
+    std::string interface_config_file = config_folder + "/interface_config.yaml";
+    YAMLParser yaml_parser(interface_config_file);
+    yaml_parser.Init(interface_config_file);
+    Eigen::VectorXd default_loco_q = yaml_parser.get_VectorXd("default_loco_q");
+
+    BipedMotorCommands loco_motor_commands_init = loco_motor_commands_;
+    loco_motor_commands_init.joint_positions = default_loco_q;
+
+    loco_motor_commands_init.joint_kp.setConstant(10.0);
+    loco_motor_commands_init.joint_kd.setConstant(0.2);
+
+    ProcessMotorCommands(loco_motor_commands_init);
 }
 
 void G1HardwareInterface::LowStateHandler(const void *message)
@@ -135,17 +150,24 @@ void G1HardwareInterface::LowStateHandler(const void *message)
     pelvis_imu.acc = low_state.imu_state().accelerometer();
     pelvis_imu_buffer_.SetData(pelvis_imu);
 
-    // // update gamepad
-    // // Add bounds checking before memcpy
-    // if (low_state.wireless_remote().size() >= 40 && sizeof(rx_.buff) >= 40)
-    // {
-    //     memcpy(rx_.buff, &low_state.wireless_remote()[0], 40);
-    // }
-    // else
-    // {
-    //     std::cerr << "Buffer size mismatch!" << std::endl;
-    // }
-    // gamepad_.update(rx_.RF_RX);
+    // update gamepad
+    // Add bounds checking before memcpy
+    if (low_state.wireless_remote().size() >= 40 && sizeof(rx_.buff) >= 40)
+    {
+        memcpy(rx_.buff, &low_state.wireless_remote()[0], 40);
+    }
+    else
+    {
+        std::cerr << "Buffer size mismatch!" << std::endl;
+    }
+    gamepad_.update(rx_.RF_RX);
+    if (gamepad_.X.pressed)
+    {
+        //exit program when X button is pressed
+        // this is kill swtich
+        std::cout << "X button pressed, exiting program." << std::endl;
+        std::exit(0);
+    }
 
     // update mode machine
     if (mode_machine_ != low_state.mode_machine())
@@ -199,7 +221,7 @@ BipedProprioception G1HardwareInterface::ReadAndEstimate()
 
     Eigen::VectorXf LogData;
 
-    std::vector<Eigen::VectorXd> log_vectors = {est_lin_vel_};
+    std::vector<Eigen::VectorXd> log_vectors = {est_lin_vel_, full_proprioception_.q, full_proprioception_.qdot};
     LogData = CollectLog(simple_timer_.ElapsedSinceStart(), log_vectors);
     if (logFile_.is_open())
     {
@@ -222,6 +244,10 @@ void G1HardwareInterface::ConvertG1StateToProprioception()
     sensor_hw_.base_ang_quat.x() = static_cast<double>(pelvis_imu->quat[1]);
     sensor_hw_.base_ang_quat.y() = static_cast<double>(pelvis_imu->quat[2]);
     sensor_hw_.base_ang_quat.z() = static_cast<double>(pelvis_imu->quat[3]);
+
+    //make sure the quaternion is normalized
+    sensor_hw_.base_ang_quat.normalize();
+    
 
     sensor_hw_.base_ang_vel << static_cast<double>(pelvis_imu->omega[0]),
         static_cast<double>(pelvis_imu->omega[1]),
@@ -271,9 +297,7 @@ void G1HardwareInterface::ConvertMotorCommandsToG1(const BipedMotorCommands &com
     
 // }
 
-void G1HardwareInterface::InitializeBendKneePos(){
-    loco_motor_commands_.joint_positions = Eigen::VectorXf::Zero(loco_motor_dof_);
-}
+
 void G1HardwareInterface::LowCommandWriter()
 {
     LowCmd_ dds_low_command;
@@ -286,7 +310,7 @@ void G1HardwareInterface::LowCommandWriter()
         
         for (int i = 0; i < total_motor_dof_; i++)
         {
-            dds_low_command.motor_cmd().at(i).mode() = 1; // 1:Enable, 0:Disable
+            dds_low_command.motor_cmd().at(i).mode() = g1_motor_mode.at(i); // 1:Enable, 0:Disable
             dds_low_command.motor_cmd().at(i).tau() = mc->tau_ff.at(i);
             dds_low_command.motor_cmd().at(i).q() = mc->q_target.at(i);
             dds_low_command.motor_cmd().at(i).dq() = mc->dq_target.at(i);
@@ -313,9 +337,16 @@ void G1HardwareInterface::LowCommandWriterDebug()
         {
             std::cout << mc->q_target.at(i) << " ";
         }
+        std::cout << "buffer kp: " << std::endl;
+        for (int i = 0; i < total_motor_dof_; i++)
+        {
+            std::cout << mc->kp.at(i) << " ";
+        }
+        
         std::cout << std::endl;
 
-        std::cout << "final_motor_commands_.q: " << final_motor_commands_.joint_positions.transpose() << std::endl;
+        std::cout << "final_motor_commands: " << std::endl;
+        std::cout << final_motor_commands_ << std::endl;
 
 
         // for (int i = 0; i < total_motor_dof_; i++)

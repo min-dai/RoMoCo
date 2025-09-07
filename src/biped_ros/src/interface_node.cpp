@@ -17,9 +17,11 @@ RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
       "controller_cmds", qos,
       [this](const biped_msgs::msg::BipedMotorCommands::SharedPtr msg)
       {
-        std::lock_guard<std::mutex> lock(ctrl_mutex_);
-        loco_ctrl_cmd_ = fromRosMsg(*msg); // convert to struct
-        RCLCPP_DEBUG(this->get_logger(), "Received controller commands");
+        {
+          std::lock_guard<std::mutex> lock(ctrl_mutex_);
+          loco_ctrl_cmd_ = fromRosMsg(*msg); // convert to struct
+        }
+        has_ctrl_cmd_ = true;
       });
 
   // Publisher: proprioception
@@ -43,14 +45,18 @@ RosInterfaceNode::~RosInterfaceNode()
 }
 void RosInterfaceNode::Loop()
 {
-  BipedMotorCommands loco_ctrl_cmd;
+  if (has_ctrl_cmd_)
   {
-    std::lock_guard<std::mutex> lock(ctrl_mutex_);
-    loco_ctrl_cmd = loco_ctrl_cmd_;
+    BipedMotorCommands loco_ctrl_cmd;
+    {
+      std::lock_guard<std::mutex> lock(ctrl_mutex_);
+      loco_ctrl_cmd = loco_ctrl_cmd_;
+    }
+    interface_->ProcessMotorCommands(loco_ctrl_cmd);
   }
 
   loco_proprioception_ = interface_->ReadAndEstimate();
-  interface_->ProcessMotorCommands(loco_ctrl_cmd);
+  
 
   if (interface_->IsInterfaceRunning())
   {
@@ -59,5 +65,5 @@ void RosInterfaceNode::Loop()
     proprio_pub_->publish(ros_proprio_msg);
   }
   interface_->SendPacket();
-  std::cout << "Interface Loop End" << std::endl;
+
 }

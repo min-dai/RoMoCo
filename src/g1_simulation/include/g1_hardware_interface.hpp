@@ -67,6 +67,8 @@ public:
 
     ~G1HardwareInterface() override = default;
 
+    bool is_sim() const override { return false; }
+
     BipedProprioception ReadAndEstimate() override;
     void SendPacket() override;
 
@@ -75,6 +77,7 @@ public:
 private:
     void Init(const std::string &config_folder, const std::string &log_path) override;
     void InitDDS(const std::string &network_interface);
+    void InitBendKneePos(const std::string &config_folder);
 
     void Estimate();
     
@@ -167,9 +170,6 @@ private:
     ChannelSubscriberPtr<LowState_> lowstate_subscriber_;
     ChannelSubscriberPtr<IMUState_> torso_imu_subscriber_;
 
-
-    // // Thread for command writer
-    // ThreadPtr command_writer_ptr_, control_thread_ptr_;
 
     // Motion switcher
     std::shared_ptr<unitree::robot::b2::MotionSwitcherClient> motion_switcher_;

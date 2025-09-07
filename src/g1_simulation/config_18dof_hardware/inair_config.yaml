@@ -5,8 +5,8 @@ controller: "velik"
 
 pose_command: 
   dt_lowpass: 0.0005
-  yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
-  # yd_lowpass_dt_cutoff: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+  # yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
+  yd_lowpass_dt_cutoff: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
   swingZ_lb: -0.9
   swingZ_ub: -0.4
   swingX_backward: -0.2
@@ -22,7 +22,7 @@ pose_command:
 
 
 qp:
-  ifprintQP: true
+  ifprintQP: false
   OutputKP: [ 300, 250, 300, 300, 300, 300,  300, 250, 300, 300, 300, 300]   
   OutputKD: [ 10,   5,   10,  5,    5,   5,  10,   5,   10,    5,  5,   5]
 

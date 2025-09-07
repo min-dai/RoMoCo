@@ -5,7 +5,7 @@
 #include <biped_core/interface_base.hpp>
 #include "biped_msgs/msg/biped_motor_commands.hpp"
 #include "biped_msgs/msg/biped_proprioception.hpp"
-
+#include <atomic>
 class RosInterfaceNode : public rclcpp::Node
 {
 public:
@@ -26,6 +26,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 
   BipedMotorCommands loco_ctrl_cmd_;
+  std::atomic<bool> has_ctrl_cmd_{false};
   BipedProprioception loco_proprioception_;
 
 };

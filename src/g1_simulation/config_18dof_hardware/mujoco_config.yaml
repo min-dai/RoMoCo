@@ -1,0 +1,16 @@
+robot_name: "g1"          # The name of the robot
+
+
+mujoco_settings:
+  model_name: "g1_29_withsensor.xml" 
+  pin_pelvis: True          # Pin the pelvis in the simulation
+
+
+video_settings:                  # Video recording settings
+  record_video: no             # Enable or disable video recording
+  video_width: 2500              # Video resolution width (pixels)
+  video_height: 2000             # Video resolution height (pixels)
+  video_fps: 50                  # Frames per second for video, 25 is real-time
+  video_name: "g1video.mp4"         # Output video file name
+
+

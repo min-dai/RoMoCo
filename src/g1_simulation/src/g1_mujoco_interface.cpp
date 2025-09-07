@@ -18,7 +18,7 @@ G1MujocoInterface::~G1MujocoInterface()
 
 void G1MujocoInterface::Init(const std::string &config_folder, const std::string &log_path)
 {
-   InitLogFile(log_path, true);
+   InitLogFile(log_path);
 
    InitDofAndIndicesFromConfigFile(config_folder);
    InitMotorCommands();

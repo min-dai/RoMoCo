@@ -65,7 +65,6 @@ void G1Model::AddFrames()
 {
     AddFramesImpl("waist_pitch_joint");
     // AddFramesImpl("root_joint");
-
 }
 
 void G1Model::InitActuation()

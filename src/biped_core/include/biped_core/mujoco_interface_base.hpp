@@ -13,6 +13,7 @@ public:
    bool IsInterfaceRunning() const override{
       return !paused();
    }
+   bool is_sim() const override { return true; }
 
    virtual BipedProprioception ReadAndEstimate() override;
    virtual void SendPacket() override;

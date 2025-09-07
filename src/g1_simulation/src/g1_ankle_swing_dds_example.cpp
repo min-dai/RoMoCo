@@ -24,71 +24,112 @@ using namespace unitree::robot;
 using namespace unitree_hg::msg::dds_;
 
 template <typename T>
-class DataBuffer {
- public:
-  void SetData(const T &newData) {
+class DataBuffer
+{
+public:
+  void SetData(const T &newData)
+  {
     std::unique_lock<std::shared_mutex> lock(mutex);
     data = std::make_shared<T>(newData);
   }
 
-  std::shared_ptr<const T> GetData() {
+  std::shared_ptr<const T> GetData()
+  {
     std::shared_lock<std::shared_mutex> lock(mutex);
     return data ? data : nullptr;
   }
 
-  void Clear() {
+  void Clear()
+  {
     std::unique_lock<std::shared_mutex> lock(mutex);
     data = nullptr;
   }
 
- private:
+private:
   std::shared_ptr<T> data;
   std::shared_mutex mutex;
 };
 
 const int G1_NUM_MOTOR = 29;
-struct ImuState {
+struct ImuState
+{
   std::array<float, 3> rpy = {};
   std::array<float, 3> omega = {};
   std::array<float, 3> acc = {};
   std::array<float, 4> quat = {};
 };
-struct MotorCommand {
+struct MotorCommand
+{
   std::array<float, G1_NUM_MOTOR> q_target = {};
   std::array<float, G1_NUM_MOTOR> dq_target = {};
   std::array<float, G1_NUM_MOTOR> kp = {};
   std::array<float, G1_NUM_MOTOR> kd = {};
   std::array<float, G1_NUM_MOTOR> tau_ff = {};
 };
-struct MotorState {
+struct MotorState
+{
   std::array<float, G1_NUM_MOTOR> q = {};
   std::array<float, G1_NUM_MOTOR> dq = {};
 };
 
+// // Stiffness for all G1 Joints
+// std::array<float, G1_NUM_MOTOR> Kp{
+//     60, 60, 60, 100, 40, 40,      // legs
+//     60, 60, 60, 100, 40, 40,      // legs
+//     60, 40, 40,                   // waist
+//     40, 40, 40, 40,  40, 40, 40,  // arms
+//     40, 40, 40, 40,  40, 40, 40   // arms
+// };
+// // Damping for all G1 Joints
+// std::array<float, G1_NUM_MOTOR> Kd{
+//     1, 1, 1, 2, 1, 1,     // legs
+//     1, 1, 1, 2, 1, 1,     // legs
+//     1, 1, 1,              // waist
+//     1, 1, 1, 1, 1, 1, 1,  // arms
+//     1, 1, 1, 1, 1, 1, 1   // arms
+// };
 // Stiffness for all G1 Joints
 std::array<float, G1_NUM_MOTOR> Kp{
-    60, 60, 60, 100, 40, 40,      // legs
-    60, 60, 60, 100, 40, 40,      // legs
-    60, 40, 40,                   // waist
-    40, 40, 40, 40,  40, 40, 40,  // arms
-    40, 40, 40, 40,  40, 40, 40   // arms
+    30, 30, 30, 30, 30, 30,     // legs
+    30, 30, 30, 30, 30, 30,     // legs
+    10, 10, 10,                 // waist
+    10, 10, 10, 10, 10, 10, 10, // arms
+    10, 10, 10, 10, 10, 10, 10  // arms
 };
 
 // Damping for all G1 Joints
 std::array<float, G1_NUM_MOTOR> Kd{
-    1, 1, 1, 2, 1, 1,     // legs
-    1, 1, 1, 2, 1, 1,     // legs
-    1, 1, 1,              // waist
-    1, 1, 1, 1, 1, 1, 1,  // arms
-    1, 1, 1, 1, 1, 1, 1   // arms
+    0.2, 0.2, 0.2, 0.2, 0.2, 0.2,      // legs
+    0.2, 0.2, 0.2, 0.2, 0.2, 0.2,      // legs
+    0.2, 0.2, 0.2,                     // waist
+    0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, // arms
+    0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2  // arms
 };
 
-enum class Mode {
-  PR = 0,  // Series Control for Ptich/Roll Joints
-  AB = 1   // Parallel Control for A/B Joints
+// q target
+std::array<float, G1_NUM_MOTOR> qdes_default{
+    -0.3, 0, 0, 0.6, 0.3, 0, // legs
+    -0.3, 0, 0, 0.6, 0.3, 0, // legs
+    0, 0, 0,                 // waist
+    0, 0, 0, 0, 0, 0, 0,     // arms
+    0, 0, 0, 0, 0, 0, 0,     // arms
 };
 
-enum G1JointIndex {
+std::array<float, G1_NUM_MOTOR> g1_motor_mode{
+    1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1,
+    1, 0, 0,
+    1, 1, 1, 1, 1, 0, 0,
+    1, 1, 1, 1, 1, 0, 0};
+
+enum class Mode
+{
+  PR = 0, // Series Control for Ptich/Roll Joints
+  AB = 1  // Parallel Control for A/B Joints
+};
+
+enum G1JointIndex
+{
   LeftHipPitch = 0,
   LeftHipRoll = 1,
   LeftHipYaw = 2,
@@ -106,41 +147,47 @@ enum G1JointIndex {
   RightAnkleRoll = 11,
   RightAnkleA = 11,
   WaistYaw = 12,
-  WaistRoll = 13,        // NOTE INVALID for g1 23dof/29dof with waist locked
-  WaistA = 13,           // NOTE INVALID for g1 23dof/29dof with waist locked
-  WaistPitch = 14,       // NOTE INVALID for g1 23dof/29dof with waist locked
-  WaistB = 14,           // NOTE INVALID for g1 23dof/29dof with waist locked
+  WaistRoll = 13,  // NOTE INVALID for g1 23dof/29dof with waist locked
+  WaistA = 13,     // NOTE INVALID for g1 23dof/29dof with waist locked
+  WaistPitch = 14, // NOTE INVALID for g1 23dof/29dof with waist locked
+  WaistB = 14,     // NOTE INVALID for g1 23dof/29dof with waist locked
   LeftShoulderPitch = 15,
   LeftShoulderRoll = 16,
   LeftShoulderYaw = 17,
   LeftElbow = 18,
   LeftWristRoll = 19,
-  LeftWristPitch = 20,   // NOTE INVALID for g1 23dof
-  LeftWristYaw = 21,     // NOTE INVALID for g1 23dof
+  LeftWristPitch = 20, // NOTE INVALID for g1 23dof
+  LeftWristYaw = 21,   // NOTE INVALID for g1 23dof
   RightShoulderPitch = 22,
   RightShoulderRoll = 23,
   RightShoulderYaw = 24,
   RightElbow = 25,
   RightWristRoll = 26,
-  RightWristPitch = 27,  // NOTE INVALID for g1 23dof
-  RightWristYaw = 28     // NOTE INVALID for g1 23dof
+  RightWristPitch = 27, // NOTE INVALID for g1 23dof
+  RightWristYaw = 28    // NOTE INVALID for g1 23dof
 };
 
-inline uint32_t Crc32Core(uint32_t *ptr, uint32_t len) {
+inline uint32_t Crc32Core(uint32_t *ptr, uint32_t len)
+{
   uint32_t xbit = 0;
   uint32_t data = 0;
   uint32_t CRC32 = 0xFFFFFFFF;
   const uint32_t dwPolynomial = 0x04c11db7;
-  for (uint32_t i = 0; i < len; i++) {
+  for (uint32_t i = 0; i < len; i++)
+  {
     xbit = 1 << 31;
     data = ptr[i];
-    for (uint32_t bits = 0; bits < 32; bits++) {
-      if (CRC32 & 0x80000000) {
+    for (uint32_t bits = 0; bits < 32; bits++)
+    {
+      if (CRC32 & 0x80000000)
+      {
         CRC32 <<= 1;
         CRC32 ^= dwPolynomial;
-      } else
+      }
+      else
         CRC32 <<= 1;
-      if (data & xbit) CRC32 ^= dwPolynomial;
+      if (data & xbit)
+        CRC32 ^= dwPolynomial;
 
       xbit >>= 1;
     }
@@ -148,11 +195,12 @@ inline uint32_t Crc32Core(uint32_t *ptr, uint32_t len) {
   return CRC32;
 };
 
-class G1Example {
- private:
+class G1Example
+{
+private:
   double time_;
-  double control_dt_;  // [2ms]
-  double duration_;    // [3 s]
+  double control_dt_; // [2ms]
+  double duration_;   // [3 s]
   int counter_;
   Mode mode_pr_;
   uint8_t mode_machine_;
@@ -171,14 +219,15 @@ class G1Example {
 
   std::shared_ptr<unitree::robot::b2::MotionSwitcherClient> msc_;
 
- public:
+public:
   G1Example(std::string networkInterface)
       : time_(0.0),
         control_dt_(0.002),
         duration_(3.0),
         counter_(0),
         mode_pr_(Mode::PR),
-        mode_machine_(0) {
+        mode_machine_(0)
+  {
     ChannelFactory::Instance()->Init(0, networkInterface);
 
     // try to shutdown motion control-related service
@@ -186,7 +235,8 @@ class G1Example {
     msc_->SetTimeout(5.0f);
     msc_->Init();
     std::string form, name;
-    while (msc_->CheckMode(form, name), !name.empty()) {
+    while (msc_->CheckMode(form, name), !name.empty())
+    {
       if (msc_->ReleaseMode())
         std::cout << "Failed to switch to Release Mode\n";
       sleep(5);
@@ -205,23 +255,27 @@ class G1Example {
     control_thread_ptr_ = CreateRecurrentThreadEx("control", UT_CPU_ID_NONE, 2000, &G1Example::Control, this);
   }
 
-  void imuTorsoHandler(const void *message) {
+  void imuTorsoHandler(const void *message)
+  {
     IMUState_ imu_torso = *(const IMUState_ *)message;
     auto &rpy = imu_torso.rpy();
     if (counter_ % 500 == 0)
       printf("IMU.torso.rpy: %.2f %.2f %.2f\n", rpy[0], rpy[1], rpy[2]);
   }
 
-  void LowStateHandler(const void *message) {
+  void LowStateHandler(const void *message)
+  {
     LowState_ low_state = *(const LowState_ *)message;
-    if (low_state.crc() != Crc32Core((uint32_t *)&low_state, (sizeof(LowState_) >> 2) - 1)) {
+    if (low_state.crc() != Crc32Core((uint32_t *)&low_state, (sizeof(LowState_) >> 2) - 1))
+    {
       std::cout << "[ERROR] CRC Error" << std::endl;
       return;
     }
 
     // get motor state
     MotorState ms_tmp;
-    for (int i = 0; i < G1_NUM_MOTOR; ++i) {
+    for (int i = 0; i < G1_NUM_MOTOR; ++i)
+    {
       ms_tmp.q.at(i) = low_state.motor_state()[i].q();
       ms_tmp.dq.at(i) = low_state.motor_state()[i].dq();
       if (low_state.motor_state()[i].motorstate() && i <= RightAnkleRoll)
@@ -240,13 +294,16 @@ class G1Example {
     gamepad_.update(rx_.RF_RX);
 
     // update mode machine
-    if (mode_machine_ != low_state.mode_machine()) {
-      if (mode_machine_ == 0) std::cout << "G1 type: " << unsigned(low_state.mode_machine()) << std::endl;
+    if (mode_machine_ != low_state.mode_machine())
+    {
+      if (mode_machine_ == 0)
+        std::cout << "G1 type: " << unsigned(low_state.mode_machine()) << std::endl;
       mode_machine_ = low_state.mode_machine();
     }
 
     // report robot status every second
-    if (++counter_ % 500 == 0) {
+    if (++counter_ % 500 == 0)
+    {
       counter_ = 0;
       // IMU
       auto &rpy = low_state.imu_state().rpy();
@@ -267,36 +324,48 @@ class G1Example {
       auto &ms = low_state.motor_state();
       printf("All %d Motors:", G1_NUM_MOTOR);
       printf("\nmode: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,", ms[i].mode());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%u,", ms[i].mode());
       printf("\npos: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].q());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%.2f,", ms[i].q());
       printf("\nvel: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].dq());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%.2f,", ms[i].dq());
       printf("\ntau_est: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].tau_est());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%.2f,", ms[i].tau_est());
       printf("\ntemperature: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%d,%d;", ms[i].temperature()[0], ms[i].temperature()[1]);
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%d,%d;", ms[i].temperature()[0], ms[i].temperature()[1]);
       printf("\nvol: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%.2f,", ms[i].vol());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%.2f,", ms[i].vol());
       printf("\nsensor: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,%u;", ms[i].sensor()[0], ms[i].sensor()[1]);
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%u,%u;", ms[i].sensor()[0], ms[i].sensor()[1]);
       printf("\nmotorstate: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,", ms[i].motorstate());
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%u,", ms[i].motorstate());
       printf("\nreserve: ");
-      for (int i = 0; i < G1_NUM_MOTOR; ++i) printf("%u,%u,%u,%u;", ms[i].reserve()[0], ms[i].reserve()[1], ms[i].reserve()[2], ms[i].reserve()[3]);
+      for (int i = 0; i < G1_NUM_MOTOR; ++i)
+        printf("%u,%u,%u,%u;", ms[i].reserve()[0], ms[i].reserve()[1], ms[i].reserve()[2], ms[i].reserve()[3]);
       printf("\n");
     }
   }
 
-  void LowCommandWriter() {
+  void LowCommandWriter()
+  {
     LowCmd_ dds_low_command;
     dds_low_command.mode_pr() = static_cast<uint8_t>(mode_pr_);
     dds_low_command.mode_machine() = mode_machine_;
 
     const std::shared_ptr<const MotorCommand> mc = motor_command_buffer_.GetData();
-    if (mc) {
-      for (size_t i = 0; i < G1_NUM_MOTOR; i++) {
-        dds_low_command.motor_cmd().at(i).mode() = 1;  // 1:Enable, 0:Disable
+    if (mc)
+    {
+      for (size_t i = 0; i < G1_NUM_MOTOR; i++)
+      {
+        dds_low_command.motor_cmd().at(i).mode() = g1_motor_mode.at(i); // 1:Enable, 0:Disable
         dds_low_command.motor_cmd().at(i).tau() = mc->tau_ff.at(i);
         dds_low_command.motor_cmd().at(i).q() = mc->q_target.at(i);
         dds_low_command.motor_cmd().at(i).dq() = mc->dq_target.at(i);
@@ -309,19 +378,22 @@ class G1Example {
     }
   }
 
-  void Control() {
+  void Control()
+  {
     MotorCommand motor_command_tmp;
     const std::shared_ptr<const MotorState> ms = motor_state_buffer_.GetData();
 
-    for (int i = 0; i < G1_NUM_MOTOR; ++i) {
+    for (int i = 0; i < G1_NUM_MOTOR; ++i)
+    {
       motor_command_tmp.tau_ff.at(i) = 0.0;
-      motor_command_tmp.q_target.at(i) = 0.0;
+      motor_command_tmp.q_target.at(i) = qdes_default[i];
       motor_command_tmp.dq_target.at(i) = 0.0;
       motor_command_tmp.kp.at(i) = Kp[i];
       motor_command_tmp.kd.at(i) = Kd[i];
     }
 
-    if (ms) {
+    if (ms)
+    {
       // time_ += control_dt_;
       // if (time_ < duration_) {
       //   // [Stage 1]: set robot to zero posture
@@ -366,13 +438,16 @@ class G1Example {
   }
 };
 
-int main(int argc, char const *argv[]) {
-  if (argc < 2) {
-    std::cout << "Usage: g1_ankle_swing_example network_interface" << std::endl;
-    exit(0);
-  }
-  std::string networkInterface = argv[1];
+int main(int argc, char const *argv[])
+{
+  // if (argc < 2) {
+  //   std::cout << "Usage: g1_ankle_swing_example network_interface" << std::endl;
+  //   exit(0);
+  // }
+  // std::string networkInterface = argv[1];
+  std::string networkInterface = "enp4s0";
   G1Example custom(networkInterface);
-  while (true) sleep(10);
+  while (true)
+    sleep(10);
   return 0;
 }

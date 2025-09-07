@@ -9,6 +9,9 @@ srv_gen/
 build_isolated/
 devel_isolated/
 
+html/
+latex/
+
 # Catkin tools
 .catkin_tools/
 .catkin_workspace

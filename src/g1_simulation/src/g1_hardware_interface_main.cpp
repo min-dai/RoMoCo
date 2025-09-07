@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
    // Create the robot-specific interface
    std::string package_folder = ament_index_cpp::get_package_share_directory("g1_simulation");
-   std::string config_folder = package_folder + "/config_18dof";
+   std::string config_folder = package_folder + "/config_18dof_hardware";
    std::string home = std::string(getenv("HOME"));
 
    // if timestamp env variable not set, use default

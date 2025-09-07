@@ -9,7 +9,7 @@ InterfaceBase::~InterfaceBase()
    }
 }
 
-void InterfaceBase::InitLogFile(const std::string &log_path, bool isSim)
+void InterfaceBase::InitLogFile(const std::string &log_path)
 {
    // Check if the log directory exists, if not, create it
    if (!std::filesystem::exists(log_path))
@@ -23,7 +23,7 @@ void InterfaceBase::InitLogFile(const std::string &log_path, bool isSim)
          std::cerr << "Failed to create log directory: " << log_path<< std::endl;
       }
    }
-   if (isSim)
+   if (is_sim())
        logFilePath_ = log_path + "/logSimInterface.bin";
    else
        logFilePath_ = log_path + "/logInterface.bin";
@@ -34,6 +34,7 @@ void InterfaceBase::InitLogFile(const std::string &log_path, bool isSim)
 void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_folder)
 {
    // pull locked and loco encoder names from interface config
+
    std::string interface_config_file = config_folder + "/interface_config.yaml";
    YAMLParser yaml_parser(interface_config_file);
    yaml_parser.Init(interface_config_file);
@@ -93,7 +94,7 @@ void InterfaceBase::InitMotorCommands()
 {
    if (total_motor_dof_ <= 0 || loco_motor_dof_ <= 0)
    {
-      throw std::runtime_error("motor DOF not initialized. Call InitDofAndIndicesFromConfigFile first.");
+      throw std::runtime_error("motor DOF not initialized.");
    }
 
    pd_motor_commands_.ZeroAll(pd_motor_dof_);
@@ -116,15 +117,15 @@ void InterfaceBase::CheckInitialization() const
 {
    if (pd_proprio_indices_.empty() || loco_proprio_indices_.empty())
    {
-      throw std::runtime_error("Proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
+      throw std::runtime_error("Proprio indices not initialized.");
    }
    if (total_motor_dof_ <= 0 || total_proprio_dof_ <= 0)
    {
-      throw std::runtime_error("Total DOF not initialized. Call InitDofAndIndicesFromConfigFile first.");
+      throw std::runtime_error("Total DOF not initialized.");
    }
    if (loco_proprio_motor_indices_.empty())
    {
-      throw std::runtime_error("Motored loco proprio indices not initialized. Call InitDofAndIndicesFromConfigFile first.");
+      throw std::runtime_error("Motored loco proprio indices not initialized.");
    }
 
 }

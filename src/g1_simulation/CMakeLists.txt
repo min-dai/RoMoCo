@@ -153,6 +153,9 @@ install(
 install(DIRECTORY config_18dof/
   DESTINATION share/${PROJECT_NAME}/config_18dof
 )
+install(DIRECTORY config_18dof_hardware/
+  DESTINATION share/${PROJECT_NAME}/config_18dof_hardware
+)
 install(DIRECTORY config_29dof/
   DESTINATION share/${PROJECT_NAME}/config_29dof
 )
