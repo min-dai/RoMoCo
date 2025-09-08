@@ -1,5 +1,5 @@
 
-controller: "posik"
+controller: "velik"
 
 
 
@@ -38,10 +38,10 @@ id:
 
 velik:
   #for each leg
-  JointKP: [150, 150, 150, 150, 150, 150]
+  JointKP: [150, 200, 200, 150, 40, 40]
   #for each leg
-  JointKD: [3,3,3,3,3,3] 
-  output_ik_gain: [1.5, 1, 1, 1, 1, 1]
+  JointKD: [9,5,5,5,3,2] 
+  output_ik_gain: [1, 1, 1, 1, 1, 1]
   
 friction:  
   frictionCoef: 1

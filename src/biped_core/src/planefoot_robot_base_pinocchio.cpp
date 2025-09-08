@@ -4,6 +4,10 @@ PlaneFootRobotBasePinocchio::PlaneFootRobotBasePinocchio(const std::string &urdf
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
 }
+PlaneFootRobotBasePinocchio::PlaneFootRobotBasePinocchio(const std::string &config_folder)
+    : RobotBasePinocchio(config_folder)
+{
+}
 
 std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> PlaneFootRobotBasePinocchio::GetAllFrameKinematics()
 {

@@ -35,11 +35,20 @@ using Eigen::VectorXd;
 class RobotBasePinocchio
 {
 public:
-    // Constructor for RobotBasePinocchio.
-    // @param urdf_path: Path to the robot's URDF file.
-    // @param locked_encoder_names: Names of joints to be locked (fixed) in the model.
-    // @param locked_joints_q: Values for the locked joints (must match the size of locked_encoder_names).
-    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+
+    /**
+     * @param urdf_path: Path to the robot's URDF file.
+     * @param locked_encoder_names: Names of joints to be locked (fixed) in the model.
+     * @param locked_joints_q: Values for the locked joints (must match the size of locked_encoder_names).
+     */
+    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q);
+    
+    /**
+     * @param config_folder: Path to the configuration folder.
+     * This constructor initializes the robot model using configuration parameters
+     */
+    explicit RobotBasePinocchio(const std::string &config_folder);
+
     // virtual destructor
     virtual ~RobotBasePinocchio() = default;
 
@@ -48,16 +57,12 @@ public:
 
     void Init();
 
-    // if robot class need estimation, prepare contact classifier, otherwise do nothing
-    bool need_estimation() const { return need_estimation_; }
-    void set_need_estimation(bool need_estimation) { need_estimation_ = need_estimation; }
-
-    void SetComputedTorque(const VectorXd &torque) { computed_torque_ = torque; }
+    // estimation realted functions
+    void set_computed_torque(const VectorXd &torque) { computed_torque_ = torque; }
     void ReconfigureContactClassifier(const std::string &config_folder) { contact_classifier_.Reconfigure(config_folder); }
-    // TODO: make pure virutal
-    virtual void ComputeContactClassifierInput() {};
-    // TODO: add toe, heel version as well
-    virtual BipedEstimationKinematicsInput ComputeEstimationKinematicsInput() { return BipedEstimationKinematicsInput(); };
+    virtual std::vector<int> left_leg_encoder_idx() const = 0;
+    virtual std::vector<int> right_leg_encoder_idx() const = 0;
+    virtual BipedEstimationKinematicsInput ComputeEstimationKinematicsInput();
 
     double mass() const { return mass_; }
     int nq() const { return model_.nq; }
@@ -196,6 +201,8 @@ public:
     }
 
 protected:
+    void InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+    virtual void ComputeContactClassifierInput() = 0;
     pinocchio::Model model_; // Pinocchio model
     pinocchio::Data data_;   // Pinocchio data
 

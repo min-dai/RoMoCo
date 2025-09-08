@@ -1,7 +1,32 @@
 
 #include "biped_core/robot_base_pinocchio.hpp"
 
+#include "biped_utils/yaml_parser.hpp"
+RobotBasePinocchio::RobotBasePinocchio(const std::string &config_folder)
+{
+    std::string interface_config_file = config_folder + "/interface_config.yaml";
+    YAMLParser yaml_parser(interface_config_file);
+    std::string urdf_name = yaml_parser.get_string("urdf_name");
+    std::string urdf_path = config_folder + "/../model_files/" + urdf_name;
+    std::vector<std::string> locked_encoder_names;
+    bool exists = yaml_parser.get_string_vector_optional("locked_encoder_names", locked_encoder_names);
+    if (!exists)
+    {
+        InitPinocchioModel(urdf_path);
+    }
+    else
+    {
+        VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
+        InitPinocchioModel(urdf_path, locked_encoder_names, locked_joints_q);
+    }
+}
+
 RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+{
+    InitPinocchioModel(urdf_path, locked_encoder_names, locked_joints_q);
+}
+
+void RobotBasePinocchio::InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
 {
     pinocchio::JointModelComposite jointComposite(2);
     jointComposite.addJoint(pinocchio::JointModelTranslation());
@@ -214,6 +239,21 @@ std::vector<std::reference_wrapper<RobotBasePinocchio::JointKinematics1D>> Robot
 {
    return {
        left_hip_yaw_, right_hip_yaw_};
+}
+
+BipedEstimationKinematicsInput RobotBasePinocchio::ComputeEstimationKinematicsInput()
+{
+    ComputeContactClassifierInput();
+    ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
+
+    BipedEstimationKinematicsInput biped_estimation_kinematics_input;
+    biped_estimation_kinematics_input.p_left_foot = left_below_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.p_right_foot = right_below_ankle_.kinematics.position;
+    biped_estimation_kinematics_input.J_left_foot = left_below_ankle_.kinematics.jacobian(Eigen::all, left_leg_encoder_idx());
+    biped_estimation_kinematics_input.J_right_foot = right_below_ankle_.kinematics.jacobian(Eigen::all, right_leg_encoder_idx());
+    biped_estimation_kinematics_input.left_contact_prob = contact_classifier_output_.left_contact_prob;
+    biped_estimation_kinematics_input.right_contact_prob = contact_classifier_output_.right_contact_prob;
+    return biped_estimation_kinematics_input;
 }
 
 void RobotBasePinocchio::FrameKinematics3D::Update(pinocchio::Model &model, pinocchio::Data &data)

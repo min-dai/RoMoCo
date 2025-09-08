@@ -4,6 +4,10 @@ LineFootRobotBasePinocchio::LineFootRobotBasePinocchio(const std::string &urdf_p
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
 }
+LineFootRobotBasePinocchio::LineFootRobotBasePinocchio(const std::string &config_folder)
+    : RobotBasePinocchio(config_folder)
+{
+}
 
 std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> LineFootRobotBasePinocchio::GetAllFrameKinematics()
 {

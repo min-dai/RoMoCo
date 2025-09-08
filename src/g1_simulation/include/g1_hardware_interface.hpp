@@ -78,6 +78,7 @@ private:
     void Init(const std::string &config_folder, const std::string &log_path) override;
     void InitDDS(const std::string &network_interface);
     void InitBendKneePos(const std::string &config_folder);
+    void CheckSafeMotorCommands(BipedMotorCommands &commands);
 
     void Estimate();
     
@@ -197,6 +198,13 @@ private:
     Eigen::VectorXd default_loco_q_;
 
     SimpleTimer simple_timer_;
+
+
+
+
+   //Safe q bound
+   Eigen::VectorXd q_lower_bound_;
+   Eigen::VectorXd q_upper_bound_;
 };
 
 #endif // G1_HARDWARE_INTERFACE_HPP

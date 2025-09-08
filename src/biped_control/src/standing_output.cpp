@@ -128,8 +128,8 @@ void StandingOutput::ComputeDesired(const DesiredCommand &command)
 {
     double x_d = (updated.queueTransition) ? config.x_offset : config.x_offset + command.values(Channel::X) * config.x_range;
     double y_d = (updated.queueTransition) ? config.stand2step_y_offset : command.values(Channel::Y) * config.y_range;
-    double z_d = 0.5 * command.values(Channel::Z) * (config.z_ub - config.z_lb) + 0.5 * (config.z_ub + config.z_lb);
-    // double z_d = updated.initial_height + 0.1*command(Channel::Z);
+    // double z_d = 0.5 * command.values(Channel::Z) * (config.z_ub - config.z_lb) + 0.5 * (config.z_ub + config.z_lb);
+    double z_d = updated.initial_height + 0.1*command.values(Channel::Z);
     double yaw_d = (updated.queueTransition) ? 0 : command.values(Channel::Yaw) * config.yaw_range;
     double pitch_d = (updated.queueTransition) ? 0 : command.values(Channel::Pitch) * config.pitch_range;
     double roll_d = (updated.queueTransition) ? 0 : command.values(Channel::Roll) * config.roll_range;

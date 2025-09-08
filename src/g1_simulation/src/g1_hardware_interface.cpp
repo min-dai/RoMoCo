@@ -22,6 +22,9 @@ G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, c
     simple_timer_.Reset();
 
     InitBendKneePos(config_folder);
+
+
+
     std::cout << "G1 Hardware Interface initialized on " << network_interface << std::endl;
 }
 
@@ -106,10 +109,13 @@ void G1HardwareInterface::InitBendKneePos(const std::string &config_folder)
     BipedMotorCommands loco_motor_commands_init = loco_motor_commands_;
     loco_motor_commands_init.joint_positions = default_loco_q;
 
-    loco_motor_commands_init.joint_kp.setConstant(10.0);
+    loco_motor_commands_init.joint_kp.setConstant(30.0);
     loco_motor_commands_init.joint_kd.setConstant(0.2);
 
     ProcessMotorCommands(loco_motor_commands_init);
+
+    q_lower_bound_ = yaml_parser.get_VectorXd("safe_loco_q_bounds/lower");
+    q_upper_bound_ = yaml_parser.get_VectorXd("safe_loco_q_bounds/upper");
 }
 
 void G1HardwareInterface::LowStateHandler(const void *message)
@@ -260,6 +266,7 @@ void G1HardwareInterface::ConvertG1StateToProprioception()
 
 void G1HardwareInterface::SendPacket()
 {
+    CheckSafeMotorCommands(loco_motor_commands_);
     // Convert final motor commands to G1 format
     ConvertMotorCommandsToG1(final_motor_commands_);
 
@@ -270,7 +277,7 @@ void G1HardwareInterface::SendPacket()
     // Update torque in robot model for contact classifier by compute motored joints PD control
     torque_loco_ = loco_motor_commands_.SolveFullTorque(loco_proprioception_.q(loco_proprio_motor_indices_),
                                                         loco_proprioception_.qdot(loco_proprio_motor_indices_));
-    robot_->SetComputedTorque(torque_loco_);
+    robot_->set_computed_torque(torque_loco_);
 }
 
 void G1HardwareInterface::ConvertMotorCommandsToG1(const BipedMotorCommands &commands)
@@ -292,10 +299,12 @@ void G1HardwareInterface::ConvertMotorCommandsToG1(const BipedMotorCommands &com
     motor_command_buffer_.SetData(mc_tmp);
 }
 
-// void G1HardwareInterface::CheckSafeMotorCommands(const BipedMotorCommands &commands)
-// {
-    
-// }
+void G1HardwareInterface::CheckSafeMotorCommands(BipedMotorCommands &commands)
+{
+    commands.joint_positions = commands.joint_positions.cwiseMax(q_lower_bound_).cwiseMin(q_upper_bound_);
+    std::cout << "Checked safe q: " << commands.joint_positions.transpose() << std::endl;
+    ProcessMotorCommands(commands);
+}
 
 
 void G1HardwareInterface::LowCommandWriter()
@@ -332,23 +341,6 @@ void G1HardwareInterface::LowCommandWriterDebug()
     const std::shared_ptr<const MotorCommand> mc = motor_command_buffer_.GetData();
     if (mc)
     {
-        std::cout << "buffer q: " << std::endl;
-        for (int i = 0; i < total_motor_dof_; i++)
-        {
-            std::cout << mc->q_target.at(i) << " ";
-        }
-        std::cout << "buffer kp: " << std::endl;
-        for (int i = 0; i < total_motor_dof_; i++)
-        {
-            std::cout << mc->kp.at(i) << " ";
-        }
-        
-        std::cout << std::endl;
-
-        std::cout << "final_motor_commands: " << std::endl;
-        std::cout << final_motor_commands_ << std::endl;
-
-
         // for (int i = 0; i < total_motor_dof_; i++)
         // {
         //     dds_low_command.motor_cmd().at(i).mode() = 1; // 1:Enable, 0:Disable

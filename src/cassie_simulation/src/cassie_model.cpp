@@ -2,7 +2,13 @@
 using Eigen::Vector3d;
 
 CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names)
-    : LineFootRobotBasePinocchio(urdf_path, locked_encoder_names)
+    : LineFootRobotBasePinocchio(urdf_path, locked_encoder_names, VectorXd::Zero(0))
+{
+    Init();
+}
+
+CassieModel::CassieModel(const std::string &config_folder)
+    : LineFootRobotBasePinocchio(config_folder)
 {
     Init();
 }
@@ -272,17 +278,3 @@ void CassieModel::ComputeContactClassifierInput()
     contact_classifier_input_.torque_right = computed_torque_.tail(5);
 }
 
-BipedEstimationKinematicsInput CassieModel::ComputeEstimationKinematicsInput()
-{
-    ComputeContactClassifierInput();
-    ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
-
-    BipedEstimationKinematicsInput biped_estimation_kinematics_input;
-    biped_estimation_kinematics_input.p_left_foot = left_below_ankle_.kinematics.position;
-    biped_estimation_kinematics_input.p_right_foot = right_below_ankle_.kinematics.position;
-    biped_estimation_kinematics_input.J_left_foot = left_below_ankle_.kinematics.jacobian.block(0, LeftHipRoll, 3, 6);
-    biped_estimation_kinematics_input.J_right_foot = right_below_ankle_.kinematics.jacobian.block(0, RightHipRoll, 3, 6);
-    biped_estimation_kinematics_input.left_contact_prob = contact_classifier_output_.left_contact_prob;
-    biped_estimation_kinematics_input.right_contact_prob = contact_classifier_output_.right_contact_prob;
-    return biped_estimation_kinematics_input;
-}

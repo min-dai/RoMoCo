@@ -2,7 +2,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "ament_index_cpp/get_package_share_directory.hpp"
 
-#include "biped_ros/controller_node.hpp"
+#include "biped_ros/ros_controller_node.hpp"
 #include "cassie_model.hpp"
 
 int main(int argc, char *argv[])

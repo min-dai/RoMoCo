@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import SetEnvironmentVariable
+from launch.substitutions import LaunchConfiguration
 import datetime
 def generate_launch_description() -> LaunchDescription:
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -18,6 +19,7 @@ def generate_launch_description() -> LaunchDescription:
             package="cassie_simulation",
             executable="cassie_controller_node_main",
             name="cassie_controller_node_main",
+            arguments=[LaunchConfiguration("use_estimation")],
             output="screen",
             emulate_tty=True
         ),

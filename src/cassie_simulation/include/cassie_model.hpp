@@ -31,10 +31,18 @@ public:
 
     Kinematics1D left_achilles, right_achilles;
 
-    CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {});
-
+    CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names);
+    CassieModel(const std::string &config_folder);
+    ~CassieModel() override = default;
+    std::vector<int> left_leg_encoder_idx() const override{
+        return {JointIndex::LeftHipRoll, JointIndex::LeftHipYaw, JointIndex::LeftHipPitch, JointIndex::LeftKneePitch, JointIndex::LeftTarsusPitch};
+    }
+    std::vector<int> right_leg_encoder_idx() const override{
+        return {JointIndex::RightHipRoll, JointIndex::RightHipYaw, JointIndex::RightHipPitch, JointIndex::RightKneePitch, JointIndex::RightTarsusPitch};
+    }
+    
     void ComputeContactClassifierInput() override;
-    BipedEstimationKinematicsInput ComputeEstimationKinematicsInput() override;
+
 
     std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;
     std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const override;

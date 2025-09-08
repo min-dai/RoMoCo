@@ -9,6 +9,11 @@ G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::stri
     Init();
     
 }
+G1ModelLeg::G1ModelLeg(const std::string &config_folder)
+    : PlaneFootRobotBasePinocchio(config_folder)
+{
+    Init();
+}
 
 std::vector<int> G1ModelLeg::actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const
 {
@@ -161,12 +166,12 @@ Kinematics1D G1ModelLeg::GetRightFootDeltaPitch()
 
 Kinematics1D G1ModelLeg::GetLeftFootDeltaRoll()
 {
-    return ((left_footLF_.kinematics.z()+left_footLB_.kinematics.z())/2. - (left_footRF_.kinematics.z() +left_footRB_.kinematics.z() )/2.)/0.06;
+    return ((left_footLF_.kinematics.z()+left_footLB_.kinematics.z())/2. - (left_footRF_.kinematics.z() +left_footRB_.kinematics.z() )/2.)/0.055;
 }
 
 Kinematics1D G1ModelLeg::GetRightFootDeltaRoll()
 {
-    return ((right_footLF_.kinematics.z()+right_footLB_.kinematics.z())/2. - (right_footRF_.kinematics.z() +right_footRB_.kinematics.z() )/2.)/0.06;
+    return ((right_footLF_.kinematics.z()+right_footLB_.kinematics.z())/2. - (right_footRF_.kinematics.z() +right_footRB_.kinematics.z() )/2.)/0.055;
 }
 
 Kinematics1D G1ModelLeg::GetBaseDeltaPitch()
@@ -180,11 +185,11 @@ Kinematics1D G1ModelLeg::GetBaseDeltaRoll()
 
 void G1ModelLeg::ComputeContactClassifierInput()
 {
-    MatrixXd Jleft_ankle =left_ankle_.kinematics.jacobian;
-    MatrixXd Jright_ankle =right_ankle_.kinematics.jacobian;
+    MatrixXd Jleft = left_below_ankle_.kinematics.jacobian;
+    MatrixXd Jright = right_below_ankle_.kinematics.jacobian;
 
-    contact_classifier_input_.Jleft_active = Jleft_ankle(Eigen::all, {LeftHipPitch, LeftHipRoll, LeftHipYaw, LeftKneePitch, LeftAnklePitch, LeftAnkleRoll});
-    contact_classifier_input_.Jright_active = Jright_ankle(Eigen::all, {RightHipPitch, RightHipRoll, RightHipYaw, RightKneePitch, RightAnklePitch, RightAnkleRoll});
+    contact_classifier_input_.Jleft_active = Jleft(Eigen::all, {LeftHipPitch, LeftHipRoll, LeftHipYaw, LeftKneePitch, LeftAnklePitch, LeftAnkleRoll});
+    contact_classifier_input_.Jright_active = Jright(Eigen::all, {RightHipPitch, RightHipRoll, RightHipYaw, RightKneePitch, RightAnklePitch, RightAnkleRoll});
 
     if (computed_torque_.size() != nu_)
     {
@@ -195,18 +200,6 @@ void G1ModelLeg::ComputeContactClassifierInput()
 }
 
 
-BipedEstimationKinematicsInput G1ModelLeg::ComputeEstimationKinematicsInput()
-{
-    ComputeContactClassifierInput();
-    ContactClassifierOutput contact_classifier_output_ = contact_classifier_.Update(contact_classifier_input_);
-    BipedEstimationKinematicsInput biped_estimation_kinematics_input;
-    biped_estimation_kinematics_input.p_left_foot = left_ankle_.kinematics.position;
-    biped_estimation_kinematics_input.p_right_foot = right_ankle_.kinematics.position;
-    biped_estimation_kinematics_input.J_left_foot = contact_classifier_input_.Jleft_active;
-    biped_estimation_kinematics_input.J_right_foot = contact_classifier_input_.Jright_active;
-    biped_estimation_kinematics_input.left_contact_prob = contact_classifier_output_.left_contact_prob;
-    biped_estimation_kinematics_input.right_contact_prob = contact_classifier_output_.right_contact_prob;
-    return biped_estimation_kinematics_input;
-}
+
 
 

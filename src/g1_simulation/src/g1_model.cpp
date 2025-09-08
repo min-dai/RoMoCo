@@ -5,6 +5,11 @@ G1Model::G1Model(const std::string &urdf_path, const std::vector<std::string> &l
 {
     Init();
 }
+G1Model::G1Model(const std::string &config_folder)
+    : G1ModelLeg(config_folder)
+{
+    Init();
+}
 
 std::vector<int> G1Model::actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const
 {

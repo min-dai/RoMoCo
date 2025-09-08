@@ -1,4 +1,4 @@
-#include "biped_ros/interface_node.hpp"
+#include "biped_ros/ros_interface_node.hpp"
 #include "biped_ros/conversions.hpp"
 #include "biped_utils/yaml_parser.hpp"
 RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,

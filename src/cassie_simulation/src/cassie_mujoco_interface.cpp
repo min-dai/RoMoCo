@@ -66,7 +66,7 @@ void CassieMujocoInterface::Init(const std::string &config_folder, const std::st
 
     if (robot_ != nullptr)
     {
-        robot_->SetComputedTorque(torque_loco_);
+        robot_->set_computed_torque(torque_loco_);
         UpdateHardwareSensorData();
         robot_->ReconfigureContactClassifier(config_folder);
         std::cout << "Initial HW Sensor Data :" << sensor_hw_ << std::endl;
@@ -263,7 +263,7 @@ void CassieMujocoInterface::SendPacket()
 
     if (robot_ != nullptr)
     {
-        robot_->SetComputedTorque(torque_loco_);
+        robot_->set_computed_torque(torque_loco_);
     }
 }
 

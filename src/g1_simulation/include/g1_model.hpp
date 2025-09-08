@@ -20,7 +20,8 @@ public:
         RightElbowPitch,
     };
 
-    G1Model(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+    G1Model(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q);
+    G1Model(const std::string &config_folder);
     ~G1Model() override = default;
     
 

@@ -1,7 +1,7 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include "ament_index_cpp/get_package_share_directory.hpp"
-#include "biped_ros/interface_node.hpp"
+#include "biped_ros/ros_interface_node.hpp"
 
 #include "cassie_mujoco_interface.hpp"
 

@@ -221,7 +221,7 @@ void G1MujocoInterface::SendPacket()
    std::cout << "Loco Torque Command: " << torque_loco_.transpose() << std::endl;
    if (robot_ != nullptr)
    {
-      robot_->SetComputedTorque(torque_loco_);
+      robot_->set_computed_torque(torque_loco_);
    }
 }
 

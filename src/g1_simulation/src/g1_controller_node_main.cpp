@@ -1,43 +1,32 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
-#include "ament_index_cpp/get_package_share_directory.hpp"
 
-#include "biped_ros/controller_node.hpp"
+
+#include "biped_ros/ros_controller_node.hpp"
 #include "g1_model_leg.hpp"
+
+#include "biped_ros/ros_load_config.hpp"
 
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
-
-   std::string package_folder = ament_index_cpp::get_package_share_directory("g1_simulation");
-   std::string config_folder = package_folder + "/config_18dof";
-
-   std::string home = std::string(getenv("HOME"));
-   // if timestamp env variable not set, use default
-   std::string timestamp;
-   if (getenv("LOG_FOLDER_TIMESTAMP") == NULL)
-   {
-      timestamp = "default";
+   bool use_sim_gains = false;
+   if (argc > 1) {
+     use_sim_gains = std::string(argv[1]) == "true" || std::string(argv[1]) == "1";
    }
+   std::cout << "Using simulation gains: " << (use_sim_gains ? "true" : "false") << std::endl;
+   std::string config_folder_name;
+   if (use_sim_gains)
+     config_folder_name = "config_18dof";
    else
-   {
-      timestamp = std::string(getenv("LOG_FOLDER_TIMESTAMP"));
-   }
-   std::string log_path = home + "/ROBOTLOG/G1/" + timestamp;
+     config_folder_name = "config_18dof_hardware";
 
-   std::string mujoco_config_file = config_folder + "/interface_config.yaml";
-   YAMLParser yaml_parser(mujoco_config_file);
-   std::string urdf_name = yaml_parser.get_string("urdf_name");
+   RosLoadConfig ros_config("g1_simulation", config_folder_name, "ROBOTLOG/G1");
 
-   std::string urdf_path = package_folder + "/model_files/" + urdf_name;
-   std::vector<std::string> locked_encoder_names = yaml_parser.get_string_vector("locked_encoder_names");
-
-   VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
-
-   std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<G1ModelLeg>(urdf_path, locked_encoder_names, locked_joints_q);
+   std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<G1ModelLeg>(ros_config.config_folder);
 
    // Wrap in ROS controller node
-   auto node = std::make_shared<RosControllerNode>(config_folder, log_path, robot_ptr);
+   auto node = std::make_shared<RosControllerNode>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr));
 
    // Spin
    rclcpp::spin(node);

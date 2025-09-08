@@ -62,6 +62,34 @@ YAML::Node YAMLParser::getNode(const std::string &key_path) const
     return node; // Return the final node
 }
 
+bool YAMLParser::getNodeOptional(const std::string& key_path, YAML::Node& node) const
+{
+    // Make sure is initialized
+    if (!initialized)
+    {
+        throw std::runtime_error("YAMLParser not initialized");
+    }
+
+    node = YAML::Clone(root);
+    std::istringstream ss(key_path);
+    std::string key;
+
+    // Split the path by '/'
+    while (std::getline(ss, key, '/'))
+    {
+        if (!node.IsMap())
+        {
+            return false; // Not a mapping, cannot proceed
+        }
+        if (!node[key])
+        {
+            return false; // Key does not exist
+        }
+        node = node[key];
+    }
+    return true; // Successfully retrieved the node
+}
+
 /**
  * @brief Retrieves an Eigen::VectorXd from YAML.
  */
@@ -82,6 +110,31 @@ Eigen::VectorXd YAMLParser::get_VectorXd(const std::string &key_path) const
     }
 
     return vec;
+}
+
+bool YAMLParser::get_VectorXd_optional(const std::string &key_path, Eigen::VectorXd &result) const
+{
+    YAML::Node node;
+    bool exists = getNodeOptional(key_path, node);
+
+    if (!exists)
+    {
+        return false; // Key does not exist
+    }
+    else
+    {
+        if (!node.IsSequence())
+        {
+            throw std::runtime_error("Expected a sequence at key path: " + key_path);
+        }
+        int size = node.size();
+        result.resize(size);
+        for (int i = 0; i < size; i++)
+        {
+            result[i] = node[i].as<double>();
+        }
+    }
+    return true; // Successfully retrieved the value
 }
 
 /**
@@ -128,6 +181,30 @@ std::vector<std::string> YAMLParser::get_string_vector(const std::string &key_pa
     }
 
     return values;
+}
+
+bool YAMLParser::get_string_vector_optional(const std::string &key_path, std::vector<std::string> &values) const
+{
+    YAML::Node node;
+    bool exists = getNodeOptional(key_path, node);
+
+    if (!exists)
+    {
+        return false; // Key does not exist
+    }
+    else
+    {
+        if (!node.IsSequence())
+        {
+            throw std::runtime_error("Expected a sequence at key path: " + key_path);
+        }
+        values.clear();
+        for (const auto &item : node)
+        {
+            values.push_back(item.as<std::string>());
+        }
+    }
+    return true; // Successfully retrieved the value
 }
 
 /**

@@ -1,11 +1,11 @@
-#include "biped_ros/controller_node.hpp"
+#include "biped_ros/ros_controller_node.hpp"
 #include "biped_ros/conversions.hpp"
 #include "screen_radio/screen_radio.hpp"
 #include "biped_utils/yaml_parser.hpp"
 RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,
                                      std::shared_ptr<RobotBasePinocchio> robot)
-    : Node("controller_node"),
+    : Node("ros_controller_node"),
       controller_(std::make_unique<BasicControllerStateMachine>(config_folder, log_path, robot)),
       robot_(robot)
 {

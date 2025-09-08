@@ -37,6 +37,14 @@ public:
     Eigen::VectorXd get_VectorXd(const std::string& key_path) const;
 
     /**
+     * @brief Retrieves an Eigen::VectorXd from YAML if the key exists.
+     * @param key_path Slash-separated key path (e.g., "qp/OutputKP").
+     * @param result Reference to store the resulting Eigen::VectorXd.
+     * @return true if the key exists and value is retrieved, false otherwise.
+     */
+    bool get_VectorXd_optional(const std::string& key_path, Eigen::VectorXd& result) const;
+
+    /**
      * @brief Retrieves an integer from YAML.
      * @param key_path Slash-separated key path.
      * @return Integer value.
@@ -63,7 +71,15 @@ public:
      * @return std::vector<std::string> containing the values.
      */
     std::vector<std::string> get_string_vector(const std::string &key_path) const;
-
+    
+    /**
+     * @brief Retrieves a vector of strings from YAML if the key exists.
+     * @param key_path Slash-separated key path.
+     * @param values Reference to store the resulting vector of strings.
+     * @return true if the key exists and value is retrieved, false otherwise.
+     */
+    bool get_string_vector_optional(const std::string &key_path, std::vector<std::string> &values) const;
+    
     /**
      * @brief Retrieves a boolean from YAML.
      * @param key_path Slash-separated key path.
@@ -82,6 +98,13 @@ private:
      * @return YAML::Node corresponding to the key.
      */
     YAML::Node getNode(const std::string& key_path) const;
+    /**
+     * @brief Traverses the YAML tree based on a slash-separated key path, returning whether the node exists.
+     * @param key_path Slash-separated key path (e.g., "qp/OutputKP").
+     * @param node YAML::Node to store the result if found.
+     * @return true if the node exists, false otherwise.
+     */
+    bool getNodeOptional(const std::string& key_path, YAML::Node& node) const;
 
     bool initialized = false;
 
