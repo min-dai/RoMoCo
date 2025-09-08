@@ -184,8 +184,7 @@ void ContactKf::UpdateStep(const Eigen::Vector3d &plf_enc, const Eigen::Vector3d
 
     Eigen::VectorXd p(3), v(3), plf(3), prf(3), ba(3);
     this->UnpackState(this->x_hat, p, v, plf, prf, ba);
-    std::cout << "plf, prf: " << plf.transpose() << ", " << prf.transpose() << std::endl;
-    std::cout << "p : " << p.transpose() << std::endl;
+
     yk.segment(0, 3) = plf_enc - (plf - p);
     yk.segment(3, 3) = prf_enc - (prf - p);
 

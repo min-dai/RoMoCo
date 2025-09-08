@@ -22,9 +22,7 @@ void G1MujocoInterface::Init(const std::string &config_folder, const std::string
 
    InitDofAndIndicesFromConfigFile(config_folder);
    InitMotorCommands();
-   // TODO: find a better way to set these indices
-   pd_motor_commands_.joint_indices = {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28}; // waist and arms
-   loco_motor_commands_.joint_indices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};                             // legs
+
    std::string interface_config_file = config_folder + "/interface_config.yaml";
    ReconfigurePdMotorCommands(interface_config_file);
    InitProprioception();

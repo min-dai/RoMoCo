@@ -9,7 +9,8 @@
 class InterfaceBase
 {
 public:
-    explicit InterfaceBase() {}
+
+    explicit InterfaceBase(bool initial_ready_state = false) : ready_for_control_(initial_ready_state) {}
 
     virtual ~InterfaceBase();
 
@@ -18,6 +19,8 @@ public:
     virtual BipedProprioception ReadAndEstimate() = 0;
 
     virtual bool is_sim() const = 0;
+
+    bool ready_for_control() const { return ready_for_control_; }
 
     int loco_motor_dof() const { return loco_motor_dof_; }
 
@@ -33,6 +36,8 @@ public:
 
     virtual void Init(const std::string &config_folder, const std::string &log_path) = 0;
 
+    // for hardware interface, do nothing for sim interface
+    virtual void DampedInitializationControl(){};
 protected:
     void InitLogFile(const std::string &log_path);
 
@@ -81,12 +86,21 @@ protected:
     //updated every cycle
     BipedMotorCommands loco_motor_commands_;
     BipedMotorCommands final_motor_commands_;
+    //pd_motor_commands = final_motor_commands.GetIndex(pd_motor_command_indices);
+    //loco_motor_commands = final_motor_commands.GetIndex(loco_motor_command_indices);
+    std::vector<int> pd_motor_command_indices_;
+    std::vector<int> loco_motor_command_indices_;
+
 
     Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
 
     // for Log files
     std::fstream logFile_;
     std::string logFilePath_;
+
+    //for hardware initialization
+    bool ready_for_control_ = false;
+    
 };
 
 #endif // INTERFACE_BASE_HPP

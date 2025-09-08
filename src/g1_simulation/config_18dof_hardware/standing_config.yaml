@@ -1,11 +1,11 @@
 
-controller: "velik"
+controller: "posik"
 
 
 
 pose_command: 
   dt_lowpass: 0.0005
-  yd_lowpass_dt_cutoff: [5, 2, .5, .5, .5, .5]
+  yd_lowpass_dt_cutoff: [1, 1, .5, .5, .5, .5]
   stand2step_y_offset: 0.04
   x_offset: 0.0
   x_range: 0.05
@@ -55,5 +55,5 @@ friction:
 posik:
   tol: 0.0001
   max_iter: 1000
-  JointKP: [200, 200, 150, 150, 150, 150]
-  JointKD: [10,10,10,10,10,10]
+  JointKP: [200, 200, 200, 150, 50, 50]
+  JointKD: [10,5,5,5,3,2]

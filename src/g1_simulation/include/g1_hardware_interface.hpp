@@ -25,9 +25,7 @@
 
 #include "biped_utils/simple_timer.hpp"
 
-using namespace unitree::common;
-using namespace unitree::robot;
-using namespace unitree_hg::msg::dds_;
+
 
 static const std::string HG_CMD_TOPIC = "rt/lowcmd";
 static const std::string HG_IMU_TORSO = "rt/secondary_imu";
@@ -45,7 +43,7 @@ public:
     std::shared_ptr<const T> GetData()
     {
         std::shared_lock<std::shared_mutex> lock(mutex);
-        return data ? data : nullptr;
+        return data;
     }
 
     void Clear()
@@ -62,22 +60,23 @@ private:
 class G1HardwareInterface : public InterfaceBase
 {
 public:
-    explicit G1HardwareInterface(const std::string &network_interface);
     G1HardwareInterface(const std::string &network_interface, const std::string &config_file, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot);
-
     ~G1HardwareInterface() override = default;
 
     bool is_sim() const override { return false; }
 
     BipedProprioception ReadAndEstimate() override;
+
     void SendPacket() override;
 
     bool IsInterfaceRunning() const override { return true; }
 
+    void DampedInitializationControl() override;
+
 private:
     void Init(const std::string &config_folder, const std::string &log_path) override;
     void InitDDS(const std::string &network_interface);
-    void InitBendKneePos(const std::string &config_folder);
+    void GetInitialProprioception();
     void CheckSafeMotorCommands(BipedMotorCommands &commands);
 
     void Estimate();
@@ -135,7 +134,9 @@ private:
         std::array<float, 3> acc = {};
         std::array<float, 4> quat = {};
     };
-    static constexpr int G1_NUM_MOTOR = 29;
+    // G1_NUM_MOTOR represents the total number of actuated joints in the G1 robot.
+    // This value matches the joint indices defined in the commented G1JointIndex enum above (0 to 28).
+        static constexpr int G1_NUM_MOTOR = 29;
     std::array<int, G1_NUM_MOTOR> g1_motor_mode;
     
     struct MotorState
@@ -157,8 +158,8 @@ private:
     G1Mode mode_pr_;
     uint8_t mode_machine_;
 
-    Gamepad gamepad_;
-    REMOTE_DATA_RX rx_;
+    unitree::common::Gamepad gamepad_;
+    unitree::common::REMOTE_DATA_RX rx_;
 
     // Thread-safe data buffers
     DataBuffer<MotorState> motor_state_buffer_;
@@ -167,9 +168,9 @@ private:
     DataBuffer<MotorCommand> motor_command_buffer_;
 
     // DDS communication
-    ChannelPublisherPtr<LowCmd_> lowcmd_publisher_;
-    ChannelSubscriberPtr<LowState_> lowstate_subscriber_;
-    ChannelSubscriberPtr<IMUState_> torso_imu_subscriber_;
+    unitree::robot::ChannelPublisherPtr<unitree_hg::msg::dds_::LowCmd_> lowcmd_publisher_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::LowState_> lowstate_subscriber_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::IMUState_> torso_imu_subscriber_;
 
 
     // Motion switcher
@@ -195,14 +196,20 @@ private:
     RawSensorDataHardware sensor_hw_;
     Eigen::VectorXd torque_loco_;
 
+    Eigen::VectorXd default_pd_q_;
     Eigen::VectorXd default_loco_q_;
+
+
+    Eigen::VectorXd pd_qm0_;
+    Eigen::VectorXd loco_qm0_;
+    std::string interface_config_file_;
 
     SimpleTimer simple_timer_;
 
 
+    bool initial_proprioception_received_ = false;
 
-
-   //Safe q bound
+   // Joint position limits for motor safety checks: q_lower_bound_ and q_upper_bound_ are used to ensure commanded joint positions remain within safe operational ranges.
    Eigen::VectorXd q_lower_bound_;
    Eigen::VectorXd q_upper_bound_;
 };

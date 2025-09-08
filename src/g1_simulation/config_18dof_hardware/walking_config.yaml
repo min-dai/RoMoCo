@@ -32,31 +32,6 @@ friction:
   Rot_frictionCoef: 1
 
 
-
-
-qp:
-  ifprintQP: true
-
-  # #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
-  OutputKP: [150,  300,  400,  400,  300, 300,500,  300,     800,    400]
-  OutputKD: [10,    10,    8,   8,     8,   8 , 3,   10,      20,      3]
-  # #multidomain
-  # #zCOM stHipYaw basePitch baseRoll StPitch swx swy swz swHipYaw SwPitch SwRoll
-  # # OutputKP: [ 150, 450, 500, 500, 600, 500, 500,  500, 450, 600, 900]   
-  # # OutputKD: [  15,    5,  5,  5,   10,  5,   5,   5,   5,   10,    10]
-  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
-  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
-
-
-id:
-#the ID gain works reasonably well, use it as baseline for tuning
-  threshold: 0.000001
-  OutputKP: [150, 400, 400,400, 300, 300,300, 400,200,200]
-  OutputKD: [2,5,8,8,3,3,3,5,3,3]
-  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
-  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
-
-
 posik:
   tol: 0.0001
   max_iter: 1000

@@ -87,6 +87,16 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
       x += 6;
    }
 
+   pd_motor_command_indices_ = pd_encoder_indices;
+
+      // loco_proprio_motor_indices_ are actuated joint indices in full proprio
+   for (int idx : loco_encoder_indices) {
+    if (std::find(passive_encoder_indices.begin(), passive_encoder_indices.end(), idx) == passive_encoder_indices.end()) {
+        loco_motor_command_indices_.push_back(idx);
+    }
+   }
+
+
    PrintDebugInfo();
 
 }
@@ -160,8 +170,11 @@ std::vector<int> InterfaceBase::GetJointIndicesFromSubset(
 
 void InterfaceBase::ProcessMotorCommands(const BipedMotorCommands &loco_cmd)
 {
+   if (loco_motor_command_indices_.empty()) {
+    throw std::runtime_error("loco_motor_commands_ indices not initialized.");
+  }
    loco_motor_commands_.Update(loco_cmd);
-   final_motor_commands_.UpdatePartialWithIndices(loco_motor_commands_);
+   final_motor_commands_.UpdatePartialWithIndices(loco_motor_commands_, loco_motor_command_indices_);
 }
 
 
@@ -175,7 +188,7 @@ void InterfaceBase::ReconfigurePdMotorCommands(const Eigen::VectorXd &Kp, const 
    pd_motor_commands_.joint_kd = Kd;
    pd_motor_commands_.joint_torques_ff.setZero();
    pd_motor_commands_.joint_torques.setZero();
-   final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
+   final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_, pd_motor_command_indices_);
 }
 
 void InterfaceBase::ReconfigurePdMotorCommands(std::string &config_file)
@@ -188,7 +201,7 @@ void InterfaceBase::ReconfigurePdMotorCommands(std::string &config_file)
    pd_motor_commands_.joint_kd = yaml_parser.get_VectorXd("Kd_locked_joints");
    pd_motor_commands_.joint_torques_ff.setZero();
    pd_motor_commands_.joint_torques.setZero();
-   final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_);
+   final_motor_commands_.UpdatePartialWithIndices(pd_motor_commands_, pd_motor_command_indices_);
 }
 
 void InterfaceBase::PrintDebugInfo() const
@@ -214,6 +227,21 @@ void InterfaceBase::PrintDebugInfo() const
       std::cout << idx << " ";
    }
    std::cout << std::endl;
+
+   std::cout << "PD motor command indices: ";
+   for (const auto idx : pd_motor_command_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
+
+   std::cout << "Loco motor command indices: ";
+   for (const auto idx : loco_motor_command_indices_)
+   {
+      std::cout << idx << " ";
+   }
+   std::cout << std::endl;
+
    std::cout << "=========================" << std::endl;
 }
 

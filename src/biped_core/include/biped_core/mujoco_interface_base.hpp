@@ -7,7 +7,7 @@
 class MujocoInterfaceBase : public InterfaceBase
 {
 public:
-   MujocoInterfaceBase() = default;
+   MujocoInterfaceBase(): InterfaceBase(true) {} // Mujoco interface is always ready
    virtual ~MujocoInterfaceBase() = default;
 
    bool IsInterfaceRunning() const override{

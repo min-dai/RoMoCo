@@ -1,12 +1,11 @@
 
-controller: "velik"
+controller: "posik"
 
 
 
 pose_command: 
   dt_lowpass: 0.0005
-  # yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
-  yd_lowpass_dt_cutoff: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+  yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
   swingZ_lb: -0.9
   swingZ_ub: -0.4
   swingX_backward: -0.2

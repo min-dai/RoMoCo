@@ -223,7 +223,7 @@ classdef G1Log < handle
             end
 
             plotJointPos(obj, t, q)
-            % plotJointVel(obj, t, dq)
+            plotJointVel(obj, t, dq)
 
             %plot COM
             figure

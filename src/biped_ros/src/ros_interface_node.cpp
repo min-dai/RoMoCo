@@ -45,6 +45,13 @@ RosInterfaceNode::~RosInterfaceNode()
 }
 void RosInterfaceNode::Loop()
 {
+
+  if (!interface_->ready_for_control()){
+    interface_->DampedInitializationControl();
+    return;
+  }
+
+
   if (has_ctrl_cmd_)
   {
     BipedMotorCommands loco_ctrl_cmd;
@@ -54,16 +61,16 @@ void RosInterfaceNode::Loop()
     }
     interface_->ProcessMotorCommands(loco_ctrl_cmd);
   }
+  interface_->SendPacket();
 
+  // Read sensors and update estimation to prepare proprioception for controller
   loco_proprioception_ = interface_->ReadAndEstimate();
-  
-
   if (interface_->IsInterfaceRunning())
   {
     // Publish proprioception
     auto ros_proprio_msg = toRosMsg(loco_proprioception_); // Pre-allocate message
     proprio_pub_->publish(ros_proprio_msg);
   }
-  interface_->SendPacket();
+  
 
 }

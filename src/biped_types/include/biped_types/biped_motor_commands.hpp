@@ -61,6 +61,16 @@ struct BipedMotorCommands
       joint_torques.resize(dof);
    }
 
+   BipedMotorCommands GetIndex(const std::vector<int> &indices) const
+   {
+      BipedMotorCommands result;
+      result.joint_positions = joint_positions(indices);
+      result.joint_velocities = joint_velocities(indices);
+      result.joint_kp = joint_kp(indices);
+      result.joint_kd = joint_kd(indices);
+      result.joint_torques_ff = joint_torques_ff(indices);      
+   }
+
    void Update(const BipedMotorCommands &other)
    {
       joint_positions = other.joint_positions;
@@ -71,12 +81,12 @@ struct BipedMotorCommands
       joint_torques = other.joint_torques;
    }
 
-   void UpdatePartialWithIndices(const BipedMotorCommands &other)
+   void UpdatePartialWithIndices(const BipedMotorCommands &other, const std::vector<int> &indices)
    {
-      if (other.joint_indices.size() > 0){
-         for (int i = 0; i < other.joint_indices.size(); i++)
+      if (indices.size() > 0){
+         for (int i = 0; i < indices.size(); i++)
        {
-                       int target_idx = other.joint_indices[i];
+            int target_idx = indices[i];
             
             // Add bounds checking
             if (target_idx < joint_positions.size()) {
