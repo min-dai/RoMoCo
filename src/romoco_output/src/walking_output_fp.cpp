@@ -1,6 +1,6 @@
 #include "romoco_output/walking_output_fp.hpp"
-#include "biped_planner/HLIPplanner.hpp"
-#include "biped_planner/DCMplanner.hpp"
+#include "romoco_planner/HLIPplanner.hpp"
+#include "romoco_planner/DCMplanner.hpp"
 
 WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
     : WalkingOutputBase(robot)

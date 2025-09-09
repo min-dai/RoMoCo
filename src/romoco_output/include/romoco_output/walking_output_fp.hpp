@@ -1,9 +1,9 @@
 
 #include "romoco_output/walking_output_base.hpp"
-#include "biped_utils/phase_variable.hpp"
+#include "romoco_utils/phase_variable.hpp"
 
-#include "biped_core/com_states_rel_to_stance.hpp"
-#include "biped_planner/flatfoot_fp_planner.hpp"
+#include "romoco_core/com_states_rel_to_stance.hpp"
+#include "romoco_planner/flatfoot_fp_planner.hpp"
 
 
 using std::cout;

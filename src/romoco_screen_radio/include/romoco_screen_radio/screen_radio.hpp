@@ -1,7 +1,7 @@
 #ifndef SCREEN_RADIO_HPP
 #define SCREEN_RADIO_HPP
 
-#include "biped_types/biped_commands.hpp"
+#include "romoco_types/biped_commands.hpp"
 #include "romoco_screen_radio/radio_slider_map.hpp"
 
 inline DesiredCommand getScreenCommand(Eigen::VectorXd raw_radio_data){

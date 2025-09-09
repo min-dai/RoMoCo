@@ -16,14 +16,14 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(Qt5Widgets REQUIRED)
-find_package(biped_types REQUIRED)
+find_package(romoco_types REQUIRED)
 
 set(dependencies 
   rclcpp
   std_msgs
   Eigen3
   Qt5Widgets
-  biped_types
+  romoco_types
 )
 
 # Library target

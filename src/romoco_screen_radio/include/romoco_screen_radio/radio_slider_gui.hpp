@@ -16,7 +16,7 @@
 #include <memory>
 #include <Eigen/Dense>
 
-#include "biped_types/biped_commands.hpp"
+#include "romoco_types/biped_commands.hpp"
 
 class RadioSliderGUI : public QWidget {
     Q_OBJECT

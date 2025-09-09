@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>romoco_msgs</name>
+  <version>0.0.0</version>
+  <description>
+    The romoco_msgs package provides ROS messages for bipedal robot control.
+  </description>
+  <maintainer email="mdai@caltech.edu">mdai</maintainer>
+  <license>GPL-3.0-or-later</license>
+  <author email="mdai@caltech.edu">Min Dai</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+
+
+  <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

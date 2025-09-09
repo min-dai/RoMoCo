@@ -13,15 +13,15 @@ endif()
 # Dependencies
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(biped_utils REQUIRED)
-find_package(biped_core REQUIRED)
-find_package(biped_planner REQUIRED)
+find_package(romoco_utils REQUIRED)
+find_package(romoco_core REQUIRED)
+find_package(romoco_planner REQUIRED)
 
 set(dependencies
   Eigen3
-  biped_utils
-  biped_core
-  biped_planner
+  romoco_utils
+  romoco_core
+  romoco_planner
 )
 
 # Library target

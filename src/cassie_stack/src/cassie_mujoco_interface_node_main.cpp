@@ -1,0 +1,37 @@
+#include <memory>
+#include <rclcpp/rclcpp.hpp>
+#include "ament_index_cpp/get_package_share_directory.hpp"
+#include "romoco_ros/ros_interface_node.hpp"
+
+#include "cassie_mujoco_interface.hpp"
+
+#include "cassie_model.hpp"
+
+#include "romoco_ros/ros_load_config.hpp"
+
+int main(int argc, char *argv[])
+{
+  rclcpp::init(argc, argv);
+
+  bool use_estimation = false;
+  if (argc > 1)
+  {
+    use_estimation = std::string(argv[1]) == "true" || std::string(argv[1]) == "1";
+  }
+  RosLoadConfig ros_config("cassie_stack", "config", "ROBOTLOG/Cassie");
+
+  std::unique_ptr<RobotBasePinocchio> robot_ptr = std::make_unique<CassieModel>(ros_config.config_folder);
+
+  std::shared_ptr<InterfaceBase> interface;
+  if (use_estimation)
+    interface = std::make_shared<CassieMujocoInterface>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr));
+  else
+    interface = std::make_shared<CassieMujocoInterface>(ros_config.config_folder, ros_config.log_path);
+  // Wrap in ROS interface node
+  auto node = std::make_shared<RosInterfaceNode>(ros_config.config_folder, ros_config.log_path, std::move(interface));
+
+  // Spin
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}

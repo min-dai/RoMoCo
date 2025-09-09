@@ -1,5 +1,5 @@
 #include "romoco_output/walking_output_multidomain_fp.hpp"
-#include "biped_planner/HLIPplanner.hpp"
+#include "romoco_planner/HLIPplanner.hpp"
 
 WalkingOutputMultiDomainFP::WalkingOutputMultiDomainFP(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
     : WalkingOutputBase(robot)

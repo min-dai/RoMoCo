@@ -16,7 +16,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(biped_core REQUIRED)
+find_package(romoco_core REQUIRED)
+find_package(romoco_utils REQUIRED)
 
 
 set(clarabel_LIB $ENV{HOME}/repos/Clarabel.cpp/rust_wrapper/target/release/libclarabel_c.so)
@@ -25,7 +26,8 @@ set(clarabel_INCLUDE_DIR $ENV{HOME}/repos/Clarabel.cpp/include)
 set(dependencies 
   rclcpp
   Eigen3
-  biped_core
+  romoco_core
+  romoco_utils
 )
 set(include_dirs
   ${EIGEN3_INCLUDE_DIR}

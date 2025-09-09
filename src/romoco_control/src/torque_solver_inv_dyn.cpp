@@ -1,5 +1,5 @@
 #include "romoco_control/torque_solver_inv_dyn.hpp"
-#include "biped_utils/pseudo_inverse.hpp"
+#include "romoco_utils/pseudo_inverse.hpp"
 
 using std::cout;
 using std::endl;

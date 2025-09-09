@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>romoco_core</name>
+  <version>0.0.0</version>
+  <description>The core bipedal robot control template and robot description package.</description>
+  <maintainer email="mdai@caltech.edu">mdai</maintainer>
+  <license>GPL-3.0-or-later</license>
+  <author email="mdai@caltech.edu">Min Dai</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>romoco_utils</depend>
+  <depend>romoco_types</depend>
+
+  <build_export_depend>eigen</build_export_depend>
+  <exec_depend>eigen</exec_depend>
+  <build_export_depend>pinocchio</build_export_depend>
+  <exec_depend>pinocchio</exec_depend>
+
+  <!-- <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend> -->
+  <test_depend>ament_cmake_gtest</test_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

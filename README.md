@@ -31,14 +31,14 @@ It provides modular components for planning, control, and simulation interfaces,
 - Easy-to-extend base classes for new robots or controllers
 
 ## Overview
-- biped_types: Data structures and types used throughout the control framework.
-- biped_core: Core functionalities: robot kinematics, dynamics, and base classes.
-- biped_planner: Reduced-order model planners
+- romoco_types: Data structures and types used throughout the control framework.
+- romoco_core: Core functionalities: robot kinematics, dynamics, and base classes.
+- romoco_planner: Reduced-order model planners
 - romoco_output: Output generation and embedding for whole-body control
 - mujoco_sim: Low-level interface for MuJoCo simulation
 - romoco_control: Different whole-body torque control methods
-- biped_state_machine: Example state machine for bipedal locomotion
-- biped_utils: Utility functions: Bezier, Yaml parsing, geometry, etc.
+- romoco_state_machine: Example state machine for bipedal locomotion
+- romoco_utils: Utility functions: Bezier, Yaml parsing, geometry, etc.
 - biped_estimation: Contact-aided Kalman filter for linear velocity estimation 
   
 Robots: G1, Cassie, H1, more to come  
@@ -72,8 +72,8 @@ colcon test
 - ROS 2 (recommended):
   - Source the workspace: `. install/setup.bash`
   - Example launch commands (adjust names if different):
-    - `ros2 launch g1_simulation g1mujoco.launch.xml` or `ros2 launch g1_simulation g1mujoco.launch.py`
-    - `ros2 launch cassie_simulation cassiemujoco.launch.py` (includes a fake radio; toggle SB from 0→1 for stand-to-walk)
+    - `ros2 launch g1_stack g1mujoco.launch.xml` or `ros2 launch g1_stack g1mujoco.launch.py`
+    - `ros2 launch cassie_stack cassiemujoco.launch.py` (includes a fake radio; toggle SB from 0→1 for stand-to-walk)
 
 
 ## License

@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 #include <Eigen/Dense>
-#include "biped_utils/yaml_parser.hpp"
-#include "biped_core/output_base.hpp"
-#include "biped_core/robot_base_pinocchio.hpp"
-#include "biped_types/biped_motor_commands.hpp"
+#include "romoco_utils/yaml_parser.hpp"
+#include "romoco_core/output_base.hpp"
+#include "romoco_core/robot_base_pinocchio.hpp"
+#include "romoco_types/biped_motor_commands.hpp"
 // IMPORTANT: make sure robot and outputs are updated before calling Solve
 
 class TorqueSolverBase
