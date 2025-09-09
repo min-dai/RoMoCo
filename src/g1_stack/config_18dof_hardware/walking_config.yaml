@@ -36,7 +36,7 @@ posik:
   tol: 0.0001
   max_iter: 1000
   #HipPitch HipRoll HipYaw KneePitch AnklePitch AnkleRoll
-  JointKP: [200, 200, 150, 150, 150, 150]
+  JointKP: [250, 200, 250, 150, 150, 150]
   JointKD: [10,10,10,10,10,10]
 
 

@@ -1,13 +1,15 @@
 #include "romoco_ros/ros_controller_node.hpp"
 #include "romoco_ros/conversions.hpp"
-#include "romoco_screen_radio/screen_radio.hpp"
 #include "romoco_utils/yaml_parser.hpp"
 RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,
-                                     std::shared_ptr<RobotBasePinocchio> robot)
+                                     std::shared_ptr<RobotBasePinocchio> robot,
+                                     const std::string &raw_radio_topic_name,
+                                     std::function<DesiredCommand(const Eigen::VectorXd &)> ConvertRadioToCommand)
     : Node("ros_controller_node"),
       controller_(std::make_unique<BasicControllerStateMachine>(config_folder, log_path, robot)),
-      robot_(robot)
+      robot_(robot),
+      get_command_func_(std::move(ConvertRadioToCommand))
 {
   using namespace std::chrono_literals;
 
@@ -18,7 +20,7 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
 
   // Sub: radio commands
   radio_sub_ = create_subscription<std_msgs::msg::Float64MultiArray>(
-      "screen_radio_values", 1,
+      raw_radio_topic_name, 1,
       [this](const std_msgs::msg::Float64MultiArray::SharedPtr msg)
       {
         Eigen::VectorXd raw_radio = Eigen::Map<Eigen::VectorXd>(msg->data.data(), msg->data.size());
@@ -26,7 +28,7 @@ RosControllerNode::RosControllerNode(const std::string &config_folder,
         // Thread-safe command update
         {
           std::lock_guard<std::mutex> lock(command_mutex_);
-          desired_cmd_ = getScreenCommand(raw_radio);
+          desired_cmd_ = get_command_func_(raw_radio);
         }
         has_command_ = true;
       });

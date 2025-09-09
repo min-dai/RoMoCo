@@ -17,7 +17,9 @@ class RosControllerNode : public rclcpp::Node
 public:
    explicit RosControllerNode(const std::string &config_folder,
                               const std::string &log_path,
-                              std::shared_ptr<RobotBasePinocchio> robot);
+                              std::shared_ptr<RobotBasePinocchio> robot,
+                              const std::string &raw_radio_topic_name,
+                              std::function<DesiredCommand(const Eigen::VectorXd&)> getCommand);
 
 private:
    void ProprioCallback(const romoco_msgs::msg::BipedProprioception::SharedPtr msg);
@@ -49,6 +51,7 @@ private:
    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr radio_sub_;
    DesiredCommand desired_cmd_;
    std::atomic<bool> has_command_{false};
+   std::function<DesiredCommand(const Eigen::VectorXd&)> get_command_func_;
 };
 
 #endif // BIPED_ROS_CONTROLLER_NODE_HPP

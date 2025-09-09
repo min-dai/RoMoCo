@@ -5,6 +5,7 @@
 #include "romoco_ros/ros_controller_node.hpp"
 #include "cassie_model.hpp"
 
+#include "romoco_screen_radio/screen_radio.hpp"
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
@@ -35,8 +36,11 @@ int main(int argc, char *argv[])
 
    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(urdf_path, locked_encoder_names);
 
+
+
    // Wrap in ROS controller node
-   auto node = std::make_shared<RosControllerNode>(config_folder, log_path, robot_ptr);
+   auto node = std::make_shared<RosControllerNode>(config_folder, log_path, robot_ptr,"screen_radio_values", 
+      std::function<DesiredCommand(const Eigen::VectorXd&)>(getScreenCommand));
 
    // Spin
    rclcpp::spin(node);

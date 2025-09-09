@@ -238,7 +238,6 @@ Kinematics1D CassieModel::GetRightFootDeltaPitch()
 }
 Kinematics1D CassieModel::GetBaseDeltaPitch()
 {
-    // std::cout << "base pitch: " << baseF.kinematics.position << std::endl;
     return (baseB_.kinematics.z() - baseF_.kinematics.z()) / 0.1;
 }
 Kinematics1D CassieModel::GetBaseDeltaRoll()
