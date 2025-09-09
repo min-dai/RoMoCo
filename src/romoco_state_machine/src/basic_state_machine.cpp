@@ -10,7 +10,7 @@
 #include "romoco_control/torque_solver_pos_ik.hpp"
 
 #include "romoco_output/walking_output_fp.hpp"
-#include "romoco_output/walking_output_multidomain_fp.hpp"
+
 #include "romoco_output/standing_output.hpp"
 #include "romoco_output/inair_output.hpp"
 

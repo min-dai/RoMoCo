@@ -30,7 +30,7 @@ add_library(${PROJECT_NAME} SHARED
     src/standing_output.cpp
     src/walking_output_base.cpp
     src/walking_output_fp.cpp
-    # src/walking_output_multidomain_fp.cpp
+    src/com_states_rel_to_stance.cpp
 )  
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

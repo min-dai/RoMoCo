@@ -1,8 +1,3 @@
-/**
- * @author Eric Cousineau <eacousineau@gmail.com>, member of Dr. Aaron Ames's AMBER Lab
- * @author Jenna Reher <jreher@caltech.edu>, member of Dr. Aaron Ames's AMBER Lab
- * @author Min Dai <mdai@caltech.edu>, member of Dr. Aaron Ames's AMBER Lab
- */
 #ifndef CONTROL_UTILITIES_FILTERS_HPP_
 #define CONTROL_UTILITIES_FILTERS_HPP_
 

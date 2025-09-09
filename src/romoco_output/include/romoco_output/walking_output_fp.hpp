@@ -2,7 +2,7 @@
 #include "romoco_output/walking_output_base.hpp"
 #include "romoco_utils/phase_variable.hpp"
 
-#include "romoco_core/com_states_rel_to_stance.hpp"
+#include "romoco_output/com_states_rel_to_stance.hpp"
 #include "romoco_planner/flatfoot_fp_planner.hpp"
 
 
@@ -35,9 +35,9 @@ public:
 
       void timeBasedDomainContactStatusSwitch(double t);
 
-      std::vector<VectorXd> CollectLog() const override;
+      std::vector<Eigen::VectorXd> CollectLog() const override;
 
-      Vector2d computeFPwithROmodel();
+      Eigen::Vector2d computeFPwithROmodel();
 
       void Init(const std::string &config_file);
 
@@ -61,7 +61,7 @@ private:
       {
             Domain curSagDomain;
 
-            Vector2d PhaseRange;
+            Eigen::Vector2d PhaseRange;
             double t;
             double dt;
 
@@ -74,16 +74,16 @@ private:
 
             double TSS, TDS;
 
-            VectorXd y0_UA;
-            VectorXd y0d_OA;
+            Eigen::VectorXd y0_UA;
+            Eigen::VectorXd y0d_OA;
 
-            VectorXd bezierCOMz; // bezierCOMz = (1-bezierComVertical)*y0 + bezierComVertical*y1
+            Eigen::VectorXd bezierCOMz; // bezierCOMz = (1-bezierComVertical)*y0 + bezierComVertical*y1
 
-            VectorXd bezierSwingx, bezierSwingy, bezierSwingz;
+            Eigen::VectorXd bezierSwingx, bezierSwingy, bezierSwingz;
 
-            VectorXd bezierStanceHipYaw, bezierSwingHipYaw;
+            Eigen::VectorXd bezierStanceHipYaw, bezierSwingHipYaw;
 
-            Vector2d planned_footstep;
+            Eigen::Vector2d planned_footstep;
 
             bool isDSP;
 

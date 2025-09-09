@@ -4,7 +4,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <unsupported/Eigen/EulerAngles>
-#include <fstream>
+
 
 Eigen::EulerAnglesZYXd eulerZYX(const Eigen::Quaterniond &q);
 

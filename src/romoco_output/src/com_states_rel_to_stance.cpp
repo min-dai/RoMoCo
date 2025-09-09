@@ -1,4 +1,4 @@
-#include "romoco_core/com_states_rel_to_stance.hpp"
+#include "romoco_output/com_states_rel_to_stance.hpp"
 #include "romoco_types/biped_constants.hpp"
 void ComStatesRelToStance::compute(
     const Eigen::Vector3d& com_pos_world,
@@ -20,11 +20,11 @@ void ComStatesRelToStance::compute(
    Eigen::Vector3d Lmeas;
    Lmeas << -states.Lcom.x() - angular_momentum_cross.x(), states.Lcom.y() + angular_momentum_cross.y(), states.Lcom.z() + angular_momentum_cross.z();
 
-   Vector2d uk;
+   Eigen::Vector2d uk;
    uk << dt * grav * states.pCOM.y(),
        dt * grav * states.pCOM.x();
 
-   Vector2d Lpivot2 = AMkf.Update(dt, Lmeas.head(2), uk);
+   Eigen::Vector2d Lpivot2 = AMkf.Update(dt, Lmeas.head(2), uk);
 
    states.Lpivot << Lpivot2.x(), Lpivot2.y(), Lmeas.z();
 }

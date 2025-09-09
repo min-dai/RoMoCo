@@ -239,7 +239,7 @@ void WalkingOutputFp::ComputeDesired()
       // setBezierDesiredOutputs(updated.bezierStanceHipYaw, phase.tau, phase.dtau, stanceHipYaw);
       // base pitch and roll are zero
 
-      Vector2d StepLocal = computeFPwithROmodel();
+      Eigen::Vector2d StepLocal = computeFPwithROmodel();
       updated.planned_footstep = StepLocal;
       cout << "planned_footstep: " << updated.planned_footstep.transpose() << endl;
 
