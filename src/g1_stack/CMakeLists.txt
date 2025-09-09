@@ -116,14 +116,6 @@ target_link_libraries(g1_mujoco_interface_node_main
   ${PROJECT_NAME}
 )
 
-add_executable(g1_dds
-  src/g1_ankle_swing_dds_example.cpp
-)
-target_link_libraries(g1_dds
-  ${PROJECT_NAME}
-  unitree_sdk2
-)
-
 
 add_executable(g1_controller_node_main src/g1_controller_node_main.cpp)
 target_link_libraries(g1_controller_node_main
@@ -140,7 +132,7 @@ target_link_libraries(g1_controller_node_main
 # )
 
 install(
-  TARGETS g1_state_machine  g1_mujoco_interface_node_main g1_controller_node_main g1_hardware_interface_main g1_dds
+  TARGETS g1_state_machine  g1_mujoco_interface_node_main g1_controller_node_main g1_hardware_interface_main
   DESTINATION lib/${PROJECT_NAME}
 )
 

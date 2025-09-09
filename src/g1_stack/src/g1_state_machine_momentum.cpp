@@ -18,11 +18,11 @@ VectorXd predefined_radio(double t)
 {
     VectorXd radio = VectorXd::Zero(10);
     if (t>-1.0){
-        radio(Radio::SB) = 1;
+        radio(ScreenRadio::SB) = 1;
 
     }
     if (t>5.0){
-        radio(Radio::LV) = 1;
+        radio(ScreenRadio::LV) = 1;
     }
 
     return radio;

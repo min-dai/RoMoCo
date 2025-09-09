@@ -1,6 +1,6 @@
 #ifndef RADIO_SLIDER_MAP_HPP
 #define RADIO_SLIDER_MAP_HPP
-namespace Radio
+namespace ScreenRadio
 {
    enum RadioSliderMap
    {
@@ -23,5 +23,5 @@ namespace Radio
       Walking = 1,
    };
 
-} // namespace Radio
+} // namespace ScreenRadio
 #endif // RADIO_SLIDER_MAP_HPP

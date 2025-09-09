@@ -5,7 +5,7 @@
 #include "romoco_ros/ros_controller_node.hpp"
 #include "cassie_model.hpp"
 
-#include "romoco_screen_radio/screen_radio.hpp"
+#include "romoco_screen_radio/screen_radio_conversion.hpp"
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
    // Wrap in ROS controller node
    auto node = std::make_shared<RosControllerNode>(config_folder, log_path, robot_ptr,"screen_radio_values", 
-      std::function<DesiredCommand(const Eigen::VectorXd&)>(getScreenCommand));
+      std::function<DesiredCommand(const Eigen::VectorXd&)>(ConvertScreenRadioToDesiredCommand));
 
    // Spin
    rclcpp::spin(node);

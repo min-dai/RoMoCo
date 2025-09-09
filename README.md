@@ -35,7 +35,7 @@ It provides modular components for planning, control, and simulation interfaces,
 - romoco_core: Core functionalities: robot kinematics, dynamics, and base classes.
 - romoco_planner: Reduced-order model planners
 - romoco_output: Output generation and embedding for whole-body control
-- mujoco_sim: Low-level interface for MuJoCo simulation
+- mujoco_sim: Low-level simulation interface for MuJoCo 
 - romoco_control: Different whole-body torque control methods
 - romoco_state_machine: Example state machine for bipedal locomotion
 - romoco_utils: Utility functions: Bezier, Yaml parsing, geometry, etc.

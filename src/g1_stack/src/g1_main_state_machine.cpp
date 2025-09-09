@@ -9,7 +9,7 @@
 #include "romoco_core/output_base.hpp"
 
 #include "romoco_screen_radio/radio_subscriber.hpp"
-#include "romoco_screen_radio/screen_radio.hpp"
+#include "romoco_screen_radio/screen_radio_conversion.hpp"
 
 #include <cstdlib> // For getenv()
 
@@ -23,11 +23,11 @@ VectorXd predefined_radio(double t)
     VectorXd radio = VectorXd::Zero(10);
     if (t > 1.0)
     {
-        radio(Radio::SB) = 1;
+        radio(ScreenRadio::SB) = 1;
     }
     if (t > 10.0)
     {
-        radio(Radio::LV) = 1;
+        radio(ScreenRadio::LV) = 1;
     }
 
     return radio;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         fake_radio = node->fake_radio();
 
         // fake_radio = predefined_radio(t_sim);
-        DesiredCommand command = getScreenCommand(fake_radio);
+        DesiredCommand command = ConvertScreenRadioToDesiredCommand(fake_radio);
 
 
         t_sim = state_machine.Update(command, robot_ptr, output, torque_solver, getLegModel, getUpper);

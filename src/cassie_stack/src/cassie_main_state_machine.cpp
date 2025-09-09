@@ -9,7 +9,7 @@
 #include "romoco_core/output_base.hpp"
 
 #include "romoco_screen_radio/radio_subscriber.hpp"
-#include "romoco_screen_radio/screen_radio.hpp"
+#include "romoco_screen_radio/screen_radio_conversion.hpp"
 #include <cstdlib> // For getenv()
 
 // need to set up sim
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         rclcpp::spin_some(node);
 
         fake_radio = node->fake_radio();
-        DesiredCommand command = getScreenCommand(fake_radio);
+        DesiredCommand command = ConvertScreenRadioToDesiredCommand(fake_radio);
 
         t_sim = state_machine.Update(command, robot_ptr, output, torque_solver, getLegModel, getUpper);
     }

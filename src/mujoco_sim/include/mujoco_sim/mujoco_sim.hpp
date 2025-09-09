@@ -10,6 +10,38 @@
 
 #include <vector>
 
+/**
+ * @class MujocoSim
+ * @brief A class for simulating and visualizing physics models using MuJoCo.
+ *
+ * MujocoSim provides an interface for initializing, running, and interacting with MuJoCo simulations.
+ * It supports rendering, video recording, sensor and actuator data access, and manipulation of simulation state.
+ *
+ * Main Features:
+ * - Initialization and closure of MuJoCo simulation.
+ * - Rendering and visualization controls.
+ * - Simulation stepping and control input updates.
+ * - Pelvis hold/release functionality for humanoid models.
+ * - Video recording and frame capture.
+ * - Access to actuator, sensor, and joint IDs by name.
+ * - Retrieval of sensor data, joint positions, and velocities.
+ * - Direct access and manipulation of joint and base states.
+ * - Window and user interaction management via GLFW.
+ *
+ * Usage:
+ * 1. Create an instance of MujocoSim.
+ * 2. Initialize with a model file and rendering options.
+ * 3. Use provided methods to interact with the simulation.
+ * 4. Close the simulation when done.
+ *
+ * Thread Safety:
+ * - Not guaranteed. User must ensure thread safety if used in multi-threaded contexts.
+ *
+ * Dependencies:
+ * - MuJoCo library
+ * - Eigen library
+ * - GLFW library
+ */
 class MujocoSim
 {
 
