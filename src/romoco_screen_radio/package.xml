@@ -1,24 +1,25 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>biped_state_machine</name>
+  <name>romoco_screen_radio</name>
   <version>0.0.0</version>
-  <description>The low level torque control package</description>
+  <description>The romoco_screen_radio package provides a GUI for sliders as radio input.</description>
   <maintainer email="mdai@caltech.edu">mdai</maintainer>
   <license>GPL-3.0-or-later</license>
   <author email="mdai@caltech.edu">Min Dai</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  
-  <build_export_depend>eigen</build_export_depend>
-  <exec_depend>eigen</exec_depend>
 
-  <depend>biped_core</depend>
-  <depend>romoco_screen_radio</depend>
-  <depend>romoco_control</depend>
-  <depend>romoco_output</depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
   <depend>biped_types</depend>
 
-  <!-- <test_depend>ament_lint_auto</test_depend> 
+  <build_export_depend>eigen</build_export_depend>
+  <exec_depend>eigen</exec_depend>
+  <build_export_depend>qtbase5-dev</build_export_depend>
+  <exec_depend>qtbase5-dev</exec_depend>
+
+
+  <!-- <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend> -->
   <test_depend>ament_cmake_gtest</test_depend>
 

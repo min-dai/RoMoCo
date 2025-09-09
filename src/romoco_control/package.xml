@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>biped_state_machine</name>
+  <name>romoco_control</name>
   <version>0.0.0</version>
   <description>The low level torque control package</description>
   <maintainer email="mdai@caltech.edu">mdai</maintainer>
@@ -8,20 +8,11 @@
   <author email="mdai@caltech.edu">Min Dai</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>biped_core</depend>
   
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>
-
-  <depend>biped_core</depend>
-  <depend>romoco_screen_radio</depend>
-  <depend>romoco_control</depend>
-  <depend>romoco_output</depend>
-  <depend>biped_types</depend>
-
-  <!-- <test_depend>ament_lint_auto</test_depend> 
-  <test_depend>ament_lint_common</test_depend> -->
-  <test_depend>ament_cmake_gtest</test_depend>
-
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

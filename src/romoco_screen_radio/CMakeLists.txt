@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(biped_ros)
+project(romoco_screen_radio)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -13,33 +13,31 @@ endif()
 # Dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 find_package(biped_types REQUIRED)
-find_package(biped_core REQUIRED)
-find_package(biped_state_machine REQUIRED)
-find_package(biped_msgs REQUIRED)
-find_package(romoco_screen_radio REQUIRED)
 
 set(dependencies 
   rclcpp
+  std_msgs
   Eigen3
+  Qt5Widgets
   biped_types
-  biped_core
-  biped_state_machine
-  biped_msgs
-  romoco_screen_radio
 )
 
+# Library target
+qt5_wrap_cpp(SLIDER_MOC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/include/romoco_screen_radio/radio_slider_gui.hpp)
 
 add_library(${PROJECT_NAME} SHARED
-    src/ros_interface_node.cpp
-    src/ros_controller_node.cpp
-)
+    src/radio_slider_gui.cpp
+  ${SLIDER_MOC_SRCS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${EIGEN3_INCLUDE_DIR}
+  ${Qt5Widgets_INCLUDE_DIRS}
 )
 ament_target_dependencies(${PROJECT_NAME} 
   ${dependencies}
@@ -62,7 +60,31 @@ install(
 )
 
 
+## Ros Node
+add_executable(screen_radio_node src/radio_main_node.cpp)
+target_link_libraries(screen_radio_node ${PROJECT_NAME})
+install(
+  TARGETS screen_radio_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
+
+
+
+# Tests
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test 
+    test/test_slider_gui.cpp
+  )
+  target_include_directories(${PROJECT_NAME}_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+  target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+
+  # find_package(ament_lint_auto REQUIRED)
+  # ament_lint_auto_find_test_dependencies()
+endif()
 
 
 ament_package()

@@ -3,19 +3,19 @@
 #include <filesystem> //for create_directories
 
 
-#include "torque_control/torque_solver_tscqp.hpp"
-// #include "torque_control/torque_solver_tscqp_momentum.hpp"
-#include "torque_control/torque_solver_inv_dyn.hpp"
-#include "torque_control/torque_solver_vel_ik.hpp"
-#include "torque_control/torque_solver_pos_ik.hpp"
+#include "romoco_control/torque_solver_tscqp.hpp"
+// #include "romoco_control/torque_solver_tscqp_momentum.hpp"
+#include "romoco_control/torque_solver_inv_dyn.hpp"
+#include "romoco_control/torque_solver_vel_ik.hpp"
+#include "romoco_control/torque_solver_pos_ik.hpp"
 
-#include "biped_control/walking_output_fp.hpp"
-#include "biped_control/walking_output_multidomain_fp.hpp"
-#include "biped_control/standing_output.hpp"
-#include "biped_control/inair_output.hpp"
+#include "romoco_output/walking_output_fp.hpp"
+#include "romoco_output/walking_output_multidomain_fp.hpp"
+#include "romoco_output/standing_output.hpp"
+#include "romoco_output/inair_output.hpp"
 
 //enum classes
-#include "screen_radio/radio_slider_map.hpp"
+#include "romoco_screen_radio/radio_slider_map.hpp"
 #include "biped_types/biped_constants.hpp"
 #include "biped_types/biped_motor_commands.hpp"
 

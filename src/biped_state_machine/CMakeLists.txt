@@ -14,17 +14,17 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(biped_core REQUIRED)
-find_package(screen_radio REQUIRED)
-find_package(biped_control REQUIRED)
-find_package(torque_control REQUIRED)
+find_package(romoco_screen_radio REQUIRED)
+find_package(romoco_output REQUIRED)
+find_package(romoco_control REQUIRED)
 find_package(biped_types REQUIRED)
 
 set(dependencies
   Eigen3
   biped_core
-  screen_radio
-  biped_control
-  torque_control
+  romoco_screen_radio
+  romoco_output
+  romoco_control
   biped_types
 )
 

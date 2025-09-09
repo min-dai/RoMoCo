@@ -21,10 +21,10 @@
 
   <depend>mujoco_sim</depend>
   <depend>biped_core</depend>
-  <depend>torque_control</depend>
-  <depend>biped_control</depend>
+  <depend>romoco_control</depend>
+  <depend>romoco_output</depend>
   <depend>biped_utils</depend>
-  <depend>screen_radio</depend>
+  <depend>romoco_screen_radio</depend>
   <depend>biped_state_machine</depend>
   <depend>biped_ros</depend>
 

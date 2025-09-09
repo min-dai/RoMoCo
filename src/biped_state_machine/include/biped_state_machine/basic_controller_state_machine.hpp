@@ -6,7 +6,7 @@
 #include "biped_core/mujoco_interface_base.hpp"
 
 #include "biped_utils/pd_controller.hpp"
-#include "torque_control/torque_solver_base.hpp"
+#include "romoco_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
 #include "biped_types/biped_commands.hpp"

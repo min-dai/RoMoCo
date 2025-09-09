@@ -5,11 +5,11 @@
 
 #include "g1_model_leg.hpp"
 
-#include "torque_control/torque_solver_base.hpp"
+#include "romoco_control/torque_solver_base.hpp"
 #include "biped_core/output_base.hpp"
 
-#include "screen_radio/radio_subscriber.hpp"
-#include "screen_radio/screen_radio.hpp"
+#include "romoco_screen_radio/radio_subscriber.hpp"
+#include "romoco_screen_radio/screen_radio.hpp"
 
 #include <cstdlib> // For getenv()
 

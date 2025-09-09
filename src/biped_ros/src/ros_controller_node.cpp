@@ -1,6 +1,6 @@
 #include "biped_ros/ros_controller_node.hpp"
 #include "biped_ros/conversions.hpp"
-#include "screen_radio/screen_radio.hpp"
+#include "romoco_screen_radio/screen_radio.hpp"
 #include "biped_utils/yaml_parser.hpp"
 RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,

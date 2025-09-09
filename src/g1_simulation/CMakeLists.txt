@@ -17,10 +17,10 @@ find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(mujoco_sim REQUIRED)
 find_package(biped_core REQUIRED)
-find_package(torque_control REQUIRED)
-find_package(biped_control REQUIRED)
+find_package(romoco_control REQUIRED)
+find_package(romoco_output REQUIRED)
 find_package(biped_utils REQUIRED)
-find_package(screen_radio REQUIRED)
+find_package(romoco_screen_radio REQUIRED)
 find_package(biped_state_machine REQUIRED)
 find_package(biped_ros REQUIRED)
 
@@ -46,10 +46,10 @@ set(dependencies
   rclcpp
   mujoco_sim
   biped_core
-  torque_control
-  biped_control
+  romoco_control
+  romoco_output
   biped_utils
-  screen_radio
+  romoco_screen_radio
   biped_state_machine
   Eigen3
   biped_ros

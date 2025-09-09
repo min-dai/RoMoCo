@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(biped_ros)
+project(romoco_control)
+
+
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -14,32 +16,38 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(biped_types REQUIRED)
 find_package(biped_core REQUIRED)
-find_package(biped_state_machine REQUIRED)
-find_package(biped_msgs REQUIRED)
-find_package(romoco_screen_radio REQUIRED)
+
+
+set(clarabel_LIB $ENV{HOME}/repos/Clarabel.cpp/rust_wrapper/target/release/libclarabel_c.so)
+set(clarabel_INCLUDE_DIR $ENV{HOME}/repos/Clarabel.cpp/include) 
 
 set(dependencies 
   rclcpp
   Eigen3
-  biped_types
   biped_core
-  biped_state_machine
-  biped_msgs
-  romoco_screen_radio
+)
+set(include_dirs
+  ${EIGEN3_INCLUDE_DIR}
+  ${clarabel_INCLUDE_DIR}
 )
 
 
+# Library target
 add_library(${PROJECT_NAME} SHARED
-    src/ros_interface_node.cpp
-    src/ros_controller_node.cpp
+  src/torque_solver_base.cpp
+  src/torque_solver_tscqp.cpp
+  src/torque_solver_inv_dyn.cpp
+  src/torque_solver_vel_ik.cpp
+  src/torque_solver_pos_ik.cpp
 )
-
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  ${EIGEN3_INCLUDE_DIR}
+  ${include_dirs}
+)
+target_link_libraries(${PROJECT_NAME} 
+  ${clarabel_LIB}
 )
 ament_target_dependencies(${PROJECT_NAME} 
   ${dependencies}
@@ -48,6 +56,8 @@ ament_target_dependencies(${PROJECT_NAME}
 # Install headers and library
 ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
 ament_export_dependencies(${dependencies})
+ament_export_include_directories(${include_dirs})
+ament_export_libraries(${PROJECT_NAME} ${clarabel_LIB})
 install(
   DIRECTORY include/
   DESTINATION include
@@ -61,11 +71,24 @@ install(
   INCLUDES DESTINATION include
 )
 
+# Tests
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test 
+    test/test_clarabel.cpp
+  )
+  target_include_directories(${PROJECT_NAME}_test PRIVATE
+    ${include_dirs}
+  )
+  target_link_libraries(${PROJECT_NAME}_test 
+    ${PROJECT_NAME}
+    ${clarabel_LIB}
+  )
 
-
+  # find_package(ament_lint_auto REQUIRED)
+  # ament_lint_auto_find_test_dependencies()
+endif()
 
 
 ament_package()
-
-
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(biped_ros)
+project(romoco_output)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -12,30 +12,26 @@ endif()
 
 # Dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(biped_types REQUIRED)
+find_package(biped_utils REQUIRED)
 find_package(biped_core REQUIRED)
-find_package(biped_state_machine REQUIRED)
-find_package(biped_msgs REQUIRED)
-find_package(romoco_screen_radio REQUIRED)
+find_package(biped_planner REQUIRED)
 
-set(dependencies 
-  rclcpp
+set(dependencies
   Eigen3
-  biped_types
+  biped_utils
   biped_core
-  biped_state_machine
-  biped_msgs
-  romoco_screen_radio
+  biped_planner
 )
 
-
+# Library target
 add_library(${PROJECT_NAME} SHARED
-    src/ros_interface_node.cpp
-    src/ros_controller_node.cpp
-)
-
+    src/inair_output.cpp
+    src/standing_output.cpp
+    src/walking_output_base.cpp
+    src/walking_output_fp.cpp
+    # src/walking_output_multidomain_fp.cpp
+)  
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -61,11 +57,19 @@ install(
   INCLUDES DESTINATION include
 )
 
+# Tests
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test 
+    test/test_basic.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}_test 
+    ${PROJECT_NAME}
+  )
 
-
+  # find_package(ament_lint_auto REQUIRED)
+  # ament_lint_auto_find_test_dependencies()
+endif()
 
 
 ament_package()
-
-
-

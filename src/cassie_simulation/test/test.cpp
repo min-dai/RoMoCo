@@ -2,17 +2,17 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-#include "biped_control/walking_output_fp.hpp"
-#include "biped_control/standing_output.hpp"
+#include "romoco_output/walking_output_fp.hpp"
+#include "romoco_output/standing_output.hpp"
 
 #include "cassie_mujoco.hpp"
 #include "cassie_model.hpp"
 #include "cassie_sensor.hpp"
 
-#include "torque_control/torque_solver_tscqp.hpp"
+#include "romoco_control/torque_solver_tscqp.hpp"
 #include "biped_utils/pd_controller.hpp"
-#include "torque_control/torque_solver_inv_dyn.hpp"
-#include "torque_control/torque_solver_vel_ik.hpp"
+#include "romoco_control/torque_solver_inv_dyn.hpp"
+#include "romoco_control/torque_solver_vel_ik.hpp"
 #include "biped_utils/yaml_parser.hpp"
 
 using namespace Eigen;

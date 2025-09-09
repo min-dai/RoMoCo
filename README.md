@@ -34,9 +34,9 @@ It provides modular components for planning, control, and simulation interfaces,
 - biped_types: Data structures and types used throughout the control framework.
 - biped_core: Core functionalities: robot kinematics, dynamics, and base classes.
 - biped_planner: Reduced-order model planners
-- biped_control: Output generation and embedding for whole-body control
+- romoco_output: Output generation and embedding for whole-body control
 - mujoco_sim: Low-level interface for MuJoCo simulation
-- torque_control: Different whole-body torque control methods
+- romoco_control: Different whole-body torque control methods
 - biped_state_machine: Example state machine for bipedal locomotion
 - biped_utils: Utility functions: Bezier, Yaml parsing, geometry, etc.
 - biped_estimation: Contact-aided Kalman filter for linear velocity estimation 

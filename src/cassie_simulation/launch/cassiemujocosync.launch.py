@@ -14,7 +14,7 @@ def generate_launch_description() -> LaunchDescription:
             output="screen"
         ),
         Node(
-            package="screen_radio",
+            package="romoco_screen_radio",
             executable="screen_radio_node",
             name="screen_radio_node",
             output="screen"

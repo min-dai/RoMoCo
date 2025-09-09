@@ -14,7 +14,7 @@
   <depend>biped_core</depend>
   <depend>biped_state_machine</depend>
   <depend>biped_msgs</depend>
-  <depend>screen_radio</depend>
+  <depend>romoco_screen_radio</depend>
 
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>
