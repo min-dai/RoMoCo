@@ -1,7 +1,9 @@
-#pragma once
+#ifndef BIPED_CORE_PLANEFOOT_ROBOT_BASE_PINOCCHIO_HPP_
+#define BIPED_CORE_PLANEFOOT_ROBOT_BASE_PINOCCHIO_HPP_
 
 #include "romoco_core/robot_base_pinocchio.hpp"
-
+namespace romoco
+{
 class PlaneFootRobotBasePinocchio : public RobotBasePinocchio
 {
 public:
@@ -31,3 +33,7 @@ private:
    void GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &LF, const Kinematics3D &RF, const Kinematics3D &LB, const Kinematics3D &RB, MatrixXd &Jh, VectorXd &dJhdq);
    void GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, MatrixXd &Acone, VectorXd &bcone);
 };
+
+} // namespace romoco
+
+#endif // BIPED_CORE_PLANEFOOT_ROBOT_BASE_PINOCCHIO_HPP_

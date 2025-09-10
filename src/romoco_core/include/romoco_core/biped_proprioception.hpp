@@ -3,6 +3,9 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+
+namespace romoco
+{
 struct RawSensorData
 {
    //initialize lin_pos as NAN
@@ -88,5 +91,7 @@ struct BipedProprioception
        qdot = Eigen::VectorXd::Zero(dof);
    }
 };
+
+} // namespace romoco
 
 #endif // BIPED_PROPRIOCEPTION_HPP

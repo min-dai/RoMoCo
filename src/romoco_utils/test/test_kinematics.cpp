@@ -3,6 +3,7 @@
 #include "romoco_utils/geometry.hpp"
 #include "romoco_utils/kinematics.hpp"
 
+using namespace romoco;
 TEST(Kinematics1DTest, ConstructionAndArithmetic) {
     Kinematics1D k1(2, 2);
     k1.position << 1.0, 2.0;

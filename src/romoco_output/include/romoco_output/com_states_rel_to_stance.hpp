@@ -4,6 +4,9 @@
 #include "romoco_utils/angular_momentum_kf.hpp"
 
 #include <Eigen/Dense>
+
+namespace romoco
+{
 class ComStatesRelToStance
 {
 public:
@@ -31,5 +34,7 @@ public:
 private:
    AngularMomentumKF AMkf;
 };
+
+} // namespace romoco
 
 #endif // BIPED_CORE_COM_STATES_REL_TO_STANCE_HPP

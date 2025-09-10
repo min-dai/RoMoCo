@@ -7,6 +7,8 @@
 #include "romoco_ros/ros_load_config.hpp"
 
 #include "romoco_screen_radio/screen_radio_conversion.hpp"
+
+using namespace romoco;
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);

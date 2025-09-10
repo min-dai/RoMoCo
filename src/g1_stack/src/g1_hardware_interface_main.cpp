@@ -8,6 +8,8 @@
 #include "g1_model_leg.hpp"
 
 #include "romoco_ros/ros_load_config.hpp"
+
+using namespace romoco;
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);

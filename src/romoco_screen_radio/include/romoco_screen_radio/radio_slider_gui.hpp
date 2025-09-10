@@ -16,8 +16,8 @@
 #include <memory>
 #include <Eigen/Dense>
 
-#include "romoco_types/biped_commands.hpp"
-
+namespace romoco
+{
 class RadioSliderGUI : public QWidget {
     Q_OBJECT
 
@@ -73,8 +73,8 @@ private:
     
 
     int input_value;
-};;
+};
 
-
+} // namespace romoco
 
 #endif // SLIDER_GUI_HPP

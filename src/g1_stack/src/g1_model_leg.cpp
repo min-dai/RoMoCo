@@ -1,7 +1,8 @@
 #include "g1_model_leg.hpp"
 
 #include <iostream>
-
+namespace romoco
+{
 
 G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
     : PlaneFootRobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
@@ -200,6 +201,6 @@ void G1ModelLeg::ComputeContactClassifierInput()
 }
 
 
-
+} // namespace romoco
 
 

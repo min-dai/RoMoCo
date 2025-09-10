@@ -6,6 +6,9 @@
 #include <thread>
 #include <chrono>
 
+namespace romoco
+{
+
 using namespace unitree::common;
 using namespace unitree::robot;
 using namespace unitree_hg::msg::dds_;
@@ -427,3 +430,4 @@ uint32_t G1HardwareInterface::Crc32Core(uint32_t *ptr, uint32_t len)
     }
     return CRC32;
 }
+} // namespace romoco

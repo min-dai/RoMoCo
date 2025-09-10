@@ -5,6 +5,8 @@
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
 
+namespace romoco
+{
 
 /**
  * @ingroup group_utils
@@ -110,5 +112,5 @@ private:
     bool initialized = false;
 
 };
-
+} // namespace romoco
 #endif // YAML_PARSER_HPP

@@ -24,10 +24,13 @@
 
 #include "romoco_utils/kinematics.hpp"
 #include "romoco_utils/contact_classifier.hpp"
-#include "romoco_types/biped_constants.hpp"
-#include "romoco_types/friction_params.hpp"
+#include "romoco_core/biped_constants.hpp"
+#include "romoco_core/friction_params.hpp"
 
-#include "romoco_types/biped_estimation_input.hpp"
+#include "romoco_core/biped_estimation_input.hpp"
+
+namespace romoco
+{
 
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
@@ -238,3 +241,6 @@ private:
     double mass_;
     std::vector<pinocchio::JointIndex> JointNamesToIds(const std::vector<std::string> &joint_names);
 };
+
+
+} // namespace romoco

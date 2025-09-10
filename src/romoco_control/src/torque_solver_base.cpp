@@ -1,5 +1,7 @@
 #include "romoco_control/torque_solver_base.hpp"
 
+namespace romoco
+{
 TorqueSolverBase::TorqueSolverBase(std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : robot_(robot), output_(output) {
       }
@@ -21,3 +23,5 @@ Eigen::VectorXd TorqueSolverBase::SolveGravityCompensation()
 
    return u_sol;
 }
+
+} // namespace romoco

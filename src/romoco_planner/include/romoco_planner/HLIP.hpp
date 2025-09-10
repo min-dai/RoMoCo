@@ -1,7 +1,7 @@
 #ifndef HLIP_HPP
 #define HLIP_HPP
 
-#include <romoco_types/biped_constants.hpp>
+#include <romoco_core/biped_constants.hpp>
 #include <Eigen/Dense>
 
 #include <unsupported/Eigen/MatrixFunctions>
@@ -10,7 +10,8 @@
 #include <romoco_utils/algebraic_riccati.hpp>
 
 
-using namespace std;
+namespace romoco
+{
 
 class HLIP
 {
@@ -95,5 +96,5 @@ private:
     bool useDCM_ = false;
     bool useMomentum_ = true;
 };
-
+} // namespace romoco
 #endif // HLIP_HPP

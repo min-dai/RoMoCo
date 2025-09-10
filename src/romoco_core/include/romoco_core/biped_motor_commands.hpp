@@ -3,6 +3,9 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+
+namespace romoco
+{
 struct BipedMotorCommands
 {
 
@@ -68,7 +71,8 @@ struct BipedMotorCommands
       result.joint_velocities = joint_velocities(indices);
       result.joint_kp = joint_kp(indices);
       result.joint_kd = joint_kd(indices);
-      result.joint_torques_ff = joint_torques_ff(indices);      
+      result.joint_torques_ff = joint_torques_ff(indices);
+      return result;
    }
 
    void Update(const BipedMotorCommands &other)
@@ -131,5 +135,7 @@ struct BipedMotorCommands
       return os;
    }
 };
+
+} // namespace romoco
 
 #endif // BIPED_MOTOR_COMMANDS_HPP

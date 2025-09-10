@@ -1,10 +1,14 @@
-#pragma once
+#ifndef ROMOCO_INAIR_OUTPUT_HPP
+#define ROMOCO_INAIR_OUTPUT_HPP
 
 #include "romoco_core/output_base.hpp"
 
 #include "romoco_utils/filters.hpp"
 #include "romoco_utils/yaml_parser.hpp"
 
+
+namespace romoco
+{
 class InAirOutput : public OutputBase
 {
 public:
@@ -73,3 +77,6 @@ private:
 
     control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN *VectorXd::Ones(1), 1);
 };
+
+} // namespace romoco
+#endif // ROMOCO_INAIR_OUTPUT_HPP

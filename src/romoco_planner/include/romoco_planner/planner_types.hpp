@@ -2,8 +2,10 @@
 #define PLANNER_TYPES_HPP
 
 #include <Eigen/Dense>
-#include "romoco_types/biped_constants.hpp"
+#include "romoco_core/biped_constants.hpp"
 
+namespace romoco
+{
 struct PlannerInput
 {
    Eigen::Vector4d x_now; // xnow = [pCOMx, Ly, pCOMy, -Lx]
@@ -51,5 +53,5 @@ struct PlannerParams
    }
 
 };
-
+} // namespace romoco
 #endif // PLANNER_TYPES_HPP

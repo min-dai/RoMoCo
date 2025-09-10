@@ -2,7 +2,8 @@
 #include <romoco_utils/contact_classifier.hpp>
 #include <iostream>
 
-
+namespace romoco
+{
 ContactClassifier::ContactClassifier(const std::string &config_folder)
 {
     
@@ -51,3 +52,4 @@ ContactClassifierOutput ContactClassifier::Update(const ContactClassifierInput &
     output.right_contact_prob = std::clamp((LowPassRight.getValue() - config.linear_lb) / (config.linear_ub - config.linear_lb), 0.0, 1.0);
     return output;
 }
+} // namespace romoco

@@ -4,7 +4,8 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-
+namespace romoco
+{
 namespace control_utilities
 {
 
@@ -200,8 +201,8 @@ public:
         return prev_filt_;
     }
 };
+} // namespace control_utilities
 
-
-}
+} // namespace romoco
 
 #endif // CONTROL_UTILITIES_FILTERS_HPP_

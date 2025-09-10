@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>romoco_utils</depend>
-  <depend>romoco_types</depend>
+
 
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>

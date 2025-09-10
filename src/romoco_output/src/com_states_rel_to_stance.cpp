@@ -1,5 +1,8 @@
 #include "romoco_output/com_states_rel_to_stance.hpp"
-#include "romoco_types/biped_constants.hpp"
+#include "romoco_core/biped_constants.hpp"
+
+namespace romoco
+{
 void ComStatesRelToStance::compute(
     const Eigen::Vector3d& com_pos_world,
     const Eigen::Vector3d& com_vel_world,
@@ -28,3 +31,5 @@ void ComStatesRelToStance::compute(
 
    states.Lpivot << Lpivot2.x(), Lpivot2.y(), Lmeas.z();
 }
+
+} // namespace romoco

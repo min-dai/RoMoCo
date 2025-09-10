@@ -1,12 +1,14 @@
-#pragma once
+#ifndef ROMOCO_OUTPUT_BASE_HPP
+#define ROMOCO_OUTPUT_BASE_HPP
 
 #include <memory>
 #include "romoco_core/robot_base_pinocchio.hpp"
 #include <Eigen/Dense>
 #include "romoco_utils/bezier_tools.hpp"
-#include "romoco_types/biped_commands.hpp"
+#include "romoco_core/biped_commands.hpp"
 
-
+namespace romoco
+{
 
 class OutputBase 
 {
@@ -115,26 +117,7 @@ protected:
 
     void SetOutputSize(int nq, int ny);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     void SetBezierDesiredOutputs(const VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx);
-
 
     std::vector<int> generate_full_y_idx(int nY){
         std::vector<int> full_y_idx;
@@ -157,3 +140,7 @@ protected:
 private:
     Eigen::VectorXd MapU2FullIdx(const Eigen::VectorXd &u, const std::vector<int> &actuated_u_idx, const int &full_size);
 };
+
+} // namespace romoco
+
+#endif // ROMOCO_OUTPUT_BASE_HPP

@@ -1,6 +1,8 @@
 #ifndef BIPED_CORE_FRICTION_PARAMS_HPP
 #define BIPED_CORE_FRICTION_PARAMS_HPP
 
+namespace romoco
+{
 struct FrictionParams
 {
    double frictionCoef;
@@ -9,5 +11,7 @@ struct FrictionParams
    double W;
    double Fz_lb;
 };
+
+} // namespace romoco
 
 #endif // BIPED_CORE_FRICTION_PARAMS_HPP

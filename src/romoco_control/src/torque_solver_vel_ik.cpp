@@ -1,5 +1,7 @@
 #include "romoco_control/torque_solver_vel_ik.hpp"
 
+namespace romoco
+{
 TorqueSolverVELIK::TorqueSolverVELIK(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
 {
@@ -85,3 +87,5 @@ void TorqueSolverVELIK::SolveIk()
     qm_des_ += output_->SelectActuatedStates(delta_q_output);
     dqm_des_ = output_->SelectActuatedStates(dq_output);
 }
+
+} // namespace romoco

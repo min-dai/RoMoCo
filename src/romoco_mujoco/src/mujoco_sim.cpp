@@ -1,7 +1,11 @@
-#include "mujoco_sim/mujoco_sim.hpp"
-
+#include "romoco_mujoco/mujoco_sim.hpp"
+#include <iostream>
 #include "mujoco/mjvisualize.h"
 #include <cctype> // for toupper
+
+namespace romoco
+{
+
 const char MujocoSim::help_content_[] =
     "Alt mouse button\n"
     "UI right hold\n"
@@ -639,3 +643,5 @@ void MujocoSim::SimReleasePelvis()
         m->dof_damping[i] = 0.0;
     }
 }
+
+} // namespace romoco

@@ -6,6 +6,9 @@
 #include "romoco_msgs/msg/biped_motor_commands.hpp"
 #include "romoco_msgs/msg/biped_proprioception.hpp"
 #include <atomic>
+
+namespace romoco
+{
 class RosInterfaceNode : public rclcpp::Node
 {
 public:
@@ -30,5 +33,5 @@ private:
   BipedProprioception loco_proprioception_;
 
 };
-
+} // namespace romoco
 #endif // BIPED_ROS_INTERFACE_NODE_HPP

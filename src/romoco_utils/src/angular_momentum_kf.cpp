@@ -1,5 +1,7 @@
 #include "romoco_utils/angular_momentum_kf.hpp"
 
+namespace romoco
+{
 Eigen::Vector2d AngularMomentumKF::Update(double dt, Eigen::Vector2d Lmeas, Eigen::Vector2d uk)
 {
    if (!initialized_)
@@ -25,3 +27,4 @@ Eigen::Vector2d AngularMomentumKF::Update(double dt, Eigen::Vector2d Lmeas, Eige
 
    return L_post;
 }
+} // namespace romoco

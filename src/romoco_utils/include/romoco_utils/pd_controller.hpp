@@ -2,8 +2,8 @@
 #define PD_CONTROLLER_HPP
 
 #include <Eigen/Dense>
-// namespace romoco
-// {
+namespace romoco
+{
 /**
  * @brief A Proportional-Derivative (PD) controller for joint-level control.
  *
@@ -106,5 +106,5 @@ class PDController {
   Eigen::VectorXd q_desired_;      ///< Desired joint positions.
   Eigen::VectorXd dq_desired_;     ///< Desired joint velocities.
 };
-// }  // namespace romoco
+}  // namespace romoco
 #endif  // PD_CONTROLLER_HPP

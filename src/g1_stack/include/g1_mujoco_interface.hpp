@@ -1,12 +1,14 @@
 #ifndef G1_MUJOCO_SIM_HPP
 #define G1_MUJOCO_SIM_HPP
 
-#include "mujoco_sim/mujoco_sim.hpp"
+#include "romoco_mujoco/mujoco_sim.hpp"
 #include "romoco_core/mujoco_interface_base.hpp"
 
 #include "romoco_core/robot_base_pinocchio.hpp"
 #include "romoco_core/contact_kf.hpp"
 
+namespace romoco
+{
 class G1MujocoInterface : public MujocoInterfaceBase
 {
 public:
@@ -68,5 +70,6 @@ private:
 
 
 };
+} // namespace romoco
 
 #endif // G1_MUJOCO_SIM_HPP

@@ -1,10 +1,11 @@
 #ifndef SCREEN_RADIO_HPP
 #define SCREEN_RADIO_HPP
 
-#include "romoco_types/biped_commands.hpp"
+#include "romoco_core/biped_commands.hpp"
 #include "romoco_screen_radio/radio_slider_map.hpp"
 
-
+namespace romoco
+{
 
 /**
  * @brief Converts raw radio data from the screen radio into a DesiredCommand structure.
@@ -46,5 +47,5 @@ inline DesiredCommand ConvertScreenRadioToDesiredCommand(Eigen::VectorXd raw_rad
    return cmd;
 }
 
-
+} // namespace romoco
 #endif // SCREEN_RADIO_HPP

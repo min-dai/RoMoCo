@@ -5,7 +5,8 @@
 #include <std_msgs/msg/float64_multi_array.hpp>
 #include <Eigen/Dense>
 #include <mutex>
-
+namespace romoco
+{
 class RadioSubscriber : public rclcpp::Node
 {
 public:
@@ -47,5 +48,5 @@ private:
 
 
 };
-
+} // namespace romoco
 #endif // RADIO_SUBSCRIBER_HPP

@@ -13,7 +13,8 @@
 #include <cassie_interface/cassie_user_in_t.h>
 #include <cassie_interface/cassiemujoco.h> // mujoco
 
-
+namespace romoco
+{
 class CassieMujocoInterface : public MujocoInterfaceBase
 {
 public:
@@ -64,5 +65,5 @@ private:
    Eigen::Vector3d est_lin_vel_;
 
 };
-
+} // namespace romoco
 #endif // CASSIE_MUJOCO_INTERFACE_HPP

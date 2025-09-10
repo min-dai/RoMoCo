@@ -1,5 +1,7 @@
 #include "romoco_control/torque_solver_tscqp.hpp"
 
+namespace romoco
+{
 
 using std::cout;
 using std::endl;
@@ -225,3 +227,5 @@ bool TorqueSolverTSCQP::ClarabelSolve()
 
     return if_solved_;
 }
+
+} // namespace romoco

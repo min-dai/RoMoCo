@@ -3,9 +3,12 @@
 
 #include <Eigen/Dense>
 #include "romoco_core/robot_base_pinocchio.hpp"
-#include "romoco_types/biped_proprioception.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
+#include "romoco_core/biped_proprioception.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
 #include "romoco_utils/pd_controller.hpp"
+
+namespace romoco
+{
 class InterfaceBase
 {
 public:
@@ -98,5 +101,7 @@ protected:
     // for hardware initialization
     bool ready_for_control_ = false;
 };
+
+} // namespace romoco
 
 #endif // INTERFACE_BASE_HPP

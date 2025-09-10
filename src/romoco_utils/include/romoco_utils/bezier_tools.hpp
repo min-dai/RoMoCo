@@ -4,7 +4,7 @@
 #define BEZIER_TOOLS_HPP
 
 #include <Eigen/Dense>
-
+namespace romoco{
 /**
  * @namespace bezier_tools
  * @ingroup group_utils
@@ -38,6 +38,6 @@ namespace bezier_tools
     Eigen::MatrixXd dA_bezier(const Eigen::VectorXd &coeff, double s, double sdot);
     Eigen::MatrixXd d2A_bezier(const Eigen::VectorXd &coeff, double s, double sdot);
 
-}
-
+} // namespace bezier_tools
+} // namespace romoco
 #endif // BEZIER_TOOLS_HPP

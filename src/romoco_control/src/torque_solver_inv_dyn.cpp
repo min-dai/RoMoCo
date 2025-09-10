@@ -1,6 +1,9 @@
 #include "romoco_control/torque_solver_inv_dyn.hpp"
 #include "romoco_utils/pseudo_inverse.hpp"
 
+
+namespace romoco
+{
 using std::cout;
 using std::endl;
 
@@ -101,3 +104,5 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
     // Implement the solver
     return motor_commands_;
 }
+
+} // namespace romoco

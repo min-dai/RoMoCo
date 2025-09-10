@@ -4,6 +4,7 @@
 #include <iostream>
 #include "romoco_utils/geometry.hpp"
 
+namespace romoco{
 struct Kinematics1D
 {
     Eigen::VectorXd position;
@@ -219,3 +220,5 @@ struct Kinematics3D
         return os;
     }
 };
+
+} // namespace romoco

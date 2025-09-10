@@ -1,5 +1,8 @@
 #include "romoco_planner/HLIPplanner.hpp"
 
+namespace romoco
+{
+
 HLIPPlanner::HLIPPlanner()
 {
 }
@@ -37,3 +40,5 @@ PlannerOutput HLIPPlanner::UpdatePlan(const PlannerInput& input)
 
    return output;
 }
+
+} // namespace romoco

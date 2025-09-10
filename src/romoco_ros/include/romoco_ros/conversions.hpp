@@ -3,9 +3,12 @@
 
 #include "romoco_msgs/msg/biped_motor_commands.hpp"
 #include "romoco_msgs/msg/biped_proprioception.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
-#include "romoco_types/biped_proprioception.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
+#include "romoco_core/biped_proprioception.hpp"
 
+
+namespace romoco
+{
 
 
 inline BipedProprioception fromRosMsg(const romoco_msgs::msg::BipedProprioception& msg) {
@@ -44,5 +47,5 @@ inline romoco_msgs::msg::BipedMotorCommands toRosMsg(const BipedMotorCommands& c
 
   return msg;
 }
-
+} // namespace romoco
 #endif  // ROS_MSG_TO_BIPED_TYPES_CONVERSION

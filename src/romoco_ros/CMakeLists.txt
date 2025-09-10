@@ -14,20 +14,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(romoco_types REQUIRED)
 find_package(romoco_core REQUIRED)
 find_package(romoco_state_machine REQUIRED)
 find_package(romoco_msgs REQUIRED)
-find_package(romoco_screen_radio REQUIRED)
 
 set(dependencies 
   rclcpp
   Eigen3
-  romoco_types
   romoco_core
   romoco_state_machine
   romoco_msgs
-  romoco_screen_radio
 )
 
 

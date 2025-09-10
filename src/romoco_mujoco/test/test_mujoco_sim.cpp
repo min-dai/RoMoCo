@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
-#include "mujoco_sim/mujoco_sim.hpp"
+#include "romoco_mujoco/mujoco_sim.hpp"
 #include <iostream>
+
+using namespace romoco;
 class MujocoInterfaceTest : public ::testing::Test {
  protected:
   void SetUp() override {

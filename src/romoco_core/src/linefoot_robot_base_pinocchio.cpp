@@ -1,5 +1,7 @@
 #include "romoco_core/linefoot_robot_base_pinocchio.hpp"
 
+namespace romoco
+{
 LineFootRobotBasePinocchio::LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
@@ -183,3 +185,5 @@ return {
       {left_hip_, "left_hip"}, {right_hip_, "right_hip"}, {base_, "base"}, 
       {baseF_, "baseF"}, {baseB_, "baseB"}, {baseL_, "baseL"}, {baseR_, "baseR"}};
 }
+
+} // namespace romoco

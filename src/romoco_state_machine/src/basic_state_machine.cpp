@@ -16,8 +16,11 @@
 
 //enum classes
 #include "romoco_screen_radio/radio_slider_map.hpp"
-#include "romoco_types/biped_constants.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
+#include "romoco_core/biped_constants.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
+
+namespace romoco
+{
 
 BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim)
     : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))
@@ -305,3 +308,4 @@ void BasicStateMachine::SelectControllers(
       return;
    }
 }
+} // namespace romoco

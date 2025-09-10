@@ -3,6 +3,8 @@
 
 #include "romoco_core/robot_base_pinocchio.hpp"
 
+namespace romoco
+{
 class LineFootRobotBasePinocchio : public RobotBasePinocchio
 {
 public:
@@ -33,5 +35,7 @@ private:
    void GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B, MatrixXd &Jh, VectorXd &dJhdq);
    void GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, MatrixXd &Acone, VectorXd &bcone);
 };
+
+} // namespace romoco
 
 #endif // BIPED_CORE_LINEFOOT_ROBOT_BASE_PINOCCHIO_HPP_

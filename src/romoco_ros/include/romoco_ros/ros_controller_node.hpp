@@ -7,11 +7,13 @@
 #include "romoco_state_machine/basic_controller_state_machine.hpp"
 #include "romoco_msgs/msg/biped_motor_commands.hpp"
 #include "romoco_msgs/msg/biped_proprioception.hpp"
-#include "romoco_types/biped_proprioception.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
-#include "romoco_types/biped_commands.hpp"
+#include "romoco_core/biped_proprioception.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
+#include "romoco_core/biped_commands.hpp"
 #include <std_msgs/msg/float64_multi_array.hpp>
 
+namespace romoco
+{
 class RosControllerNode : public rclcpp::Node
 {
 public:
@@ -54,4 +56,5 @@ private:
    std::function<DesiredCommand(const Eigen::VectorXd&)> get_command_func_;
 };
 
+} // namespace romoco
 #endif // BIPED_ROS_CONTROLLER_NODE_HPP

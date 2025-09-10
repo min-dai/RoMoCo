@@ -19,7 +19,7 @@
 
 
 
-  <depend>mujoco_sim</depend>
+  <depend>romoco_mujoco</depend>
   <depend>romoco_core</depend>
   <depend>romoco_control</depend>
   <depend>romoco_output</depend>

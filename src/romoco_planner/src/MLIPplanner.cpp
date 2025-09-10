@@ -1,5 +1,8 @@
 #include "romoco_planner/MLIPPlanner.hpp"
 
+
+namespace romoco
+{
 MLIPPlanner::MLIPPlanner()
 {
 }
@@ -34,3 +37,4 @@ Vector2d MLIPPlanner::UpdatePlan(Vector4d x_now, double T2imp, StanceStatus stan
    return plan;
 }
 
+} // namespace romoco

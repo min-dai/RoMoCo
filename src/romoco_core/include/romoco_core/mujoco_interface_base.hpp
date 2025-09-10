@@ -2,15 +2,18 @@
 #define MUJOCO_INTERFACE_BASE_HPP
 #include "romoco_core/interface_base.hpp"
 #include "romoco_utils/yaml_parser.hpp"
-#include "romoco_types/biped_proprioception.hpp"
+#include "romoco_core/biped_proprioception.hpp"
 
+namespace romoco
+{
 class MujocoInterfaceBase : public InterfaceBase
 {
 public:
-   MujocoInterfaceBase(): InterfaceBase(true) {} // Mujoco interface is always ready
+   MujocoInterfaceBase() : InterfaceBase(true) {} // Mujoco interface is always ready
    virtual ~MujocoInterfaceBase() = default;
 
-   bool IsInterfaceRunning() const override{
+   bool IsInterfaceRunning() const override
+   {
       return !paused();
    }
    bool is_sim() const override { return true; }
@@ -18,12 +21,10 @@ public:
    virtual BipedProprioception ReadAndEstimate() override;
    virtual void SendPacket() override;
 
-
    void GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot);
 
-
    virtual bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) = 0;
-   
+
    virtual void SimHoldPelvis() = 0;
    virtual void SimReleasePelvis() = 0;
 
@@ -60,6 +61,7 @@ protected:
    int render_loop_counter_threshold_ = 40;
 
    bool pin_pelvis_ = false;
-
 };
+
+} // namespace romoco
 #endif // MUJOCO_INTERFACE_BASE_HPP

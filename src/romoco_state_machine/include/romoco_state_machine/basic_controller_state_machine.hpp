@@ -9,12 +9,14 @@
 #include "romoco_control/torque_solver_base.hpp"
 #include "romoco_core/output_base.hpp"
 
-#include "romoco_types/biped_commands.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
+#include "romoco_core/biped_commands.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
 #include "romoco_utils/simple_timer.hpp"
 #include <fstream> // For std::fstream
 #include <string>  // For std::string
 
+namespace romoco
+{
 class BasicControllerStateMachine
 {
 public:
@@ -54,5 +56,7 @@ private:
 
    BipedMotorCommands motor_commands_;
 };
+
+} // namespace romoco
 
 #endif // BASIC_CONTROLLER_STATE_MACHINE_HPP

@@ -1,7 +1,7 @@
 #ifndef MLIP_HPP
 #define MLIP_HPP
 
-#include <romoco_types/biped_constants.hpp>
+#include <romoco_core/biped_constants.hpp>
 #include <Eigen/Dense>
 
 
@@ -13,7 +13,8 @@
 
 
 
-using namespace std;
+namespace romoco
+{
 
 class MLIP
 {
@@ -134,5 +135,5 @@ public:
 
     Eigen::Vector2d solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B);
 };
-
+} // namespace romoco
 #endif // MLIP_HPP

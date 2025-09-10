@@ -3,6 +3,9 @@
 #include <stdexcept>
 #include <string>
 
+namespace romoco
+{
+
 /**
  * @brief Constructor: Loads the YAML file into memory.
  */
@@ -215,3 +218,5 @@ bool YAMLParser::get_bool(const std::string &key_path) const
     YAML::Node node = getNode(key_path);
     return node.as<bool>();
 }
+
+} // namespace romoco

@@ -7,9 +7,11 @@
 #include "romoco_utils/yaml_parser.hpp"
 #include "romoco_core/output_base.hpp"
 #include "romoco_core/robot_base_pinocchio.hpp"
-#include "romoco_types/biped_motor_commands.hpp"
+#include "romoco_core/biped_motor_commands.hpp"
 // IMPORTANT: make sure robot and outputs are updated before calling Solve
 
+namespace romoco
+{
 class TorqueSolverBase
 {
 public:
@@ -31,5 +33,7 @@ protected:
 
     BipedMotorCommands motor_commands_;
 };
+
+} // namespace romoco
 
 #endif // TORQUE_SOLVER_BASE_HPP

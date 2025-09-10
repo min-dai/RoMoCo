@@ -1,6 +1,8 @@
 #include <romoco_core/contact_kf.hpp>
 #include <iostream>
 
+namespace romoco
+{
 ContactKf::ContactKf(const std::string &config_folder, int n_encoders)
 {
     std::string config_file = config_folder + "/interface_config.yaml";
@@ -247,3 +249,5 @@ void ContactKf::PackState(Eigen::MatrixXd &x, const Eigen::VectorXd &p, const Ei
     x.col(3) = prf;
     x.col(4) = ba;
 }
+
+} // namespace romoco

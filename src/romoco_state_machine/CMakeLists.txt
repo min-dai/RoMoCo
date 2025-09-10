@@ -17,7 +17,6 @@ find_package(romoco_core REQUIRED)
 find_package(romoco_screen_radio REQUIRED)
 find_package(romoco_output REQUIRED)
 find_package(romoco_control REQUIRED)
-find_package(romoco_types REQUIRED)
 find_package(romoco_utils REQUIRED)
 
 set(dependencies
@@ -26,7 +25,6 @@ set(dependencies
   romoco_screen_radio
   romoco_output
   romoco_control
-  romoco_types
   romoco_utils
 )
 

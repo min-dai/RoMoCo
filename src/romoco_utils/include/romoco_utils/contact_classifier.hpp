@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 #include "romoco_utils/yaml_parser.hpp"
 
+namespace romoco{
 struct ContactClassifierOutput
 {
     double left_contact_prob = 0.0;
@@ -64,5 +65,7 @@ private:
 
     Eigen::VectorXd grf_;
 };
+
+} // namespace romoco
 
 #endif // CONTACT_CLASSIFIER_HPP

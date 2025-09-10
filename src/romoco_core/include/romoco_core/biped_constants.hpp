@@ -1,7 +1,8 @@
 #ifndef BIPED_CORE_BIPED_CONSTANTS_HPP
 #define BIPED_CORE_BIPED_CONSTANTS_HPP
 
-
+namespace romoco
+{
 
 constexpr double grav = 9.81; // Gravity in m/s²
 
@@ -50,5 +51,5 @@ enum class StanceStatus
     LeftStance,
     RightStance
 };
-
+} // namespace romoco
 #endif // BIPED_CORE_BIPED_CONSTANTS_HPP

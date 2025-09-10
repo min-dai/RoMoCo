@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 
+namespace romoco
+{
 /**
  * @class PhaseVariable
  * @brief Represents a phase variable operating in the normalized range [0, 1].
@@ -84,5 +86,5 @@ class PhaseVariable {
    */
   void UpdatePhase();
 };
-
+}  // namespace romoco
 #endif  // PHASE_VARIABLE_HPP

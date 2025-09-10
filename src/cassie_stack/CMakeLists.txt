@@ -16,7 +16,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
-find_package(mujoco_sim REQUIRED)
 find_package(romoco_core REQUIRED)
 find_package(romoco_control REQUIRED)
 find_package(romoco_output REQUIRED)
@@ -27,7 +26,6 @@ find_package(romoco_ros REQUIRED)
 
 set(dependencies
   rclcpp
-  mujoco_sim
   romoco_core
   romoco_control
   romoco_output

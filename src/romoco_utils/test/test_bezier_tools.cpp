@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <romoco_utils/bezier_tools.hpp>
 
-using namespace bezier_tools;
+using namespace romoco::bezier_tools;
 
 TEST(BezierToolsTest, FactorialAndNchoosek)
 {

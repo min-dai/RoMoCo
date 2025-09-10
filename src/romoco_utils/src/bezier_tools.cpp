@@ -2,6 +2,8 @@
 
 #include <romoco_utils/bezier_tools.hpp>
 
+namespace romoco
+{
 namespace bezier_tools
 {
 
@@ -163,3 +165,4 @@ namespace bezier_tools
     };
 
 } // namespace bezier_tools
+} // namespace romoco

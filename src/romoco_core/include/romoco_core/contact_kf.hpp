@@ -4,8 +4,10 @@
 #include "romoco_utils/filters.hpp"
 
 #include "romoco_utils/yaml_parser.hpp"
-#include "romoco_types/biped_estimation_input.hpp"
+#include "romoco_core/biped_estimation_input.hpp"
 
+namespace romoco
+{
 class ContactKf
 {
 
@@ -76,4 +78,6 @@ private:
 
 };
 
-#endif
+} // namespace romoco
+
+#endif // CONTACT_KF_HPP

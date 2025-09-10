@@ -1,11 +1,14 @@
-#pragma once
+#ifndef ROMOCO_STANDING_OUTPUT_HPP
+#define ROMOCO_STANDING_OUTPUT_HPP
+
 
 #include "romoco_core/output_base.hpp"
 
 #include "romoco_utils/filters.hpp"
 #include "romoco_utils/yaml_parser.hpp"
 
-
+namespace romoco
+{
 class StandingOutput : public OutputBase
 {
 public:
@@ -80,3 +83,6 @@ private:
 
     control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN *VectorXd::Ones(1), 1);
 };
+
+} // namespace romoco
+#endif // ROMOCO_STANDING_OUTPUT_HPP

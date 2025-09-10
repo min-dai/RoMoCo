@@ -1,6 +1,9 @@
 #include "romoco_ros/ros_interface_node.hpp"
 #include "romoco_ros/conversions.hpp"
 #include "romoco_utils/yaml_parser.hpp"
+
+namespace romoco
+{
 RosInterfaceNode::RosInterfaceNode(const std::string &config_folder,
                                    const std::string &log_path,
                                    std::shared_ptr<InterfaceBase> interface)
@@ -74,3 +77,5 @@ void RosInterfaceNode::Loop()
   
 
 }
+
+} // namespace romoco

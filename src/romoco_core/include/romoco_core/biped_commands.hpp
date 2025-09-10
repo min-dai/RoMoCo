@@ -3,6 +3,9 @@
 
 #include <Eigen/Dense>
 
+namespace romoco
+{
+
 namespace Channel
 {
    enum DesiredChannel
@@ -62,5 +65,7 @@ struct DesiredCommand
       return os;
    }
 };
+
+} // namespace romoco
 
 #endif // BIPED_COMMANDS_HPP

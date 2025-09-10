@@ -9,6 +9,7 @@
 
 #include "romoco_screen_radio/screen_radio_conversion.hpp"
 
+using namespace romoco;
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
@@ -25,11 +26,11 @@ int main(int argc, char *argv[])
 
    RosLoadConfig ros_config("g1_stack", config_folder_name, "ROBOTLOG/G1");
 
-   std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<G1ModelLeg>(ros_config.config_folder);
+   std::shared_ptr<romoco::RobotBasePinocchio> robot_ptr = std::make_shared<romoco::G1ModelLeg>(ros_config.config_folder);
 
    // Wrap in ROS controller node
-   auto node = std::make_shared<RosControllerNode>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr),"screen_radio_values", 
-      std::function<DesiredCommand(const Eigen::VectorXd&)>(ConvertScreenRadioToDesiredCommand));
+   auto node = std::make_shared<romoco::RosControllerNode>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr),"screen_radio_values", 
+      std::function<romoco::DesiredCommand(const Eigen::VectorXd&)>(romoco::ConvertScreenRadioToDesiredCommand));
    // Spin
    rclcpp::spin(node);
    rclcpp::shutdown();

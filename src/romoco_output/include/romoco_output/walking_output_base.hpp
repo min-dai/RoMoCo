@@ -1,9 +1,14 @@
-#pragma once
+#ifndef ROMOCO_WALKING_OUTPUT_BASE_HPP
+#define ROMOCO_WALKING_OUTPUT_BASE_HPP
+
 #include "romoco_core/output_base.hpp"
 #include "romoco_utils/filters.hpp"
-#include "romoco_types/biped_constants.hpp"
+#include "romoco_core/biped_constants.hpp"
 #include "romoco_utils/yaml_parser.hpp"
 #include "romoco_planner/planner_types.hpp"
+
+namespace romoco
+{
 class WalkingOutputBase : public OutputBase
 {
 public:
@@ -78,3 +83,6 @@ protected:
     void ComputeHolonomicConstraints();
     void ComputeFrictionConstraints(const FrictionParams &fric_params);
 };
+
+} // namespace romoco
+#endif // ROMOCO_WALKING_OUTPUT_BASE_HPP

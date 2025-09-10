@@ -2,6 +2,10 @@
 #include <Eigen/Dense>
 
 #include "romoco_planner/planner_types.hpp"
+
+namespace romoco
+{
+
 class FlatFootFPPlanner
 {
 public:
@@ -14,3 +18,5 @@ public:
 
    virtual PlannerOutput UpdatePlan(const PlannerInput &input) = 0;
 };
+
+} // namespace romoco

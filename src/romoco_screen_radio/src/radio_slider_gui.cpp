@@ -1,5 +1,7 @@
 #include "romoco_screen_radio/radio_slider_gui.hpp"
 
+namespace romoco
+{
 RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -157,3 +159,4 @@ void RadioSliderGUI::handleInputChange(const QString &text)
 {
     input_value = text.toInt();
 }
+} // namespace romoco

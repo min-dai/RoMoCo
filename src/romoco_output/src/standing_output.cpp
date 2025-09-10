@@ -1,5 +1,7 @@
 #include "romoco_output/standing_output.hpp"
 
+namespace romoco
+{
 StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
     : OutputBase(robot)
 {
@@ -157,3 +159,4 @@ void StandingOutput::ComputeFrictionConstraints()
 {
     robot_->GetFrictionCone(config.fric_params, contact.leftC, contact.rightC, Afric_, bfric_ub_);
 }
+} // namespace romoco

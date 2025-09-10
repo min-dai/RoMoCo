@@ -1,7 +1,9 @@
-#pragma once
+#ifndef CASSIE_MODEL_HPP
+#define CASSIE_MODEL_HPP
 
 #include "romoco_core/linefoot_robot_base_pinocchio.hpp"
-
+namespace romoco
+{
 class CassieModel : public LineFootRobotBasePinocchio
 {
 public:
@@ -67,3 +69,6 @@ private:
     std::vector<std::reference_wrapper<FrameKinematics3D>> GetAllFrameKinematics() override;
     std::vector<std::pair<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>, std::string>> GetFrameIds() override;
 };
+
+} // namespace romoco
+#endif // CASSIE_MODEL_HPP

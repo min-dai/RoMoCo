@@ -1,7 +1,8 @@
 #include "romoco_core/mujoco_interface_base.hpp"
 #include "romoco_core/prep_proprioception.hpp"
 
-#include <iostream>
+namespace romoco
+{
 void MujocoInterfaceBase::GetAllJointStateFromSensorMujoco(Eigen::VectorXd &q, Eigen::VectorXd &qdot)
 {
    q = full_proprioception_.q;
@@ -23,3 +24,5 @@ void MujocoInterfaceBase::SendPacket()
 
    Step(torque_loco_, torque_pd_);
 }
+
+} // namespace romoco

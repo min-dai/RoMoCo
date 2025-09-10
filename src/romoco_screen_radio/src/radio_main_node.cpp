@@ -3,6 +3,8 @@
 #include <QTimer>
 #include "romoco_screen_radio/radio_slider_gui.hpp"
 
+using namespace romoco;
+
 int main(int argc, char **argv)
 {
    rclcpp::init(argc, argv);
@@ -42,4 +44,5 @@ int main(int argc, char **argv)
                     { rclcpp::shutdown(); });
 
    return app.exec();
-}
+
+} 

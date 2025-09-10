@@ -1,7 +1,8 @@
 #include <romoco_core/prep_proprioception.hpp>
 #include <romoco_utils/geometry.hpp>
 
-
+namespace romoco
+{
 
 BipedProprioception GetBipedProprioceptionFromSensorDataPostEstimation(const SensorDataPostEstimation &sensor_data)
 {
@@ -40,3 +41,5 @@ BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSen
    BipedEstimation estimation;
    return GetBipedProprioceptionFromRawSensorDataHardware(raw_sensor_data, estimation);
 }
+
+} // namespace romoco

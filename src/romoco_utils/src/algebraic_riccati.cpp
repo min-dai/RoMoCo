@@ -1,7 +1,7 @@
 
 #include "romoco_utils/algebraic_riccati.hpp"
 
-
+namespace romoco{
 Eigen::MatrixXd SolveDare(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::MatrixXd>& B, const Eigen::Ref<const Eigen::MatrixXd>& Q, const Eigen::Ref<const Eigen::MatrixXd>& R, double tol)
 {
       Eigen::MatrixXd A_m = A;
@@ -32,3 +32,4 @@ Eigen::VectorXd SolveDlqrGain(const Eigen::Ref<const Eigen::MatrixXd>& A, const 
     Eigen::VectorXd Kvec = K.row(0);
     return Kvec;
 };
+} // namespace romoco

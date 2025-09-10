@@ -1,4 +1,7 @@
 
+#ifndef ROMOCO_WALKING_OUTPUT_FP_HPP
+#define ROMOCO_WALKING_OUTPUT_FP_HPP
+
 #include "romoco_output/walking_output_base.hpp"
 #include "romoco_utils/phase_variable.hpp"
 
@@ -6,6 +9,8 @@
 #include "romoco_planner/flatfoot_fp_planner.hpp"
 
 
+namespace romoco
+{
 using std::cout;
 using std::endl;
 
@@ -103,3 +108,6 @@ private:
 
       std::unique_ptr<FlatFootFPPlanner> ROplanner;
 };
+
+} // namespace romoco   
+#endif // ROMOCO_WALKING_OUTPUT_FP_HPP

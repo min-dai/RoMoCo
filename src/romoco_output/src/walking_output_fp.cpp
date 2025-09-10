@@ -2,6 +2,9 @@
 #include "romoco_planner/HLIPplanner.hpp"
 #include "romoco_planner/DCMplanner.hpp"
 
+namespace romoco
+{
+
 WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
     : WalkingOutputBase(robot)
 {
@@ -365,3 +368,5 @@ std::vector<Eigen::VectorXd> WalkingOutputFp::CollectLog() const
 
    return log;
 }
+
+} // namespace romoco

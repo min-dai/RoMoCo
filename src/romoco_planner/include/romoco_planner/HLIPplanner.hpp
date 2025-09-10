@@ -5,6 +5,8 @@
 #include "romoco_planner/HLIP.hpp"
 #include "romoco_planner/planner_types.hpp"
 
+namespace romoco
+{
 class HLIPPlanner : public FlatFootFPPlanner
 {
 public:
@@ -24,5 +26,6 @@ protected:
    HLIP HLIP_sag;
    HLIP HLIP_lat;
 };
+} // namespace romoco
 
 #endif // BIPED_PLANNER_HLIPPLANNER_HPP

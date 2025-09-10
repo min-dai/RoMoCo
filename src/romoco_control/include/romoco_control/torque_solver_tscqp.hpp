@@ -5,7 +5,8 @@
 #include <clarabel.hpp>
 
 
-
+namespace romoco
+{
 class TorqueSolverTSCQP : public TorqueSolverBase
 {
 public:
@@ -38,5 +39,7 @@ private:
     // Settings for the Clarabel QP solver
     clarabel::DefaultSettings<double> settings_;
 };
+
+} // namespace romoco
 
 #endif // TORQUE_SOLVER_TSCQP_HPP

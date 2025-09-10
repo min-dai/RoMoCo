@@ -9,11 +9,13 @@
 #include "romoco_control/torque_solver_base.hpp"
 #include "romoco_core/output_base.hpp"
 
-#include "romoco_types/biped_commands.hpp"
+#include "romoco_core/biped_commands.hpp"
 
 #include <fstream> // For std::fstream
 #include <string>  // For std::string
 
+namespace romoco
+{
 class BasicStateMachine
 {
 public:
@@ -57,5 +59,7 @@ private:
    VectorXd q_locked_joints_des_, dq_locked_joints_des_;
    PDController locked_joints_pd_controller_;
 };
+
+} // namespace romoco
 
 #endif // BASIC_STATE_MACHINE_HPP

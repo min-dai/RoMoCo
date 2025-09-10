@@ -26,6 +26,8 @@
 #include "romoco_utils/simple_timer.hpp"
 
 
+namespace romoco
+{
 
 static const std::string HG_CMD_TOPIC = "rt/lowcmd";
 static const std::string HG_IMU_TORSO = "rt/secondary_imu";
@@ -213,5 +215,5 @@ private:
    Eigen::VectorXd q_lower_bound_;
    Eigen::VectorXd q_upper_bound_;
 };
-
+} // namespace romoco
 #endif // G1_HARDWARE_INTERFACE_HPP

@@ -2,6 +2,9 @@
 
 #include <romoco_planner/HLIP.hpp>
 
+namespace romoco
+{
+using namespace std;
 HLIP::HLIP(bool useMomentum) : useMomentum_(useMomentum) {};
 
 void HLIP::Init(double z0, double Ts, double Td, int orbitPeriod, double vel, double stepwidth = 0)
@@ -240,3 +243,4 @@ Eigen::Vector2d HLIP::solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B)
     Eigen::Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
     return Kdeadbeat;
 };
+} // namespace romoco

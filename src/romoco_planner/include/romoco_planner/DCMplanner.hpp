@@ -3,6 +3,8 @@
 
 #include "romoco_planner/HLIPplanner.hpp"
 
+namespace romoco
+{
 class DCMPlanner : public HLIPPlanner
 {
 public:
@@ -17,5 +19,6 @@ public:
       HLIP_lat.set_useDCM(true);
    }
 };
+} // namespace romoco
 
 #endif // BIPED_PLANNER_DCMPLANNER_HPP

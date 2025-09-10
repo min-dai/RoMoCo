@@ -1,6 +1,8 @@
 
 #include <romoco_utils/phase_variable.hpp>
 
+namespace romoco
+{
 PhaseVariable::PhaseVariable()
 {
     this->tau = 0.0;
@@ -30,3 +32,4 @@ void PhaseVariable::UpdatePhase()
     this->tau = (this->time_passed_ - this->phase_range_(0)) / (this->phase_range_(1) - this->phase_range_(0));
     this->dtau = 1.0 / (this->phase_range_(1) - this->phase_range_(0));
 }
+} // namespace romoco

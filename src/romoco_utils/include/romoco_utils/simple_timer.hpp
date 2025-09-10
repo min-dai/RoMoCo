@@ -2,7 +2,8 @@
 #define SIMPLE_TIMER_H_
 
 #include <chrono>
-
+namespace romoco
+{
 class SimpleTimer {
  public:
   SimpleTimer() { Reset(); }
@@ -43,5 +44,5 @@ class SimpleTimer {
   double t_now_;
   double t_old_;
 };
-
+}  // namespace romoco
 #endif  // SIMPLE_TIMER_H_

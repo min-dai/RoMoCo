@@ -4,7 +4,7 @@
 #include <filesystem>
 
 namespace fs = std::filesystem;
-
+using namespace romoco;
 class YAMLParserTest : public ::testing::Test {
 protected:
   std::string test_file;

@@ -1,4 +1,7 @@
 #include "cassie_model.hpp"
+
+namespace romoco
+{
 using Eigen::Vector3d;
 
 CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names)
@@ -277,3 +280,4 @@ void CassieModel::ComputeContactClassifierInput()
     contact_classifier_input_.torque_right = computed_torque_.tail(5);
 }
 
+} // namespace romoco

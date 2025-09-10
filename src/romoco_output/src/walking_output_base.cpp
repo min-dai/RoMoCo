@@ -1,5 +1,7 @@
 #include "romoco_output/walking_output_base.hpp"
 
+namespace romoco
+{
 void WalkingOutputBase::ConfigBase::InitConfigBase(const std::string &config_file, const RobotType &robot_type)
 {
    yaml_parser.Init(config_file);
@@ -49,3 +51,4 @@ void WalkingOutputBase::ComputeFrictionConstraints(const FrictionParams& fric_pa
 {
    robot_->GetFrictionCone(fric_params,domain.leftC, domain.rightC, Afric_, bfric_ub_);
 }
+} // namespace romoco

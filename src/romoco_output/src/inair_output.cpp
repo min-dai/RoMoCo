@@ -1,5 +1,7 @@
 #include "romoco_output/inair_output.hpp"
 
+namespace romoco
+{
 InAirOutput::InAirOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
     : OutputBase(robot)
 {
@@ -162,3 +164,5 @@ void InAirOutput::ComputeHolonomicConstraints()
     dJhdq_ << dJhdq_internal,
         dJhdq_base;
 }
+
+} // namespace romoco

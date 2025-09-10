@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 
+namespace romoco
+{
 /**
  * @brief Input structure for estimation modules that require kinematic data.
  *
@@ -27,12 +29,12 @@ struct BipedEstimationKinematicsInput
     Eigen::VectorXd p_right_foot;
 
     /**
-     * @brief Left foot Jacobian (expected size 3 x n_joints_per_leg).
+     * @brief Left foot Jacobian (expected size 3 x n_encoder_joints_per_leg).
      */
     Eigen::MatrixXd J_left_foot;
 
     /**
-     * @brief Right foot Jacobian (expected size 3 x n_joints_per_leg).
+     * @brief Right foot Jacobian (expected size 3 x n_encoder_joints_per_leg).
      */
     Eigen::MatrixXd J_right_foot;
 
@@ -65,5 +67,6 @@ struct BipedEstimationKinematicsInput
         return os;
     }
 };
+} // namespace romoco
 
 #endif // BIPED_ESTIMATION_INPUT_HPP

@@ -1,7 +1,10 @@
-#pragma once
+#ifndef G1_MODEL_HPP
+#define G1_MODEL_HPP
 
 #include "g1_model_leg.hpp"
 
+namespace romoco
+{
 class G1Model : public G1ModelLeg
 {
 public:
@@ -39,3 +42,6 @@ public:
 private:
 
 };
+} // namespace romoco
+
+#endif // G1_MODEL_HPP

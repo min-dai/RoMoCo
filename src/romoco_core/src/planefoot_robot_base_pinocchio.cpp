@@ -1,5 +1,6 @@
 #include "romoco_core/planefoot_robot_base_pinocchio.hpp"
-
+namespace romoco
+{
 PlaneFootRobotBasePinocchio::PlaneFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
@@ -206,3 +207,4 @@ std::vector<std::pair<std::reference_wrapper<RobotBasePinocchio::FrameKinematics
    return {
        {left_footLF_, "left_foot_LF"}, {left_footRF_, "left_foot_RF"}, {left_footLB_, "left_foot_LB"}, {left_footRB_, "left_foot_RB"}, {left_below_ankle_, "left_below_ankle"}, {left_mid_foot_, "left_mid_foot"}, {left_ankle_, "left_ankle"}, {right_footLF_, "right_foot_LF"}, {right_footRF_, "right_foot_RF"}, {right_footLB_, "right_foot_LB"}, {right_footRB_, "right_foot_RB"}, {right_below_ankle_, "right_below_ankle"}, {right_mid_foot_, "right_mid_foot"}, {right_ankle_, "right_ankle"}, {left_hip_, "left_hip"}, {right_hip_, "right_hip"}, {base_, "base"}, {baseF_, "baseF"}, {baseB_, "baseB"}, {baseL_, "baseL"}, {baseR_, "baseR"}};
 }
+} // namespace romoco

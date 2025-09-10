@@ -1,6 +1,8 @@
 #include <romoco_utils/pseudo_inverse.hpp>
 #include <Eigen/QR>
 
+namespace romoco
+{
 Eigen::MatrixXd PseudoInverse(const Eigen::MatrixXd &matrix,
                               const double &threshold)
 {
@@ -27,3 +29,5 @@ Eigen::MatrixXd WeightedPseudoInverse(const Eigen::MatrixXd &J,
   // Compute the weighted pseudo-inverse of J
   return W_inv * J.transpose() * lambda_inv;
 }
+
+} // namespace romoco

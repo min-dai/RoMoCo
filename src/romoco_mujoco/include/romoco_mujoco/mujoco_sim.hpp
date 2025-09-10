@@ -3,12 +3,12 @@
 
 #include "mujoco/mujoco.h"
 #include "GLFW/glfw3.h"
-#include <iostream>
 #include <cstring>
-
 #include <Eigen/Dense>
-
 #include <vector>
+
+namespace romoco
+{
 
 /**
  * @class MujocoSim
@@ -149,5 +149,5 @@ private:
     static const char help_content_[];
     static const char help_title_[];
 };
-
+} // namespace romoco
 #endif // MUJOCOINTERFACE_H

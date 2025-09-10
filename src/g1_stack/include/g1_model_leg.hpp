@@ -1,7 +1,9 @@
-#pragma once
+#ifndef G1_MODEL_LEG_HPP
+#define G1_MODEL_LEG_HPP
 
 #include "romoco_core/planefoot_robot_base_pinocchio.hpp"
-
+namespace romoco
+{
 class G1ModelLeg : public PlaneFootRobotBasePinocchio
 {
 public:
@@ -65,3 +67,5 @@ protected:
     void InitActuationImpl(int nu);
 
 };
+} // namespace romoco
+#endif // G1_MODEL_LEG_HPP

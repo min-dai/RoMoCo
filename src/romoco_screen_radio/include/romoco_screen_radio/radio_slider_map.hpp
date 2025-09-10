@@ -1,5 +1,8 @@
 #ifndef RADIO_SLIDER_MAP_HPP
 #define RADIO_SLIDER_MAP_HPP
+
+namespace romoco
+{
 namespace ScreenRadio
 {
    enum RadioSliderMap
@@ -24,4 +27,5 @@ namespace ScreenRadio
    };
 
 } // namespace ScreenRadio
+} // namespace romoco
 #endif // RADIO_SLIDER_MAP_HPP

@@ -6,6 +6,9 @@
 #include <filesystem>
 #include <cstdlib>
 #include <iostream>
+
+namespace romoco
+{
 struct RosLoadConfig
 {
     std::string config_folder;
@@ -57,5 +60,5 @@ struct RosLoadConfig
         }
     }
 };
-
+} // namespace romoco
 #endif // BIPED_ROS_ROS_LOAD_CONFIG_HPP

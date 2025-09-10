@@ -2,6 +2,10 @@
 
 #include "romoco_planner/MLIP.hpp"
 
+namespace romoco
+{
+
+using namespace std;
 MLIP::MLIP(bool useMomentum_) {
     params.useMomentum = useMomentum_;
 };
@@ -458,3 +462,4 @@ Eigen::Vector2d MLIP::solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B)
     Eigen::Vector2d Kdeadbeat(Ktmp(0, 0), Ktmp(1, 0));
     return Kdeadbeat;
 };
+} // namespace romoco

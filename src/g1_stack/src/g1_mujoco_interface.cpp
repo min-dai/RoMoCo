@@ -1,6 +1,8 @@
 #include "g1_mujoco_interface.hpp"
 #include "romoco_core/prep_proprioception.hpp"
 
+namespace romoco
+{
 G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path)
 {
    Init(config_folder, log_path);
@@ -237,3 +239,5 @@ void G1MujocoInterface::HandleRendering()
       }
    }
 }
+
+} // namespace romoco

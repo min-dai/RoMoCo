@@ -3,6 +3,8 @@
 
 #include "romoco_screen_radio/radio_slider_gui.hpp"
 
+using namespace romoco;
+
 // Needed because QApplication requires argc/argv.
 int argc = 0;
 char **argv = nullptr;

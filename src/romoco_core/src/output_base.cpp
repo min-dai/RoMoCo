@@ -1,5 +1,7 @@
 #include "romoco_core/output_base.hpp"
 
+namespace romoco
+{
 OutputBase::OutputBase(std::shared_ptr<RobotBasePinocchio> robot)
     : robot_(robot)
 {
@@ -69,3 +71,5 @@ Eigen::VectorXd OutputBase::MapU2FullIdx(const Eigen::VectorXd &u, const std::ve
     }
     return u_full;
 }
+
+} // namespace romoco

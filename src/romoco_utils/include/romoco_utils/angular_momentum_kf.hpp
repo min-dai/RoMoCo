@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 
+namespace romoco{
 /**
  * @class AngularMomentumKF
  * @ingroup group_utils
@@ -44,5 +45,5 @@ private:
 
    bool initialized_ = false;
 };
-
+} // namespace romoco
 #endif // ANGULAR_MOMENTUM_KF_HPP

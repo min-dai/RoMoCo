@@ -16,7 +16,7 @@
   <depend>romoco_screen_radio</depend>
   <depend>romoco_control</depend>
   <depend>romoco_output</depend>
-  <depend>romoco_types</depend>
+
   <depend>romoco_utils</depend>
 
   <!-- <test_depend>ament_lint_auto</test_depend> 

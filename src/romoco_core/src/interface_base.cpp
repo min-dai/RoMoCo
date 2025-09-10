@@ -1,6 +1,9 @@
 #include "romoco_core/interface_base.hpp"
 #include "romoco_utils/yaml_parser.hpp"
 #include <filesystem> //for create_directories
+
+namespace romoco
+{
 InterfaceBase::~InterfaceBase()
 {
    if (logFile_.is_open())
@@ -272,3 +275,4 @@ Eigen::VectorXf InterfaceBase::CollectLog(const double t, const std::vector<Vect
    }
    return log;
 }
+} // namespace romoco

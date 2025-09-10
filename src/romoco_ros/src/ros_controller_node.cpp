@@ -1,6 +1,11 @@
 #include "romoco_ros/ros_controller_node.hpp"
 #include "romoco_ros/conversions.hpp"
 #include "romoco_utils/yaml_parser.hpp"
+
+
+namespace romoco
+{
+
 RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,
                                      std::shared_ptr<RobotBasePinocchio> robot,
@@ -106,3 +111,5 @@ void RosControllerNode::Loop()
   }
   motor_pub_->publish(toRosMsg(motor_cmd));
 }
+
+} // namespace romoco

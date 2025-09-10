@@ -482,7 +482,7 @@ static bool load_glfw_library(const char *basedir)
 #ifndef _WIN32
     // Open dependencies
     gl_handle = LOADLIB("libGL.so.1");
-    snprintf(buf, sizeof buf, "%.4096s/biped_simulation/src/cassie_simulation/lib/mujoco210/bin/libglew.so", basedir);
+    snprintf(buf, sizeof buf, "%.4096s/RoMoCo/src/cassie_stack/lib/mujoco210/bin/libglew.so", basedir);
     glew_handle = LOADLIB(buf);
     if (!gl_handle || !glew_handle) {
         printf("gl_handle or glew_handle not loaded\n");
@@ -491,7 +491,7 @@ static bool load_glfw_library(const char *basedir)
 #endif
 
     // Open library
-    snprintf(buf, sizeof buf, "%.4096s/biped_simulation/src/cassie_simulation/lib/mujoco210/bin/" GLFWLIBNAME, basedir);
+    snprintf(buf, sizeof buf, "%.4096s/RoMoCo/src/cassie_stack/lib/mujoco210/bin/" GLFWLIBNAME, basedir);
     glfw_handle = LOADLIB(buf);
     if (!glfw_handle) {
         //fprintf(stderr, "Failed to load %s\n", buf);
@@ -522,10 +522,10 @@ static bool load_mujoco_library()
     //struct passwd *pw = getpwuid(getuid());
     
     // Choose library version
-    snprintf(buf, sizeof buf, "%.4096s/biped_simulation/src/cassie_simulation/lib/mujoco210/bin/" MJLIBNAME, homedir);
+    snprintf(buf, sizeof buf, "%.4096s/RoMoCo/src/cassie_stack/lib/mujoco210/bin/" MJLIBNAME, homedir);
 #ifndef _WIN32
     if (!gl) {
-        snprintf(buf, sizeof buf, "%.4096s/biped_simulation/src/cassie_simulation/lib/mujoco210/bin/" MJLIBNAMENOGL, homedir);
+        snprintf(buf, sizeof buf, "%.4096s/RoMoCo/src/cassie_stack/lib/mujoco210/bin/" MJLIBNAMENOGL, homedir);
     }
 #endif
 

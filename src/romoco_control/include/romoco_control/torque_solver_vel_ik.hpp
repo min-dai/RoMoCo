@@ -3,7 +3,8 @@
 
 #include "romoco_control/torque_solver_base.hpp"
 #include "romoco_utils/pd_controller.hpp"
-
+namespace romoco
+{
 class TorqueSolverVELIK : public TorqueSolverBase
 {
 public:
@@ -25,5 +26,7 @@ private:
 
     void SolveIk();
 };
+
+} // namespace romoco
 
 #endif // TORQUE_SOLVER_VELIK_HPP

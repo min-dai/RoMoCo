@@ -1,6 +1,8 @@
 #include <cassie_mujoco_interface.hpp>
 #include "romoco_core/prep_proprioception.hpp"
 
+namespace romoco
+{
 CassieMujocoInterface::CassieMujocoInterface() : sim(nullptr), vis(nullptr), timeMujoP(nullptr)
 {
 }
@@ -280,3 +282,4 @@ void CassieMujocoInterface::HandleRendering()
         }
     }
 }
+} // namespace romoco

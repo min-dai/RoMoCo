@@ -10,11 +10,9 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>romoco_types</depend>
   <depend>romoco_core</depend>
   <depend>romoco_state_machine</depend>
   <depend>romoco_msgs</depend>
-  <depend>romoco_screen_radio</depend>
 
   <build_export_depend>eigen</build_export_depend>
   <exec_depend>eigen</exec_depend>

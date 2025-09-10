@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mujoco_sim</name>
+  <name>romoco_mujoco</name>
   <version>0.0.0</version>
-  <description>The mujoco_sim package</description>
+  <description>The romoco_mujoco package</description>
   <maintainer email="mdai@caltech.edu">mdai</maintainer>
   <license>GPL-3.0-or-later</license>
   <author email="mdai@caltech.edu">Min Dai</author>

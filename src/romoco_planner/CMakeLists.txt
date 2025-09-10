@@ -14,13 +14,13 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(romoco_utils REQUIRED)
-find_package(romoco_types REQUIRED)
+find_package(romoco_core REQUIRED)
 
 
 set(dependencies 
   Eigen3
   romoco_utils
-  romoco_types
+  romoco_core
 )
 
 

@@ -1,7 +1,9 @@
 #include <unordered_set>
+// todo: remove?
 #include "romoco_control/torque_solver_pos_ik.hpp"
 
-
+namespace romoco
+{
 TorqueSolverPOSIK::TorqueSolverPOSIK(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
 {
@@ -113,3 +115,4 @@ void TorqueSolverPOSIK::SolveIk()
     output_->ForwardPosIK(q_now, f, J);
 }
 
+} // namespace romoco

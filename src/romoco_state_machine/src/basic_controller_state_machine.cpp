@@ -15,9 +15,10 @@
 #include "romoco_output/inair_output.hpp"
 
 //enum classes
-#include "romoco_types/biped_constants.hpp"
+#include "romoco_core/biped_constants.hpp"
 
-
+namespace romoco
+{
 BasicControllerStateMachine::BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
     : config_folder_(config_folder), log_path_(log_path)
 {
@@ -268,3 +269,5 @@ void BasicControllerStateMachine::SelectControllers(
       return;
    }
 }
+
+} // namespace romoco

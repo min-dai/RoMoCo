@@ -16,7 +16,7 @@ class testG1Model : public ::testing::Test
 
 // TEST_F(testG1Model, testbasicURDF)
 // {
-//     std::string urdf_path = std::string(getenv("HOME")) + "/biped_simulation/src/g1_stack/g1_model_files/test.urdf";
+//     std::string urdf_path = std::string(getenv("HOME")) + "/RoMoCo/src/g1_stack/g1_model_files/test.urdf";
 
     
 
@@ -162,7 +162,7 @@ class testG1Model : public ::testing::Test
 
 // TEST_F(testG1Model, testG1Lower)
 // {
-//     std::string urdf_path = std::string(getenv("HOME")) + "/biped_simulation/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
+//     std::string urdf_path = std::string(getenv("HOME")) + "/RoMoCo/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
     
 
 //     pinocchio::Model model;
@@ -294,7 +294,7 @@ class testG1Model : public ::testing::Test
 
 // TEST_F(testG1Model, testZeroYaw){
 
-//     std::string urdf_path = std::string(getenv("HOME")) + "/biped_simulation/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
+//     std::string urdf_path = std::string(getenv("HOME")) + "/RoMoCo/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
     
 
 //     pinocchio::Model model;
@@ -417,7 +417,7 @@ class testG1Model : public ::testing::Test
 
 TEST_F(testG1Model, testCentroidalMomentumFrame){
 
-    std::string urdf_path = std::string(getenv("HOME")) + "/biped_simulation/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
+    std::string urdf_path = std::string(getenv("HOME")) + "/RoMoCo/src/g1_stack/g1_model_files/g1_29_withsensor_with6dofbase_lowerbody.urdf";
     
 
     pinocchio::Model model;

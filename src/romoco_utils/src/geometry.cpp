@@ -1,7 +1,8 @@
 
 
 #include <romoco_utils/geometry.hpp>
-
+namespace romoco
+{
 Eigen::EulerAnglesZYXd eulerZYX(const Eigen::Quaterniond &q)
 {
     Eigen::EulerAnglesZYXd euler;
@@ -125,3 +126,5 @@ Eigen::Vector3d angularVel2EulerRate(const Eigen::EulerAnglesZYXd &euler, const 
 
     return RateMatrix.completeOrthogonalDecomposition().solve(w);
 }
+
+} // namespace romoco

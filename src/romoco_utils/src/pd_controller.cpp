@@ -1,5 +1,7 @@
 #include "romoco_utils/pd_controller.hpp"
 
+namespace romoco
+{
 PDController::PDController() : is_initialized_(false) {}
 
 // Constructs a PDController with given Kp and Kd gains.
@@ -75,3 +77,4 @@ Eigen::VectorXd PDController::Compute(const Eigen::VectorXd &q_actual, const Eig
     // Compute and return the vector
     return -(Kp_.cwiseProduct(q_actual - q_desired_) + Kd_.cwiseProduct(dq_actual - dq_desired_));
 }
+} // namespace romoco

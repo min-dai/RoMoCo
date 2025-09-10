@@ -9,7 +9,7 @@ TEST(AlgebraicRiccatiTest, SolveDAREReturnsPositiveDefinite) {
     R << 1.0;
 
     double tol = 1e-6;
-    Eigen::MatrixXd P = SolveDare(A, B, Q, R, tol);
+    Eigen::MatrixXd P = romoco::SolveDare(A, B, Q, R, tol);
 
     EXPECT_GT(P(0,0), 0.0);  // P must be positive
 }
@@ -22,7 +22,7 @@ TEST(AlgebraicRiccatiTest, SolveDLQRGainIsCorrectForScalar) {
     R << 1.0;
 
     double tol = 1e-6;
-    Eigen::VectorXd K = SolveDlqrGain(A, B, Q, R, tol);
+    Eigen::VectorXd K = romoco::SolveDlqrGain(A, B, Q, R, tol);
 
     EXPECT_NEAR(K(0), 0.618, 1e-2);  // known result for this scalar case
 }

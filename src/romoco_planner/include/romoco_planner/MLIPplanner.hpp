@@ -1,9 +1,12 @@
 
-#pragma once
+#ifndef ROMOCO_PLANNER_MLIPPLANNER_HPP
+#define ROMOCO_PLANNER_MLIPPLANNER_HPP
 
 #include "romoco_planner/ro_planner_base.hpp"
 #include "romoco_planner/MLIP.hpp"
 
+namespace romoco
+{
 class MLIPPlanner : public ROPlannerBase
 {
 public:
@@ -28,3 +31,5 @@ private:
    MLIP MLIP_sag;
    MLIP MLIP_lat;
 };
+} // namespace romoco
+#endif // ROMOCO_PLANNER_MLIPPLANNER_HPP

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(mujoco_sim)
+project(romoco_mujoco)
 
 # Humble Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
