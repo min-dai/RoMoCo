@@ -57,9 +57,9 @@ void OutputBase::ForwardPosIK(const VectorXd &qk, VectorXd &fk, MatrixXd &Jk)
 
 void OutputBase::SetBezierDesiredOutputs(const VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx)
 {
-    yd_(OutputIdx) = bezier(alpha, tau);
-    dyd_(OutputIdx) = dtimeBezier(alpha, tau, dtau);
-    d2yd_(OutputIdx) = dtime2Bezier(alpha, tau, dtau);
+    yd_(OutputIdx) = bezier_tools::bezier(alpha, tau);
+    dyd_(OutputIdx) = bezier_tools::dtimeBezier(alpha, tau, dtau);
+    d2yd_(OutputIdx) = bezier_tools::dtime2Bezier(alpha, tau, dtau);
 }
 
 Eigen::VectorXd OutputBase::MapU2FullIdx(const Eigen::VectorXd &u, const std::vector<int> &actuated_u_idx, const int &full_size){

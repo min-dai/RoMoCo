@@ -6,7 +6,7 @@
 #include "romoco_utils/bezier_tools.hpp"
 #include "romoco_types/biped_commands.hpp"
 
-using namespace bezier_tools;
+
 
 class OutputBase 
 {

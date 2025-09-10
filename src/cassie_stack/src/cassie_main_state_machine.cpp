@@ -1,5 +1,4 @@
 #include <rclcpp/rclcpp.hpp>
-#include "ament_index_cpp/get_package_share_directory.hpp"
 
 #include "romoco_state_machine/basic_state_machine.hpp"
 

@@ -5,8 +5,20 @@
 
 #include <Eigen/Dense>
 
+/**
+ * @namespace bezier_tools
+ * @ingroup group_utils
+ * @brief Utilities for working with Bézier curves.
+ */
 namespace bezier_tools
 {
+    /**
+     * @brief Compute a single term of a Bézier basis polynomial.
+     * @param m Polynomial order.
+     * @param k Term index.
+     * @param s Curve parameter in [0,1].
+     * @return Value of the basis term.
+     */
     double singleterm_bezier(int m, int k, double s);
     double bezier(const Eigen::VectorXd &coeff, double s);
     void bezier(const Eigen::MatrixXd &coeffs, double s, Eigen::VectorXd &out);

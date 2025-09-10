@@ -9,7 +9,6 @@
 class InterfaceBase
 {
 public:
-
     explicit InterfaceBase(bool initial_ready_state = false) : ready_for_control_(initial_ready_state) {}
 
     virtual ~InterfaceBase();
@@ -37,7 +36,8 @@ public:
     virtual void Init(const std::string &config_folder, const std::string &log_path) = 0;
 
     // for hardware interface, do nothing for sim interface
-    virtual void DampedInitializationControl(){};
+    virtual void DampedInitializationControl() {};
+
 protected:
     void InitLogFile(const std::string &log_path);
 
@@ -48,8 +48,6 @@ protected:
     void InitProprioception();
 
     void CheckInitialization() const;
-
-    
 
     std::vector<int> GetJointIndicesFromSubset(
         const std::vector<std::string> &all_encoder_names_pinocchio_order,
@@ -69,8 +67,8 @@ protected:
     std::vector<int> loco_proprio_indices_;
     std::vector<int> loco_proprio_motor_indices_;
 
-    //interface recieves sensor data and parse to full proprioception
-    //then ros node publish loco proprioception for controller
+    // interface recieves sensor data and parse to full proprioception
+    // then ros node publish loco proprioception for controller
     BipedProprioception full_proprioception_;
     BipedProprioception loco_proprioception_;
     BipedProprioception pd_proprioception_;
@@ -81,16 +79,15 @@ protected:
 
     bool is_sim_;
 
-    //set at beginning, constant after
+    // set at beginning, constant after
     BipedMotorCommands pd_motor_commands_;
-    //updated every cycle
+    // updated every cycle
     BipedMotorCommands loco_motor_commands_;
     BipedMotorCommands final_motor_commands_;
-    //pd_motor_commands = final_motor_commands.GetIndex(pd_motor_command_indices);
-    //loco_motor_commands = final_motor_commands.GetIndex(loco_motor_command_indices);
+    // pd_motor_commands = final_motor_commands.GetIndex(pd_motor_command_indices);
+    // loco_motor_commands = final_motor_commands.GetIndex(loco_motor_command_indices);
     std::vector<int> pd_motor_command_indices_;
     std::vector<int> loco_motor_command_indices_;
-
 
     Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
 
@@ -98,9 +95,8 @@ protected:
     std::fstream logFile_;
     std::string logFilePath_;
 
-    //for hardware initialization
+    // for hardware initialization
     bool ready_for_control_ = false;
-    
 };
 
 #endif // INTERFACE_BASE_HPP
