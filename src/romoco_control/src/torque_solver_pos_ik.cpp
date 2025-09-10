@@ -21,7 +21,7 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
     tol_ = yaml_parser_.get_double("posik/tol");
 
     // check if the size of JointKP and JointKD is the same as the number of actuated joints, or half number of actuated joints
-    //  if half size of actuated_u_idx then it is the PD gains for each leg
+    //  if half size of actuators then it is the PD gains for each leg
     if (JointKPtmp.size() == robot_->nu() / 2)
     {
         // stack the gains for each leg
@@ -52,21 +52,21 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 
     SolveIk();
 
-    pd_controller_.Reconfigure(JointKPing_(output_->actuated_u_idx), JointKDing_(output_->actuated_u_idx));
+    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKPing_);
+    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKDing_);
 
-    VectorXd u_fb = pd_controller_.Compute(output_->qDes_actuated, output_->dqDes_actuated, qm_actual_, dqm_actual_);
+    pd_controller_.Reconfigure(KP, KD);
 
+    VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
 
     VectorXd u_ff = SolveGravityCompensation();
 
-    Eigen::VectorXd u_full = MapU2FullIdx(u_fb+u_ff, output_->actuated_u_idx, robot_->nu());
-
-    motor_commands_.joint_torques_ff = MapU2FullIdx(u_ff, output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_positions = MapU2FullIdx(output_->qDes_actuated, output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_velocities = MapU2FullIdx(output_->dqDes_actuated, output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_kp = MapU2FullIdx(JointKPing_(output_->actuated_u_idx), output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_kd = MapU2FullIdx(JointKDing_(output_->actuated_u_idx), output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_torques = u_full;
+    motor_commands_.joint_torques_ff = output_->MapToFullMotors(u_ff);
+    motor_commands_.joint_positions = output_->MapToFullMotors(qm_des_);
+    motor_commands_.joint_velocities = output_->MapToFullMotors(dqm_des_);
+    motor_commands_.joint_kp = output_->MapToFullMotors(KP);
+    motor_commands_.joint_kd = output_->MapToFullMotors(KD);
+    motor_commands_.joint_torques = output_->MapToFullMotors(u_fb + u_ff);
 
     return motor_commands_;
 }
@@ -76,62 +76,40 @@ void TorqueSolverPOSIK::SolveIk()
 
     VectorXd q_now = robot_->q();
 
-    qm_actual_ = robot_->q()(output_->actuated_q_idx);
-    dqm_actual_ = robot_->dq()(output_->actuated_q_idx);
+    qm_actual_ = output_->SelectActuatedStates(q_now);
+    dqm_actual_ = output_->SelectActuatedStates(robot_->dq());
 
     // Init q0
-    output_->qDes_actuated = qm_actual_;
+    qm_des_ = qm_actual_;
 
     // forward kinematics IK
-    VectorXd f = output_->ya;
-    MatrixXd J = output_->Jya;
+    VectorXd f = output_->ya();
+    MatrixXd J = output_->Jya();
 
     VectorXd qfull = q_now;
 
     // Null-space projection for holonomic constraints
-    MatrixXd Nhol = MatrixXd::Zero(robot_->nv(), robot_->nv());
-    MatrixXd Jc = output_->Jh;
-
-    Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.completeOrthogonalDecomposition().solve(Jc);
+    MatrixXd Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
 
     int iter = 0;
     do
     {
         iter++;
-        VectorXd deltaq = (J(output_->active_y_idx, Eigen::all) * Nhol).completeOrthogonalDecomposition().solve(output_->yd(output_->active_y_idx) - f(output_->active_y_idx));
-
+        VectorXd deltaq = (J * Nhol).completeOrthogonalDecomposition().solve(output_->yd() - f);
         qfull += deltaq;
-        output_->ForwardPosIk(qfull, f, J);
-    } while ((output_->yd(output_->active_y_idx) - f(output_->active_y_idx)).norm() > tol_ && iter < max_iter_);
+        output_->ForwardPosIK(qfull, f, J);
+    } while ((output_->yd() - f).norm() > tol_ && iter < max_iter_);
 
     if (iter >= max_iter_)
     {
         std::cerr << "[IK Warning] Did not converge after " << max_iter_ << " iterations. " << std::endl;
         return;
     }
-
-    unactuated_idx_ = get_unactuated_indices(output_->actuated_q_idx, robot_->nv());
-
-    VectorXd dqdes_all = (J(output_->active_y_idx, Eigen::all) * Nhol).completeOrthogonalDecomposition().solve(output_->dyd(output_->active_y_idx));
-    output_->qDes_actuated = qfull(output_->actuated_q_idx);
-    output_->dqDes_actuated = dqdes_all(output_->actuated_q_idx);
+    VectorXd dqdes_full = (J * Nhol).completeOrthogonalDecomposition().solve(output_->dyd());
+    qm_des_ = output_->SelectActuatedStates(qfull);
+    dqm_des_ = output_->SelectActuatedStates(dqdes_full);
 
     // for logging
-    output_->ForwardPosIk(q_now, f, J);
+    output_->ForwardPosIK(q_now, f, J);
 }
 
-std::vector<int> TorqueSolverPOSIK::get_unactuated_indices(const std::vector<int> &actuated_q_idx, int q_size)
-{
-    std::unordered_set<int> actuated_set(actuated_q_idx.begin(), actuated_q_idx.end());
-    std::vector<int> unactuated_idx;
-
-    for (int i = 0; i < q_size; ++i)
-    {
-        if (actuated_set.find(i) == actuated_set.end())
-        {
-            unactuated_idx.push_back(i);
-        }
-    }
-
-    return unactuated_idx;
-}

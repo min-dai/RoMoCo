@@ -8,19 +8,19 @@ InAirOutput::InAirOutput(const std::string &config_file, std::shared_ptr<RobotBa
 
     if (robot_->robot_type() == RobotType::PlaneFoot)
     {
-        nY = 12;
+        nY_ = 12;
     }
     else if (robot_->robot_type() == RobotType::LineFoot)
     {
-        nY = 10;
+        nY_ = 10;
     }
 
-    SetOutputSize(robot_->nq(), nY);
-    actuated_q_idx = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
-    actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
-    active_y_idx = OutputBase::generate_full_y_idx(nY);
+    SetOutputSize(robot_->nq(), nY_);
+    actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
+    actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
+    active_y_idx_ = OutputBase::generate_full_y_idx(nY_);
 
-    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
+    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY_);
 }
 
 void InAirOutput::Config::Init(RobotType robot_type)
@@ -60,9 +60,9 @@ void InAirOutput::UpdateOutput(const DesiredCommand &command, const double &t, c
     if (!updated.isInitialized)
     {
         updated.isInitialized = true;
-        lowpassyd.Update(ya);
+        lowpassyd.Update(ya_);
 
-        yd = ya;
+        yd_ = ya_;
     }
 
     // Compute Desired
@@ -79,7 +79,7 @@ void InAirOutput::ComputeActual()
 
     right_foot2base = robot_->right_below_ankle_kinematics() - robot_->base_kinematics();
 
-    ya << left_foot2base.position,                 // 3
+    ya_ << left_foot2base.position,                 // 3
         robot_->left_hip_yaw_kinematics().position,  // 1
         robot_->GetLeftFootDeltaPitch().position,  // 1
         robot_->GetLeftFootDeltaRoll().position,   // 1 or 0
@@ -88,7 +88,7 @@ void InAirOutput::ComputeActual()
         robot_->GetRightFootDeltaPitch().position, // 1
         robot_->GetRightFootDeltaRoll().position;  // 1 or 0
 
-    dya << left_foot2base.velocity,                // 3
+    dya_ << left_foot2base.velocity,                // 3
         robot_->left_hip_yaw_kinematics().velocity,  // 1
         robot_->GetLeftFootDeltaPitch().velocity,  // 1
         robot_->GetLeftFootDeltaRoll().velocity,   // 1 or 0
@@ -97,7 +97,7 @@ void InAirOutput::ComputeActual()
         robot_->GetRightFootDeltaPitch().velocity, // 1
         robot_->GetRightFootDeltaRoll().velocity;  // 1 or 0
 
-    Jya << left_foot2base.jacobian,                // 3
+    Jya_ << left_foot2base.jacobian,                // 3
         robot_->left_hip_yaw_kinematics().jacobian,  // 1
         robot_->GetLeftFootDeltaPitch().jacobian,  // 1
         robot_->GetLeftFootDeltaRoll().jacobian,   // 1 or 0
@@ -106,7 +106,7 @@ void InAirOutput::ComputeActual()
         robot_->GetRightFootDeltaPitch().jacobian, // 1
         robot_->GetRightFootDeltaRoll().jacobian;  // 1 or 0
 
-    dJyadq << left_foot2base.dJdq,             // 3
+    dJyadq_ << left_foot2base.dJdq,             // 3
         robot_->left_hip_yaw_kinematics().dJdq,  // 1
         robot_->GetLeftFootDeltaPitch().dJdq,  // 1
         robot_->GetLeftFootDeltaRoll().dJdq,   // 1 or 0
@@ -129,20 +129,20 @@ void InAirOutput::ComputeDesired(const DesiredCommand &command)
     {
         double roll_d = 0.5 * command.values(Channel::Roll) * (config.roll_ub - config.roll_lb) + 0.5 * (config.roll_ub + config.roll_lb);
 
-        yd << xcom_d, ycom_d, zcom_d, -yaw_d, pitch_d, -roll_d,
+        yd_ << xcom_d, ycom_d, zcom_d, -yaw_d, pitch_d, -roll_d,
             xcom_d, -ycom_d, zcom_d, yaw_d, pitch_d, roll_d;
     }
     else if (robot_->robot_type() == RobotType::LineFoot)
     {
-        yd << xcom_d, ycom_d, zcom_d, -yaw_d, pitch_d,
+        yd_ << xcom_d, ycom_d, zcom_d, -yaw_d, pitch_d,
             xcom_d, -ycom_d, zcom_d, yaw_d, pitch_d;
     }
 
-    yd = lowpassyd.Update(yd);
+    yd_ = lowpassyd.Update(yd_);
 
-    dyd.setZero();
+    dyd_.setZero();
 
-    d2yd.setZero();
+    d2yd_.setZero();
 }
 
 void InAirOutput::ComputeHolonomicConstraints()
@@ -155,10 +155,10 @@ void InAirOutput::ComputeHolonomicConstraints()
     Jh_base.block(0, 0, 6, 6) = MatrixXd::Identity(6, 6);
     dJhdq_base = VectorXd::Zero(6);
 
-    Jh.resize(Jh_internal.rows() + Jh_base.rows(), robot_->nv());
-    Jh << Jh_internal,
+    Jh_.resize(Jh_internal.rows() + Jh_base.rows(), robot_->nv());
+    Jh_ << Jh_internal,
         Jh_base;
-    dJhdq.resize(dJhdq_internal.rows() + dJhdq_base.rows());
-    dJhdq << dJhdq_internal,
+    dJhdq_.resize(dJhdq_internal.rows() + dJhdq_base.rows());
+    dJhdq_ << dJhdq_internal,
         dJhdq_base;
 }

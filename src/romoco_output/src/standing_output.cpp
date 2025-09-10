@@ -6,7 +6,7 @@ StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<R
     config.yaml_parser.Init(config_file);
     config.Init(robot_->robot_type());
 
-    nY = 6;
+    nY_ = 6;
     if (robot_->robot_type() == RobotType::PlaneFoot)
     {
         contact.leftC = FootContactStatus::FlatPlaneContact;
@@ -22,14 +22,14 @@ StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<R
         throw std::runtime_error("Unsupported robot type");
     }
 
-    SetOutputSize(robot_->nq(), nY);
-    actuated_q_idx = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
-    actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
-    active_y_idx = OutputBase::generate_full_y_idx(nY);
+    SetOutputSize(robot_->nq(), nY_);
+    actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
+    actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::ActiveAll);
+    active_y_idx_ = OutputBase::generate_full_y_idx(nY_);
 
-    ComputeFrictionConstriants();
+    ComputeFrictionConstraints();
 
-    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY);
+    lowpassyd.Reconfigure(config.dt_lowpass, config.yd_lowpass_dt_cutoff, nY_);
 }
 
 void StandingOutput::Config::Init(RobotType robot_type)
@@ -72,16 +72,16 @@ void StandingOutput::UpdateOutput(const DesiredCommand &command, const double &t
     if (!updated.isInitialized)
     {
         updated.isInitialized = true;
-        lowpassyd.Update(ya);
+        lowpassyd.Update(ya_);
 
-        yd = ya;
-        updated.initial_height = ya(zCOM);
+        yd_ = ya_;
+        updated.initial_height = ya_(zCOM);
     }
 
     // Compute Desired
     ComputeDesired(command);
 
-    if (updated.queueTransition && (abs(ya(yCOM)) >= abs(config.stand2step_y_offset - 0.01)))
+    if (updated.queueTransition && (abs(ya_(yCOM)) >= abs(config.stand2step_y_offset - 0.01)))
     {
         updated.readyToTransition = true;
     }
@@ -106,19 +106,19 @@ void StandingOutput::ComputeActual()
     Kinematics1D delta_pitch = robot_->GetBaseDeltaPitch();
     Kinematics1D delta_roll = robot_->GetBaseDeltaRoll();
 
-    ya << com2supportbase.position,     // 3
+    ya_ << com2supportbase.position,     // 3
         delta_roll.position,            // 1
         delta_pitch.position,           // 1
         deltaYaw_cross.position.z();    // 1
-    dya << com2supportbase.velocity,    // 3
+    dya_ << com2supportbase.velocity,    // 3
         delta_roll.velocity,            // 1
         delta_pitch.velocity,           // 1
         deltaYaw_cross.velocity.z();    // 1
-    Jya << com2supportbase.jacobian,    // 3
+    Jya_ << com2supportbase.jacobian,    // 3
         delta_roll.jacobian,            // 1
         delta_pitch.jacobian,           // 1
         deltaYaw_cross.jacobian.row(2); // 1
-    dJyadq << com2supportbase.dJdq,     // 3
+    dJyadq_ << com2supportbase.dJdq,     // 3
         delta_roll.dJdq,                // 1
         delta_pitch.dJdq,               // 1
         deltaYaw_cross.dJdq.z();        // 1
@@ -134,10 +134,10 @@ void StandingOutput::ComputeDesired(const DesiredCommand &command)
     double pitch_d = (updated.queueTransition) ? 0 : command.values(Channel::Pitch) * config.pitch_range;
     double roll_d = (updated.queueTransition) ? 0 : command.values(Channel::Roll) * config.roll_range;
 
-    yd << x_d, y_d, z_d, yaw_d, pitch_d, roll_d;
-    yd = lowpassyd.Update(yd);
-    dyd.setZero();
-    d2yd.setZero();
+    yd_ << x_d, y_d, z_d, yaw_d, pitch_d, roll_d;
+    yd_ = lowpassyd.Update(yd_);
+    dyd_.setZero();
+    d2yd_.setZero();
 }
 
 void StandingOutput::ComputeHolonomicConstraints()
@@ -147,13 +147,13 @@ void StandingOutput::ComputeHolonomicConstraints()
     robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
     robot_->GetContactHolonomicConstraints(contact.leftC, contact.rightC, Jh_contact, dJhdq_contact);
 
-    Jh.resize(Jh_internal.rows() + Jh_contact.rows(), robot_->nv());
-    Jh << Jh_internal, Jh_contact;
-    dJhdq.resize(dJhdq_internal.size() + dJhdq_contact.size());
-    dJhdq << dJhdq_internal, dJhdq_contact;
+    Jh_.resize(Jh_internal.rows() + Jh_contact.rows(), robot_->nv());
+    Jh_ << Jh_internal, Jh_contact;
+    dJhdq_.resize(dJhdq_internal.size() + dJhdq_contact.size());
+    dJhdq_ << dJhdq_internal, dJhdq_contact;
 }
 
-void StandingOutput::ComputeFrictionConstriants()
+void StandingOutput::ComputeFrictionConstraints()
 {
-    robot_->GetFrictionCone(config.fric_params, contact.leftC, contact.rightC, Afric, bfric_ub);
+    robot_->GetFrictionCone(config.fric_params, contact.leftC, contact.rightC, Afric_, bfric_ub_);
 }

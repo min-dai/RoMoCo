@@ -11,7 +11,7 @@ class StandingOutput : public OutputBase
 public:
     StandingOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot);
 
-    bool isReadyToTransition() const override
+    bool is_ready_to_transit() const override
     {
         return this->updated.readyToTransition;
     }
@@ -27,9 +27,9 @@ private:
 
     void ComputeHolonomicConstraints();
 
-    void ComputeFrictionConstriants();
+    void ComputeFrictionConstraints();
 
-    int nY;
+
 
     enum OutputIndex
     {

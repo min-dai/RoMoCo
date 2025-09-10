@@ -42,7 +42,7 @@ public:
       void Init(const std::string &config_file);
 
 private:
-      int nY;
+
       PhaseVariable phase;
 
       Kinematics3D com2stance_zeroyaw;

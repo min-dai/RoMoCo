@@ -14,7 +14,7 @@ public:
 
     // Transition occurs if the center of mass (COM) velocity is low during the double support (DS) phase
     // or if the system is at the end of the single support (SS) phase.
-    // virtual bool isReadyToTransition() const override;
+    // virtual bool is_ready_to_transit() const override;
 
     enum class Domain
     {
@@ -76,5 +76,5 @@ protected:
     control_utilities::LowPassFilter lowpass_vel_y_des_ = control_utilities::LowPassFilter(NAN, NAN);
 
     void ComputeHolonomicConstraints();
-    void ComputeFrictionConstriants(const FrictionParams &fric_params);
+    void ComputeFrictionConstraints(const FrictionParams &fric_params);
 };

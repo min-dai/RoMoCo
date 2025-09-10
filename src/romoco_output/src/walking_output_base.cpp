@@ -39,13 +39,13 @@ void WalkingOutputBase::ComputeHolonomicConstraints()
    robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
 
    robot_->GetContactHolonomicConstraints(domain.leftC, domain.rightC, Jh_contact, dJhdq_contact);
-   Jh.resize(Jh_internal.rows() + Jh_contact.rows(), robot_->nv());
-   Jh << Jh_internal, Jh_contact;
-   dJhdq.resize(dJhdq_internal.size() + dJhdq_contact.size());
-   dJhdq << dJhdq_internal, dJhdq_contact;
+   Jh_.resize(Jh_internal.rows() + Jh_contact.rows(), robot_->nv());
+   Jh_ << Jh_internal, Jh_contact;
+   dJhdq_.resize(dJhdq_internal.size() + dJhdq_contact.size());
+   dJhdq_ << dJhdq_internal, dJhdq_contact;
 }
 
-void WalkingOutputBase::ComputeFrictionConstriants(const FrictionParams& fric_params)
+void WalkingOutputBase::ComputeFrictionConstraints(const FrictionParams& fric_params)
 {
-   robot_->GetFrictionCone(fric_params,domain.leftC, domain.rightC, Afric, bfric_ub);
+   robot_->GetFrictionCone(fric_params,domain.leftC, domain.rightC, Afric_, bfric_ub_);
 }

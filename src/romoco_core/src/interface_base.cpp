@@ -89,13 +89,22 @@ void InterfaceBase::InitDofAndIndicesFromConfigFile(const std::string &config_fo
 
    pd_motor_command_indices_ = pd_encoder_indices;
 
-      // loco_proprio_motor_indices_ are actuated joint indices in full proprio
-   for (int idx : loco_encoder_indices) {
-    if (std::find(passive_encoder_indices.begin(), passive_encoder_indices.end(), idx) == passive_encoder_indices.end()) {
-        loco_motor_command_indices_.push_back(idx);
+   // get all motor names list from all_encoder_names_pinocchio_order_, and remove passive joints
+   std::vector<std::string> all_motor_names;
+   for (const auto &name : all_encoder_names_pinocchio_order_) {
+    if (std::find(passive_encoder_names.begin(), passive_encoder_names.end(), name) == passive_encoder_names.end()) {
+        all_motor_names.push_back(name);
+    }
+   }
+   // get loco motor names by removing passive joints from loco_encoder_names_
+   std::vector<std::string> loco_motor_names;
+   for (const auto &name : loco_encoder_names_) {
+    if (std::find(passive_encoder_names.begin(), passive_encoder_names.end(), name) == passive_encoder_names.end()) {
+        loco_motor_names.push_back(name);
     }
    }
 
+   loco_motor_command_indices_ = GetJointIndicesFromSubset(all_motor_names, loco_motor_names);
 
    PrintDebugInfo();
 

@@ -33,7 +33,6 @@ set(include_dirs
 add_library(${PROJECT_NAME} SHARED 
             src/output_base.cpp
             src/robot_base_pinocchio.cpp
-            src/outputs.cpp
             src/planefoot_robot_base_pinocchio.cpp
             src/linefoot_robot_base_pinocchio.cpp
             src/prep_proprioception.cpp

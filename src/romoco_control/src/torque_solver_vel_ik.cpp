@@ -17,9 +17,8 @@ void TorqueSolverVELIK::Init(const std::string &config_file)
     output_ik_gain_ = yaml_parser_.get_VectorXd("velik/output_ik_gain"); 
 
 
-    // check if the size of JointKP_ and JointKD_ is the same as the number of actuated joints, or half number of actuated joints
-    //  if same size as actuated_u_idx then it is the PD gains for each joint
-    //  if half size of actuated_u_idx then it is the PD gains for each leg
+    // check if the size of JointKP and JointKD is the same as the number of actuated joints, or half number of actuated joints
+    //  if half size of actuators then it is the PD gains for each leg
     if (JointKPtmp.size() == robot_->nu())
     {
         JointKP_ = JointKPtmp;
@@ -50,54 +49,39 @@ BipedMotorCommands TorqueSolverVELIK::Solve()
 {
     SolveIk();
     
-    qm_actual_ = robot_->q()(output_->actuated_q_idx);
-    dqm_actual_ = robot_->dq()(output_->actuated_q_idx);
+    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKPing_);
+    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKDing_);
+
+    pd_controller_.Reconfigure(KP, KD);
+
+    qm_actual_ = output_->SelectActuatedStates(robot_->q());
+    dqm_actual_ = output_->SelectActuatedStates(robot_->dq());
 
     VectorXd u_ff = SolveGravityCompensation();
 
-    pd_controller_.Reconfigure(JointKPing_(output_->actuated_u_idx), JointKDing_(output_->actuated_u_idx));
-
-    VectorXd u_fb = pd_controller_.Compute(output_->qDes_actuated, output_->dqDes_actuated, qm_actual_, dqm_actual_);
-
-    Eigen::VectorXd u_full = MapU2FullIdx(u_ff+u_fb, output_->actuated_u_idx, robot_->nu());
+    VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
 
 
-    motor_commands_.joint_torques_ff = MapU2FullIdx(u_ff(output_->actuated_u_idx), output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_positions = MapU2FullIdx(output_->qDes_actuated, output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_velocities = MapU2FullIdx(output_->dqDes_actuated, output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_kp = MapU2FullIdx(JointKPing_(output_->actuated_u_idx), output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_kd = MapU2FullIdx(JointKDing_(output_->actuated_u_idx), output_->actuated_u_idx, robot_->nu());
-    motor_commands_.joint_torques = u_full;
-
+    motor_commands_.joint_torques_ff = output_->MapToFullMotors(u_ff);
+    motor_commands_.joint_positions = output_->MapToFullMotors(qm_des_);
+    motor_commands_.joint_velocities = output_->MapToFullMotors(dqm_des_);
+    motor_commands_.joint_kp = output_->MapToFullMotors(KP);
+    motor_commands_.joint_kd = output_->MapToFullMotors(KD);
+    motor_commands_.joint_torques = output_->MapToFullMotors(u_fb + u_ff);
 
     return motor_commands_;
 }
 
 void TorqueSolverVELIK::SolveIk()
 {
+    qm_des_ = output_->SelectActuatedStates(robot_->q());
 
+    MatrixXd Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
 
-    output_->qDes_actuated = robot_->q()(output_->actuated_q_idx);
-    output_->dqDes_actuated = robot_->dq()(output_->actuated_q_idx);
+    VectorXd ik_gain_active = output_->SelectActiveOutputs(output_ik_gain_);
 
-    MatrixXd Nhol = MatrixXd::Zero(robot_->nv(), robot_->nv());
-    MatrixXd Jc = output_->Jh;
-
-    Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.completeOrthogonalDecomposition().solve(Jc);
-
-    VectorXd delta_q_output = VectorXd::Zero(robot_->nv());
-    VectorXd dq_output = VectorXd::Zero(robot_->nv());
-
-    MatrixXd Jy = output_->Jya(output_->active_y_idx, Eigen::all);
-
-    delta_q_output = (Jy * Nhol).completeOrthogonalDecomposition().solve(output_ik_gain_(output_->active_y_idx).cwiseProduct(output_->yd(output_->active_y_idx) - output_->ya(output_->active_y_idx)));
-    dq_output = (Jy * Nhol).completeOrthogonalDecomposition().solve(output_ik_gain_(output_->active_y_idx).cwiseProduct(output_->dyd(output_->active_y_idx)));
-
-    output_->qDes_actuated += delta_q_output(output_->actuated_q_idx);
-    output_->dqDes_actuated = dq_output(output_->actuated_q_idx);
-
-
+    VectorXd delta_q_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->yd() - output_->ya()));
+    VectorXd dq_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->dyd()));
+    qm_des_ += output_->SelectActuatedStates(delta_q_output);
+    dqm_des_ = output_->SelectActuatedStates(dq_output);
 }
-
-
-

@@ -8,17 +8,17 @@ WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr
 
    if (robot_->robot_type() == RobotType::PlaneFoot)
    {
-      nY = 10;
+      nY_ = 10;
    }
    else if (robot_->robot_type() == RobotType::LineFoot)
    {
-      nY = 9;
+      nY_ = 9;
    }
    else
    {
       throw std::runtime_error("Unsupported robot type");
    }
-   SetOutputSize(robot_->nv(), nY);
+   SetOutputSize(robot_->nv(), nY_);
 
    // Initialize the walking output
    Init(config_file);
@@ -72,17 +72,17 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          {
             domain.leftC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
             domain.rightC = FootContactStatus::InAir;
-            actuated_q_idx = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::ActiveAll);
-            actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::ActiveAll);
+            actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::ActiveAll);
+            actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::ActiveAll);
          }
          else
          {
             domain.leftC = FootContactStatus::InAir;
             domain.rightC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
-            actuated_q_idx = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::PassiveAll);
-            actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::PassiveAll);
+            actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::PassiveAll);
+            actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::ActiveAll, AnkleMotorStatus::PassiveAll);
          }
-         active_y_idx = OutputBase::generate_full_y_idx(nY);
+         active_y_idx_ = generate_full_y_idx(nY_);
 
          com_rel_to_below_ankle.Reset();
          com_rel_to_ankle.Reset();
@@ -92,7 +92,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          phase.Reconfigure(updated.PhaseRange);
 
          ComputeActual();
-         updated.y0_UA = ya;
+         updated.y0_UA = ya_;
 
          cout << "updated.y0_UA" << updated.y0_UA.transpose() << endl;
 
@@ -115,7 +115,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          updated.bezierSwingHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingHipYaw) - config.bezierSwingHorizontal * ToYaw;
 
          // Compute Friction Constraints
-         ComputeFrictionConstriants(config.fric_params);
+         ComputeFrictionConstraints(config.fric_params);
       }
 
       // UA to OA
@@ -131,17 +131,17 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          { // recompute friction cone only if there is a valid OA phase
             domain.leftC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
             domain.rightC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
-            actuated_q_idx = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
-            actuated_u_idx = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
+            actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
+            actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
 
             // assume both passive ankle
             ComputeActual();
 
-            updated.y0d_OA = yd;
-            active_y_idx = {0, 1, 2, 3};
+            updated.y0d_OA = yd_;
+            active_y_idx_ = {0, 1, 2, 3};
 
             // Compute Friction Constraints
-            ComputeFrictionConstriants(config.fric_params);
+            ComputeFrictionConstraints(config.fric_params);
          }
       }
 
@@ -224,19 +224,19 @@ void WalkingOutputFp::UpdateOutput(const DesiredCommand &command, const double &
 
 void WalkingOutputFp::ComputeDesired()
 {
-   dyd.setZero();
-   d2yd.setZero();
+   dyd_.setZero();
+   d2yd_.setZero();
    if (updated.isDSP)
    {
-      yd = updated.y0d_OA;
+      yd_ = updated.y0d_OA;
    }
    else
    {
-      yd.setZero();
+      yd_.setZero();
 
       // todo: for now, set yaw all as zero
-      setBezierDesiredOutputs(updated.bezierCOMz, phase.tau, phase.dtau, zCOM);
-      // setBezierDesiredOutputs(updated.bezierStanceHipYaw, phase.tau, phase.dtau, stanceHipYaw);
+      SetBezierDesiredOutputs(updated.bezierCOMz, phase.tau, phase.dtau, zCOM);
+      // SetBezierDesiredOutputs(updated.bezierStanceHipYaw, phase.tau, phase.dtau, stanceHipYaw);
       // base pitch and roll are zero
 
       Eigen::Vector2d StepLocal = computeFPwithROmodel();
@@ -246,11 +246,11 @@ void WalkingOutputFp::ComputeDesired()
       updated.bezierSwingx = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingStepx) + config.bezierSwingHorizontal * updated.planned_footstep.x();
       updated.bezierSwingy = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingStepy) + config.bezierSwingHorizontal * updated.planned_footstep.y();
 
-      setBezierDesiredOutputs(updated.bezierSwingx, phase.tau, phase.dtau, swingStepx);
-      setBezierDesiredOutputs(updated.bezierSwingy, phase.tau, phase.dtau, swingStepy);
+      SetBezierDesiredOutputs(updated.bezierSwingx, phase.tau, phase.dtau, swingStepx);
+      SetBezierDesiredOutputs(updated.bezierSwingy, phase.tau, phase.dtau, swingStepy);
 
-      setBezierDesiredOutputs(updated.bezierSwingz, phase.tau, phase.dtau, swingStepz);
-      // setBezierDesiredOutputs(updated.bezierSwingHipYaw, phase.tau, phase.dtau, swingHipYaw);
+      SetBezierDesiredOutputs(updated.bezierSwingz, phase.tau, phase.dtau, swingStepz);
+      // SetBezierDesiredOutputs(updated.bezierSwingHipYaw, phase.tau, phase.dtau, swingHipYaw);
       // swing delta pitch and roll are zero
    }
 }
@@ -304,7 +304,7 @@ void WalkingOutputFp::ComputeActual()
    Kinematics1D delta_pitch = robot_->GetBaseDeltaPitch();
    Kinematics1D delta_roll = robot_->GetBaseDeltaRoll();
 
-   ya << com2stance_zeroyaw.position.z(), // 1
+   ya_ << com2stance_zeroyaw.position.z(), // 1
        st_hipyaw.position,                // 1
        delta_pitch.position,              // 1
        delta_roll.position,               // 1
@@ -313,7 +313,7 @@ void WalkingOutputFp::ComputeActual()
        sw_deltapitch.position,            // 1
        sw_deltaroll.position;             // 1 or 0
 
-   dya << com2stance_zeroyaw.velocity.z(), // 1
+   dya_ << com2stance_zeroyaw.velocity.z(), // 1
        st_hipyaw.velocity,                 // 1
        delta_pitch.velocity,               // 1
        delta_roll.velocity,                // 1
@@ -322,7 +322,7 @@ void WalkingOutputFp::ComputeActual()
        sw_deltapitch.velocity,             // 1
        sw_deltaroll.velocity;              // 1 or 0
 
-   Jya << com2stance_zeroyaw.jacobian.row(2), // 1
+   Jya_ << com2stance_zeroyaw.jacobian.row(2), // 1
        st_hipyaw.jacobian,                    // 1
        delta_pitch.jacobian,                  // 1
        delta_roll.jacobian,                   // 1
@@ -331,7 +331,7 @@ void WalkingOutputFp::ComputeActual()
        sw_deltapitch.jacobian,                // 1
        sw_deltaroll.jacobian;                 // 1 or 0
 
-   dJyadq << com2stance_zeroyaw.dJdq.row(2), // 1
+   dJyadq_ << com2stance_zeroyaw.dJdq.row(2), // 1
        st_hipyaw.dJdq,                       // 1
        delta_pitch.dJdq,                     // 1
        delta_roll.dJdq,                      // 1

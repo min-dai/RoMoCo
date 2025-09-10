@@ -16,12 +16,10 @@ public:
 
 
 private:
-   std::vector<int> get_unactuated_indices(const std::vector<int> &actuated_idx, int nq);
-
-   std::vector<int> unactuated_idx_;
-
    double tol_ = 1e-3;
    int max_iter_ = 100;
+
+   VectorXd qm_des_, dqm_des_;
 
 
 

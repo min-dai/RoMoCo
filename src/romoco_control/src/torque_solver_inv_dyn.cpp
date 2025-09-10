@@ -30,10 +30,19 @@ void TorqueSolverInvDyn::Init(const std::string &config_file)
 BipedMotorCommands TorqueSolverInvDyn::Solve()
 {
     VectorXd u_sol;
+
+    Eigen::MatrixXd B = output_->B();
+    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKPing_);
+    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKDing_);
+
+    Eigen::MatrixXd Jc = output_->Jh();
+    Eigen::VectorXd ddy_star = output_->d2yd() - KP.cwiseProduct(output_->ya() - output_->yd()) - KD.cwiseProduct(output_->dya() - output_->dyd());
+
+
     if (robot_->nv() == (output_->ny() + output_->nh()))
     {
         // Inverse Dynamics Control of Floating Base Systems using Orthogonal projection
-        Eigen::MatrixXd Jc = output_->Jh;
+        
         Eigen::MatrixXd Q = Jc.transpose().householderQr().householderQ();
 
         Eigen::MatrixXd Su, Sc;
@@ -42,60 +51,47 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
         Su << Eigen::MatrixXd::Zero(robot_->nv() - output_->nh(), output_->nh()), Eigen::MatrixXd::Identity(robot_->nv() - output_->nh(), robot_->nv() - output_->nh());
         Sc << Eigen::MatrixXd::Identity(output_->nh(), output_->nh()), Eigen::MatrixXd::Zero(output_->nh(), robot_->nv() - output_->nh());
 
-        Eigen::MatrixXd B = robot_->B()(Eigen::all, output_->actuated_u_idx);
-
+        
         Eigen::MatrixXd Jfullrank(output_->nh() + output_->ny(), robot_->nv());
 
-        Jfullrank << output_->Jh,
-            output_->Jya(output_->active_y_idx, Eigen::all);
-        Eigen::VectorXd ddy_star = output_->d2yd - OutputKPing_.cwiseProduct(output_->ya - output_->yd) - OutputKDing_.cwiseProduct(output_->dya - output_->dyd);
+        Jfullrank << Jc,
+            output_->Jya();
 
         Eigen::VectorXd bfullrank(output_->nh() + output_->ny());
-        bfullrank << -output_->dJhdq,
-            -output_->dJyadq(output_->active_y_idx) + ddy_star(output_->active_y_idx);
+        bfullrank << -output_->dJhdq(),
+            -output_->dJyadq() + ddy_star;
 
         Eigen::MatrixXd invJ = PseudoInverse(Jfullrank, threshold_);
 
         VectorXd ddq_target = invJ * bfullrank;
 
-        // cout << "ddq_target = [ " << ddq_target.transpose() << "];" << std::endl;
-
         u_sol = (Su * Q.transpose() * B).completeOrthogonalDecomposition().solve(Su) * Q.transpose() * (robot_->D() * ddq_target + robot_->H());
-
-        cout << "u_sol = [ " << u_sol.transpose() << "];" << std::endl;
-
-        MatrixXd Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.completeOrthogonalDecomposition().solve(Jc);
     }
     else if (output_->nu() == output_->ny())
     {
         // Contact Consistent Control Framework for Humanoid Robots
         // Important: this implementation only works for number of output = number of actuated motors
 
-        Eigen::MatrixXd Jc = output_->Jh;
-        Eigen::MatrixXd B = robot_->B()(Eigen::all, output_->actuated_u_idx);
-        Eigen::VectorXd ddy_star = output_->d2yd - OutputKPing_.cwiseProduct(output_->ya - output_->yd) - OutputKDing_.cwiseProduct(output_->dya - output_->dyd);
-
         Eigen::MatrixXd invD = PseudoInverse(robot_->D(), threshold_);
 
         Eigen::MatrixXd Dc = PseudoInverse(Jc * invD * Jc.transpose(), threshold_);
         Eigen::MatrixXd Nc = Eigen::MatrixXd::Identity(robot_->nv(), robot_->nv()) - Jc.transpose() * Dc * Jc * invD;
 
-        Eigen::MatrixXd Jya = output_->Jya;
+        Eigen::MatrixXd Jya = output_->Jya();
 
         Eigen::MatrixXd Do = PseudoInverse(Jya * invD * Nc * Jya.transpose(), threshold_);
         Eigen::MatrixXd Jobar_tran = Do * Jya * invD * Nc;
-        Eigen::MatrixXd Co = Do * Jya * invD * (Nc * robot_->H() + Jc.transpose() * Dc * output_->dJhdq) - Do * output_->dJyadq;
+        Eigen::MatrixXd Co = Do * Jya * invD * (Nc * robot_->H() + Jc.transpose() * Dc * output_->dJhdq()) - Do * output_->dJyadq();
 
         u_sol = PseudoInverse(Jobar_tran * B, threshold_) * (Do * ddy_star + Co);
 
-        std::cout << "u_sol = [ " << u_sol.transpose() << "];" << std::endl;
 
         // Eigen::VectorXd Cc = Dc * Jc * invD * robot_->H() - Dc * output_->dJhdq;
 
         // Eigen::VectorXd ddq_computed = invD * (Nc * B * u_sol - robot_->H() + Jc.transpose() * Cc);
     }
 
-    Eigen::VectorXd u_full = MapU2FullIdx(u_sol, output_->actuated_u_idx, robot_->nu());
+    Eigen::VectorXd u_full = output_->MapToFullMotors(u_sol);
 
     std::cout << "u_id =[ " << u_full.transpose() << "];" << std::endl;
 

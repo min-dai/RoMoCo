@@ -54,9 +54,9 @@ void TorqueSolverTSCQP::ResetSize()
     Aub_fric_ = MatrixXd::Zero(output_->nfric(), nVar_);
     bub_fric_.resize(output_->nfric());
     if (output_->nfric() > 0){
-        Aub_fric_.rightCols(output_->nFc())<< output_->Afric;
+        Aub_fric_.rightCols(output_->nFc())<< output_->Afric();
         
-        bub_fric_ << output_->bfric_ub;
+        bub_fric_ << output_->bfric_ub();
     }
 
     u_sol_ = VectorXd::Zero(output_->nu());
@@ -72,16 +72,18 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     if (nVar_ != robot_->nv() + output_->nu() + output_->nh()){
         ResetSize();
     }
+    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKPing_);
+    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKDing_);
     
     //cost: ||Jya*ddq + dJyadq - ddy*||^2 
     A_y_ = MatrixXd::Zero(output_->ny(), nVar_);
     b_y_ = VectorXd::Zero(output_->ny());
-    A_y_.block(0, 0, output_->ny(), robot_->nv())  << output_->Jya(output_->active_y_idx, Eigen::all);
-    b_y_ << output_->dJyadq(output_->active_y_idx) 
-         - output_->d2yd(output_->active_y_idx) 
-         + OutputKPing_(output_->active_y_idx).cwiseProduct(output_->ya(output_->active_y_idx) - output_->yd(output_->active_y_idx)) 
-         + OutputKDing_(output_->active_y_idx).cwiseProduct(output_->dya(output_->active_y_idx) - output_->dyd(output_->active_y_idx));
-    
+    A_y_.block(0, 0, output_->ny(), robot_->nv())  << output_->Jya();
+    b_y_ << output_->dJyadq()
+         - output_->d2yd()
+         + KP.cwiseProduct(output_->ya() - output_->yd())
+         + KD.cwiseProduct(output_->dya() - output_->dyd());
+
     G_ << A_y_.transpose() * A_y_;
     g_ << A_y_.transpose() * b_y_;
 
@@ -95,10 +97,10 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     // [D  -B -Jh^T] [ddq] = [-H]
     // [Jh  0     0] [u  ]   [-dJhdq]
     //               [F  ]   
-    Aeq_.topRows(robot_->nv()) << robot_->D(), -robot_->B()(Eigen::all, output_->actuated_u_idx), -output_->Jh.transpose();
-    Aeq_.block(Aeq_.rows()-output_->nh(), 0, output_->nh(), robot_->nv()) << output_->Jh;                                      
+    Aeq_.topRows(robot_->nv()) << robot_->D(), -output_->B(), -output_->Jh().transpose();
+    Aeq_.block(Aeq_.rows()-output_->nh(), 0, output_->nh(), robot_->nv()) << output_->Jh();
     beq_.topRows(robot_->nv()) << -robot_->H();
-    beq_.bottomRows(output_->nh()) << -output_->dJhdq;
+    beq_.bottomRows(output_->nh()) << -output_->dJhdq();
 
 
 
@@ -110,8 +112,7 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
  
 
     if_solved_ = ClarabelSolve();
-    Eigen::VectorXd u_full = MapU2FullIdx(u_sol_, output_->actuated_u_idx, robot_->nu());
-    cout << "u_qp =[ " <<u_full.transpose() << "];" << endl;
+    Eigen::VectorXd u_full = output_->MapToFullMotors(u_sol_);
 
 
     motor_commands_.joint_torques_ff = u_full;
@@ -140,8 +141,8 @@ bool TorqueSolverTSCQP::ClarabelSolve()
     Eigen::VectorXd bLarge(beq_.size() + bub_fric_.size() + output_->nu() * 2);
     bLarge << beq_,
         bub_fric_,
-        robot_->u_ub()(output_->actuated_u_idx),
-        -robot_->u_lb()(output_->actuated_u_idx);
+        output_->SelectActuatedMotors(robot_->u_ub()),
+        -output_->SelectActuatedMotors(robot_->u_lb());
 
 
 
@@ -172,13 +173,13 @@ bool TorqueSolverTSCQP::ClarabelSolve()
         {
 
             cout << "sol----------------------------------------" << endl;
-            std::cout << "ya = " << output_->ya.transpose() << std::endl;
-            // std::cout << "dya = " << output_->dya.transpose() << std::endl;
-            // std::cout << "Jya = " << output_->Jya << std::endl;
-            // std::cout << "dJyadq = " << output_->dJyadq.transpose() << std::endl;
-            std::cout << "yd = " << output_->yd.transpose() << std::endl;
-            // std::cout << "dyd = " << output_->dyd.transpose() << std::endl;
-            // std::cout << "d2yd = " << output_->d2yd.transpose() << std::endl;
+            std::cout << "ya = " << output_->ya().transpose() << std::endl;
+            // std::cout << "dya = " << output_->dya().transpose() << std::endl;
+            // std::cout << "Jya = " << output_->Jya().transpose() << std::endl;
+            // std::cout << "dJyadq = " << output_->dJyadq().transpose() << std::endl;
+            std::cout << "yd = " << output_->yd().transpose() << std::endl;
+            // std::cout << "dyd = " << output_->dyd().transpose() << std::endl;
+            // std::cout << "d2yd = " << output_->d2yd().transpose() << std::endl;
 
 
             
@@ -208,12 +209,12 @@ bool TorqueSolverTSCQP::ClarabelSolve()
 
         // check rank of [Jy; Jh]
         Eigen::MatrixXd JyJh = Eigen::MatrixXd::Zero(output_->ny() + output_->nh(), robot_->nv());
-        JyJh << output_->Jya(output_->active_y_idx,Eigen::all), output_->Jh;
+        JyJh << output_->Jya(), output_->Jh();
         Eigen::FullPivLU<Eigen::MatrixXd> lu(JyJh);
         int rank = lu.rank();
         std::cout << "JyJh rank = " << rank << ", rows = " << JyJh.rows() << std::endl;
-        std::cout << "ya = " << output_->ya.transpose() << std::endl;
-        std::cout << "yd = " << output_->yd.transpose() << std::endl;
+        std::cout << "ya = " << output_->ya().transpose() << std::endl;
+        std::cout << "yd = " << output_->yd().transpose() << std::endl;
 
 
         // TODO: safe action

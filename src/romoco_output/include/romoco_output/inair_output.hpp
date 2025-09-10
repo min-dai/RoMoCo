@@ -19,23 +19,23 @@ public:
     void ComputeHolonomicConstraints();
 
 private:
-    enum OutputIndex
-    {
-        xLeftFoot = 0,
-        yLeftFoot = 1,
-        zLeftFoot = 2,
-        yawLeftHip = 3,
-        deltaPitchLeftFoot = 4,
-        deltaRollLeftFoot = 5,
-        xRightFoot = 6,
-        yRightFoot = 7,
-        zRightFoot = 8,
-        yawRightHip = 9,
-        deltaPitchRightFoot = 10,
-        deltaRollRightFoot = 11
-    };
+    // enum OutputIndex
+    // {
+    //     xLeftFoot = 0,
+    //     yLeftFoot = 1,
+    //     zLeftFoot = 2,
+    //     yawLeftHip = 3,
+    //     deltaPitchLeftFoot = 4,
+    //     deltaRollLeftFoot = 5,
+    //     xRightFoot = 6,
+    //     yRightFoot = 7,
+    //     zRightFoot = 8,
+    //     yawRightHip = 9,
+    //     deltaPitchRightFoot = 10,
+    //     deltaRollRightFoot = 11
+    // };
 
-    int nY = 12;
+
 
     Kinematics3D left_foot2base, right_foot2base;
 

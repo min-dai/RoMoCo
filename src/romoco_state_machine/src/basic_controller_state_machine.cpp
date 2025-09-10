@@ -110,11 +110,11 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
       bool canSwitch = true;
       if (cur_mode_ == Mode::Standing && command.mode == Mode::Walking)
       {
-         canSwitch = output && output->isReadyToTransition(); // Check OUTPUT_STAND
+         canSwitch = output && output->is_ready_to_transit(); // Check OUTPUT_STAND
       }
       else if (cur_mode_ == Mode::Walking && command.mode == Mode::Standing)
       {
-         canSwitch = output && output->isReadyToTransition(); // Check OUTPUT_HLIP
+         canSwitch = output && output->is_ready_to_transit(); // Check OUTPUT_HLIP
       }
 
       if (canSwitch)
@@ -178,7 +178,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
             // Logging
             Eigen::VectorXf LogData;
 
-            std::vector<Eigen::VectorXd> log_vectors = {q_loco, dq_loco, locomotion_input_, output->ya, output->dya, output->yd, output->dyd, output->d2yd};
+            std::vector<Eigen::VectorXd> log_vectors = {q_loco, dq_loco, locomotion_input_, output->ya_full(), output->dya_full(), output->yd_full(), output->dyd_full(), output->d2yd_full()};
             std::vector<Eigen::VectorXd> logOutput = output->CollectLog();
             log_vectors.insert(log_vectors.end(), logOutput.begin(), logOutput.end());
             LogData = CollectLog(timer_.ElapsedSinceStart(), log_vectors);
