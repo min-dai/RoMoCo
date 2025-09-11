@@ -8,7 +8,7 @@ using std::cout;
 using std::endl;
 
 
-TorqueSolverInvDyn::TorqueSolverInvDyn(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
+TorqueSolverInvDyn::TorqueSolverInvDyn(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : TorqueSolverBase(robot, output)
 {
     Init(config_file);

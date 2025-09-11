@@ -14,7 +14,7 @@ class G1MujocoInterface : public MujocoInterfaceBase
 public:
    G1MujocoInterface();
    G1MujocoInterface(const std::string &config_file, const std::string &log_path);
-   G1MujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot);
+   G1MujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot);
    ~G1MujocoInterface() override;
 
    BipedProprioception ReadAndEstimate() override;
@@ -62,7 +62,7 @@ private:
 
    // for testing
    void UpdateHardwareSensorData();
-   std::unique_ptr<RobotBasePinocchio> robot_;
+   std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_;
    std::unique_ptr<ContactKf> contact_kf_;
    Eigen::Vector3d true_lin_vel_;
    Eigen::Vector3d est_lin_vel_;

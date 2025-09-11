@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
   RosLoadConfig ros_config("g1_stack", "config_18dof", "ROBOTLOG/G1");
 
-  std::unique_ptr<RobotBasePinocchio> robot_ptr = std::make_unique<G1ModelLeg>(ros_config.config_folder);
+  std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr = std::make_unique<romoco::robot::G1ModelLeg>(ros_config.config_folder);
 
   std::shared_ptr<InterfaceBase> interface;
   

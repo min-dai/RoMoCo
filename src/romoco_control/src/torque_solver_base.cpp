@@ -2,7 +2,7 @@
 
 namespace romoco
 {
-TorqueSolverBase::TorqueSolverBase(std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
+TorqueSolverBase::TorqueSolverBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output)
     : robot_(robot), output_(output) {
       }
 

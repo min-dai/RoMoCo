@@ -7,7 +7,7 @@ G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std
 {
    Init(config_folder, log_path);
 }
-G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot)
+G1MujocoInterface::G1MujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot)
     : robot_(std::move(robot)),
       contact_kf_(std::make_unique<ContactKf>(config_folder, 6))
 {

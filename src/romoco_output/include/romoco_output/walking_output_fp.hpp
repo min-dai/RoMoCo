@@ -31,7 +31,7 @@ public:
             SwingDeltaRoll
       };
 
-      WalkingOutputFp(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot);
+      WalkingOutputFp(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot);
       void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
 
       void updateTargetWalkingRadio(const DesiredCommand &command);

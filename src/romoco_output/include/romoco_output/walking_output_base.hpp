@@ -12,7 +12,7 @@ namespace romoco
 class WalkingOutputBase : public OutputBase
 {
 public:
-    WalkingOutputBase(std::shared_ptr<RobotBasePinocchio> robot)
+    WalkingOutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
         : OutputBase(robot)
     {
     }

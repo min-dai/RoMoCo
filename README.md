@@ -34,11 +34,13 @@ It provides modular components for planning, control, and simulation interfaces,
 - romoco_core: Core functionalities: Data structures and types used throughout the control framework, robot kinematics, dynamics, and base classes.
 - romoco_planner: Reduced-order model planners
 - romoco_output: Output generation and embedding for whole-body control
-- romoco_mujoco: Low-level simulation interface for MuJoCo 
 - romoco_control: Different whole-body torque control methods
+- romoco_mujoco: Low-level simulation interface for MuJoCo 
 - romoco_state_machine: Example state machine for bipedal locomotion
 - romoco_utils: Utility functions: Bezier, Yaml parsing, geometry, etc.
-- biped_estimation: Contact-aided Kalman filter for linear velocity estimation 
+- romoco_msgs: ROS 2 message definitions
+- romoco_screen_radio: a on screen radio interface for robot control
+- 
   
 Robots: G1, Cassie, H1, more to come  
 

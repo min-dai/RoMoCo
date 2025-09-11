@@ -3,7 +3,8 @@
 #include <iostream>
 namespace romoco
 {
-
+    namespace robot
+    {
 G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
     : PlaneFootRobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
@@ -200,7 +201,7 @@ void G1ModelLeg::ComputeContactClassifierInput()
     contact_classifier_input_.torque_right = computed_torque_({6, 7, 8, 9, 10, 11});
 }
 
-
+    } // namespace robot
 } // namespace romoco
 
 

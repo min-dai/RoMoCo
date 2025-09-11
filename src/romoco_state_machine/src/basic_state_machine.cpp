@@ -22,7 +22,7 @@
 namespace romoco
 {
 
-BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim)
+BasicStateMachine::BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim)
     : config_folder_(config_folder), log_path_(log_path), sim_(std::move(sim))
 {
    Init(config_folder, log_path, robot_ptr);
@@ -46,7 +46,7 @@ void BasicStateMachine::Close()
 
 
 
-void BasicStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
+void BasicStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr)
 {
    //  Initialize the robot config folder and log path
    std::string config_file = config_folder + "/interface_config.yaml";
@@ -93,7 +93,7 @@ void BasicStateMachine::Init(const std::string &config_folder, const std::string
 }
 
 double BasicStateMachine::Update(const DesiredCommand &command,
-                               std::shared_ptr<RobotBasePinocchio> robot_ptr,
+                               std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr,
                                std::shared_ptr<OutputBase> &output,
                                std::unique_ptr<TorqueSolverBase> &torque_solver,
                                std::function<Eigen::VectorXd(const Eigen::VectorXd&)> getLegModel,
@@ -255,7 +255,7 @@ Eigen::VectorXf BasicStateMachine::CollectLog(const double t, const std::vector<
 void BasicStateMachine::SelectControllers(
     Mode mode,
     const std::string &config_file,
-    std::shared_ptr<RobotBasePinocchio> robot_ptr,
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr,
     std::shared_ptr<OutputBase> &output,
     std::unique_ptr<TorqueSolverBase> &torque_solver)
 {

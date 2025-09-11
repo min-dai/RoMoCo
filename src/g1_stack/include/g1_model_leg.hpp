@@ -4,6 +4,8 @@
 #include "romoco_core/planefoot_robot_base_pinocchio.hpp"
 namespace romoco
 {
+    namespace robot
+    {
 class G1ModelLeg : public PlaneFootRobotBasePinocchio
 {
 public:
@@ -67,5 +69,6 @@ protected:
     void InitActuationImpl(int nu);
 
 };
+} // namespace robot
 } // namespace romoco
 #endif // G1_MODEL_LEG_HPP

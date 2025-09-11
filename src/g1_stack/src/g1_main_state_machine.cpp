@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     RosLoadConfig ros_config("g1_stack", "config_18dof", "ROBOTLOG/G1");
 
-    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<G1ModelLeg>(ros_config.config_folder);
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr = std::make_shared<romoco::robot::G1ModelLeg>(ros_config.config_folder);
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
 
     //with estimation
-    std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<G1ModelLeg>(ros_config.config_folder);
+    std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr_estimation = std::make_unique<romoco::robot::G1ModelLeg>(ros_config.config_folder);
 
     std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr_estimation));
 

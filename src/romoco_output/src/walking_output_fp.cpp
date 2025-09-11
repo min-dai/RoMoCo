@@ -7,7 +7,7 @@
 namespace romoco
 {
 
-WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
+WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
     : WalkingOutputBase(robot)
 {
 

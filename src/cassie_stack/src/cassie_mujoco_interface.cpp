@@ -12,7 +12,7 @@ CassieMujocoInterface::CassieMujocoInterface(const std::string &config_folder, c
     Init(config_folder, log_path);
 }
 
-CassieMujocoInterface::CassieMujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot)
+CassieMujocoInterface::CassieMujocoInterface(const std::string &config_folder, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot)
     : robot_(std::move(robot)), sim(nullptr), vis(nullptr), timeMujoP(nullptr), contact_kf_(std::make_unique<ContactKf>(config_folder, 6))
 {
     Init(config_folder, log_path);

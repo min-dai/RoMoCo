@@ -19,7 +19,7 @@
 
 namespace romoco
 {
-BasicControllerStateMachine::BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
+BasicControllerStateMachine::BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr)
     : config_folder_(config_folder), log_path_(log_path)
 {
    Init(config_folder, log_path, robot_ptr);
@@ -43,7 +43,7 @@ void BasicControllerStateMachine::Close()
 
 
 
-void BasicControllerStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr)
+void BasicControllerStateMachine::Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr)
 {
    //  Initialize the robot config folder and log path
    std::string mujoco_config_file = config_folder + "/mujoco_config.yaml";
@@ -72,7 +72,7 @@ void BasicControllerStateMachine::Init(const std::string &config_folder, const s
 }
 
 BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredCommand &command,
-                               std::shared_ptr<RobotBasePinocchio> robot_ptr,
+                               std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr,
                                std::shared_ptr<OutputBase> &output,
                                std::unique_ptr<TorqueSolverBase> &torque_solver,
                                Eigen::VectorXd& q_loco, Eigen::VectorXd& dq_loco)
@@ -216,7 +216,7 @@ Eigen::VectorXf BasicControllerStateMachine::CollectLog(const double t, const st
 void BasicControllerStateMachine::SelectControllers(
     Mode mode,
     const std::string &config_file,
-    std::shared_ptr<RobotBasePinocchio> robot_ptr,
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr,
     std::shared_ptr<OutputBase> &output,
     std::unique_ptr<TorqueSolverBase> &torque_solver)
 {

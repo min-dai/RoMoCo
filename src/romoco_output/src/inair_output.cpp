@@ -2,7 +2,7 @@
 
 namespace romoco
 {
-InAirOutput::InAirOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
+InAirOutput::InAirOutput(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
     : OutputBase(robot)
 {
     config.yaml_parser.Init(config_file);

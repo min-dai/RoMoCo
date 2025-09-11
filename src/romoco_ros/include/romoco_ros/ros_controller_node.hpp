@@ -19,7 +19,7 @@ class RosControllerNode : public rclcpp::Node
 public:
    explicit RosControllerNode(const std::string &config_folder,
                               const std::string &log_path,
-                              std::shared_ptr<RobotBasePinocchio> robot,
+                              std::shared_ptr<romoco::robot::RobotBasePinocchio> robot,
                               const std::string &raw_radio_topic_name,
                               std::function<DesiredCommand(const Eigen::VectorXd&)> getCommand);
 
@@ -44,7 +44,7 @@ private:
    BipedProprioception loco_proprioception_;
 
    // controller dependency
-   std::shared_ptr<RobotBasePinocchio> robot_;
+   std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_;
    std::shared_ptr<OutputBase> output_;
    std::unique_ptr<TorqueSolverBase> torque_solver_;
 

@@ -8,7 +8,7 @@ namespace romoco
 class TorqueSolverInvDyn : public TorqueSolverBase
 {
 public:
-    TorqueSolverInvDyn(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
+    TorqueSolverInvDyn(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
 
     void Init(const std::string &config_file) override;
 

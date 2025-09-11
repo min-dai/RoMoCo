@@ -2,7 +2,7 @@
 
 namespace romoco
 {
-OutputBase::OutputBase(std::shared_ptr<RobotBasePinocchio> robot)
+OutputBase::OutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
     : robot_(robot)
 {
 }

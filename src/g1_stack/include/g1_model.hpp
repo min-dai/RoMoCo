@@ -5,6 +5,8 @@
 
 namespace romoco
 {
+    namespace robot
+    {
 class G1Model : public G1ModelLeg
 {
 public:
@@ -42,6 +44,7 @@ public:
 private:
 
 };
+    } // namespace robot
 } // namespace romoco
 
 #endif // G1_MODEL_HPP

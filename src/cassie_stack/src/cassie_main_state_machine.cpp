@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
 
 
-    std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(ros_config.config_folder);
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr = std::make_shared<romoco::robot::CassieModel>(ros_config.config_folder);
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     { return Eigen::VectorXd::Zero(0); };
 
     // with estimation
-    std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<CassieModel>(ros_config.config_folder);
+    std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr_estimation = std::make_unique<romoco::robot::CassieModel>(ros_config.config_folder);
 
     std::unique_ptr<CassieMujocoInterface> mujocosim = std::make_unique<CassieMujocoInterface>(config_folder, log_path, std::move(robot_ptr_estimation));
 

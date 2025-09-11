@@ -21,23 +21,23 @@ class BasicControllerStateMachine
 {
 public:
    BasicControllerStateMachine() = default;
-   BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr);
+   BasicControllerStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr);
    virtual ~BasicControllerStateMachine();
 
    BipedMotorCommands UpdateControl(const DesiredCommand &command,
-                                    std::shared_ptr<RobotBasePinocchio> robot_ptr,
+                                    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr,
                                     std::shared_ptr<OutputBase> &output,
                                     std::unique_ptr<TorqueSolverBase> &torque_solver,
                                     Eigen::VectorXd &q_loco, Eigen::VectorXd &dq_loco);
 
-   void Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr);
+   void Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr);
 
    void Close();
 
 private:
    Eigen::VectorXf CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors);
 
-   void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
+   void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
 
    // path
    std::string config_folder_;

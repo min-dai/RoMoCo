@@ -2,6 +2,8 @@
 
 namespace romoco
 {
+    namespace robot
+    {
 using Eigen::Vector3d;
 
 CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names)
@@ -279,5 +281,5 @@ void CassieModel::ComputeContactClassifierInput()
     contact_classifier_input_.torque_left = computed_torque_.head(5);
     contact_classifier_input_.torque_right = computed_torque_.tail(5);
 }
-
+    } // namespace robot
 } // namespace romoco

@@ -20,19 +20,19 @@ class BasicStateMachine
 {
 public:
    BasicStateMachine() = default;
-   BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim);
+   BasicStateMachine(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr, std::unique_ptr<MujocoInterfaceBase> sim);
    virtual ~BasicStateMachine();
 
-   double Update(const DesiredCommand &command, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getLegModel, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getUpper);
+   double Update(const DesiredCommand &command, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getLegModel, std::function<Eigen::VectorXd(const Eigen::VectorXd &)> getUpper);
 
-   void Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<RobotBasePinocchio> robot_ptr);
+   void Init(const std::string &config_folder, const std::string &log_path, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr);
 
    void Close();
 
 private:
    Eigen::VectorXf CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors);
 
-   void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
+   void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
 
    // path
    std::string config_folder_;

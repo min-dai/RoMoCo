@@ -12,7 +12,7 @@ namespace romoco
 class StandingOutput : public OutputBase
 {
 public:
-    StandingOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot);
+    StandingOutput(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot);
 
     bool is_ready_to_transit() const override
     {

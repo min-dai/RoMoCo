@@ -8,7 +8,7 @@ namespace romoco
 
 RosControllerNode::RosControllerNode(const std::string &config_folder,
                                      const std::string &log_path,
-                                     std::shared_ptr<RobotBasePinocchio> robot,
+                                     std::shared_ptr<romoco::robot::RobotBasePinocchio> robot,
                                      const std::string &raw_radio_topic_name,
                                      std::function<DesiredCommand(const Eigen::VectorXd &)> ConvertRadioToCommand)
     : Node("ros_controller_node"),

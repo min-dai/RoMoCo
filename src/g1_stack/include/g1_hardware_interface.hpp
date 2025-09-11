@@ -62,7 +62,7 @@ private:
 class G1HardwareInterface : public InterfaceBase
 {
 public:
-    G1HardwareInterface(const std::string &network_interface, const std::string &config_file, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot);
+    G1HardwareInterface(const std::string &network_interface, const std::string &config_file, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot);
     ~G1HardwareInterface() override = default;
 
     bool is_sim() const override { return false; }
@@ -192,7 +192,7 @@ private:
     uint32_t Crc32Core(uint32_t *ptr, uint32_t len);
 
     // Raw sensor data
-    std::unique_ptr<RobotBasePinocchio> robot_;
+    std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_;
     std::unique_ptr<ContactKf> contact_kf_;
     Eigen::Vector3d est_lin_vel_;
     RawSensorDataHardware sensor_hw_;

@@ -15,7 +15,7 @@ namespace romoco
 class TorqueSolverBase
 {
 public:
-    TorqueSolverBase(std::shared_ptr<RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
+    TorqueSolverBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
 
     virtual ~TorqueSolverBase() = default;
 
@@ -26,7 +26,7 @@ protected:
     // solve for gravity compensation
     Eigen::VectorXd SolveGravityCompensation();
 
-    std::shared_ptr<RobotBasePinocchio> robot_;
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_;
     std::shared_ptr<OutputBase> output_;
 
     YAMLParser yaml_parser_;

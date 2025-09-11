@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
    RosLoadConfig ros_config("cassie_stack", config_folder_name, "ROBOTLOG/Cassie");
 
-   std::shared_ptr<RobotBasePinocchio> robot_ptr = std::make_shared<CassieModel>(ros_config.config_folder);
+   std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_ptr = std::make_shared<romoco::robot::CassieModel>(ros_config.config_folder);
 
    // Wrap in ROS controller node
    auto node = std::make_shared<RosControllerNode>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr),"screen_radio_values",

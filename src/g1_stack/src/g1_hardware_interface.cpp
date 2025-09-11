@@ -13,7 +13,7 @@ using namespace unitree::common;
 using namespace unitree::robot;
 using namespace unitree_hg::msg::dds_;
 
-G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, const std::string &config_folder, const std::string &log_path, std::unique_ptr<RobotBasePinocchio> robot)
+G1HardwareInterface::G1HardwareInterface(const std::string &network_interface, const std::string &config_folder, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot)
     : mode_pr_(G1Mode::PR), // Default to PR mode
       mode_machine_(0),
       robot_(std::move(robot)),

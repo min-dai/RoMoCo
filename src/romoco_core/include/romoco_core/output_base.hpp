@@ -13,7 +13,7 @@ namespace romoco
 class OutputBase 
 {
 public:
-    OutputBase(std::shared_ptr<RobotBasePinocchio> robot);
+    OutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot);
 
     int nh(){return Jh_.rows();}
     int nFc(){return Afric_.cols();} //number of forces corresponds to Contact Force
@@ -128,7 +128,7 @@ protected:
         return full_y_idx;
   }
 
-    std::shared_ptr<RobotBasePinocchio> robot_;
+    std::shared_ptr<romoco::robot::RobotBasePinocchio> robot_;
     
 
     struct Contact

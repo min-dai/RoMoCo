@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 
 namespace romoco{
+
 /**
  * @brief Solve the discrete algebraic Riccati equation (DARE).
  * @ingroup group_utils
@@ -41,5 +42,7 @@ Eigen::MatrixXd SolveDare(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eige
  * @return K (m×n) optimal feedback gain.
  */
 Eigen::VectorXd SolveDlqrGain(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::MatrixXd>& B, const Eigen::Ref<const Eigen::MatrixXd>& Q, const Eigen::Ref<const Eigen::MatrixXd>& R, double tol);
+
+
 } // namespace romoco
 #endif // ALGEBRAIC_RICCATI_HPP

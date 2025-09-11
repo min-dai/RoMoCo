@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   }
   RosLoadConfig ros_config("cassie_stack", "config", "ROBOTLOG/Cassie");
 
-  std::unique_ptr<RobotBasePinocchio> robot_ptr = std::make_unique<CassieModel>(ros_config.config_folder);
+  std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr = std::make_unique<romoco::robot::CassieModel>(ros_config.config_folder);
 
   std::shared_ptr<InterfaceBase> interface;
   if (use_estimation)

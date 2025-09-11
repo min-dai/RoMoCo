@@ -2,7 +2,7 @@
 
 namespace romoco
 {
-StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot)
+StandingOutput::StandingOutput(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
     : OutputBase(robot)
 {
     config.yaml_parser.Init(config_file);

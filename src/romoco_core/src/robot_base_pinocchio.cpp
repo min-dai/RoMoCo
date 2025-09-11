@@ -5,7 +5,8 @@
 
 namespace romoco
 {
-
+namespace robot
+{
 RobotBasePinocchio::RobotBasePinocchio(const std::string &config_folder)
 {
     std::string interface_config_file = config_folder + "/interface_config.yaml";
@@ -311,4 +312,5 @@ void RobotBasePinocchio::JointKinematics1D::Init(int nv)
     kinematics.jacobian(0, joint_id) = 1;
     kinematics.dJdq = Eigen::VectorXd::Zero(1);
 }
+} // namespace robot
 } // namespace romoco
