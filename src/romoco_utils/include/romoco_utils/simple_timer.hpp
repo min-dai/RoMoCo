@@ -2,7 +2,24 @@
 #define SIMPLE_TIMER_H_
 
 #include <chrono>
+
 namespace romoco
+/**
+ * @class SimpleTimer
+ * @ingroup group_utils
+ * @brief Utility class for measuring elapsed time and time intervals.
+ *
+ * This class provides a simple interface for tracking time using a steady clock.
+ * It allows you to reset the timer, update time stamps, and query elapsed time
+ * since the timer was started or the time between updates.
+ *
+ * Usage:
+ * - Call Reset() to initialize or restart the timer.
+ * - Call Tick() to update the current time and shift the previous time stamp.
+ * - Use t0(), t_now(), and t_old() to access time stamps in seconds.
+ * - Use ElapsedSinceStart() to get the time elapsed since the timer was started.
+ * - Use DeltaTime() to get the time difference between the last two Tick() calls.
+ */
 {
 class SimpleTimer {
  public:

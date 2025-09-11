@@ -5,20 +5,25 @@
 
 namespace romoco
 {
-class DCMPlanner : public HLIPPlanner
-{
-public:
-   DCMPlanner() = default;
-   DCMPlanner(const PlannerParams &params) : HLIPPlanner(params) {} // Constructor that initializes the HLIPPlanner with given parameters
-   ~DCMPlanner() override = default;
-
-   void Init(const PlannerParams &params) override
+   /**
+    * @class DCMPlanner
+    * @brief A class for planning using the Divergent Component of Motion (DCM) model.
+    * @ingroup group_controllers
+    */
+   class DCMPlanner : public HLIPPlanner
    {
-      HLIPPlanner::Init(params);
-      HLIP_sag.set_use_dcm(true);
-      HLIP_lat.set_use_dcm(true);
-   }
-};
+   public:
+      DCMPlanner() = default;
+      DCMPlanner(const PlannerParams &params) : HLIPPlanner(params) {} // Constructor that initializes the HLIPPlanner with given parameters
+      ~DCMPlanner() override = default;
+
+      void Init(const PlannerParams &params) override
+      {
+         HLIPPlanner::Init(params);
+         HLIP_sag.set_use_dcm(true);
+         HLIP_lat.set_use_dcm(true);
+      }
+   };
 } // namespace romoco
 
 #endif // BIPED_PLANNER_DCMPLANNER_HPP

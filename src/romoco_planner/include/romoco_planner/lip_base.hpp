@@ -7,6 +7,11 @@
 
 namespace romoco
 {
+   /**
+    * @class LIPBase
+    * @brief A class for solving the Linear Inverted Pendulum (LIP) model.
+    * @ingroup group_controllers
+    */
    class LIPBase
    {
    public:

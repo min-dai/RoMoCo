@@ -7,6 +7,15 @@ namespace romoco
 {
    namespace robot
    {
+      /**
+       * @class LineFootRobotBasePinocchio
+       * @brief A Pinocchio-based robot model for biped robots with line feet.
+       * @ingroup group_robot
+       *
+       * This class extends the RobotBasePinocchio class to represent a biped robot with line feet.
+       * It provides specific implementations for kinematics, contact constraints, and friction cones
+       * relevant to line-footed robots.
+       */
       class LineFootRobotBasePinocchio : public RobotBasePinocchio
       {
       public:

@@ -7,6 +7,7 @@ namespace romoco
 {
 /**
  * @class PhaseVariable
+ * @ingroup group_utils
  * @brief Represents a phase variable operating in the normalized range [0, 1].
  *
  * The phase variable is typically used in gait or trajectory generation contexts,

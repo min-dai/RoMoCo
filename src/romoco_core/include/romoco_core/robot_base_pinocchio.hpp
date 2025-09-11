@@ -31,8 +31,26 @@
 
 namespace romoco
 {
+    /**
+     * @namespace robot
+     * @ingroup group_controller
+     * @brief Namespace containing robot-related classes and functions.
+     * This namespace includes the RobotBasePinocchio class, which serves as a base class for robot models using the Pinocchio library.
+     * It provides functionalities for kinematics, dynamics, and contact handling for biped robots.
+     * The RobotBasePinocchio class is designed to be extended by specific robot implementations, such as LineFootRobotBasePinocchio and PlaneFootRobotBasePinocchio.
+     */
     namespace robot
     {
+        /**
+         * @class RobotBasePinocchio
+         * @brief A base class for robot models using the Pinocchio library.
+         * @ingroup group_controller
+         * This class provides functionalities for kinematics, dynamics, and contact handling for biped robots.
+         * It is designed to be extended by specific robot implementations, such as LineFootRobotBasePinocchio and PlaneFootRobotBasePinocchio.
+         * The class handles the initialization of the robot model from a URDF file, computation of dynamics matrices, and kinematics of various robot parts.
+         * It also includes methods for computing holonomic constraints and friction cones based on foot contact status.
+         * The RobotBasePinocchio class utilizes the Pinocchio library for efficient computation of kinematics and dynamics.
+         */
         class RobotBasePinocchio
         {
         public:
@@ -52,8 +70,19 @@ namespace romoco
             // virtual destructor
             virtual ~RobotBasePinocchio() = default;
 
+            enum BaseJointOrder
+            {
+                BasePosX = 0,
+                BasePosY = 1,
+                BasePosZ = 2,
+                BaseRotZ = 3,
+                BaseRotY = 4,
+                BaseRotX = 5
+            };
+
             // define the robot type: LineFoot or PlaneFoot
-            virtual RobotType robot_type() const = 0;
+            virtual RobotType
+            robot_type() const = 0;
 
             void Init();
 

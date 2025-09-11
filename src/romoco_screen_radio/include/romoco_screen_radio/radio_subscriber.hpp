@@ -7,7 +7,12 @@
 #include <mutex>
 namespace romoco
 {
-class RadioSubscriber : public rclcpp::Node
+/** 
+ * @class RadioSubscriber
+ * @brief A ROS2 node that subscribes to radio slider values.
+ * @ingroup group_ui
+ */
+    class RadioSubscriber : public rclcpp::Node
 {
 public:
     RadioSubscriber(std::string node_name)

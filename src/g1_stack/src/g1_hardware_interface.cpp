@@ -1,7 +1,6 @@
 
 
 #include "g1_hardware_interface.hpp"
-#include "romoco_core/prep_proprioception.hpp"
 #include <iostream>
 #include <thread>
 #include <chrono>

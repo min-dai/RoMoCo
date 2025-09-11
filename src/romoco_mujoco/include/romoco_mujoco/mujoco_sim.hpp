@@ -12,6 +12,7 @@ namespace romoco
 
 /**
  * @class MujocoSim
+ * @ingroup group_interface
  * @brief A class for simulating and visualizing physics models using MuJoCo.
  *
  * MujocoSim provides an interface for initializing, running, and interacting with MuJoCo simulations.

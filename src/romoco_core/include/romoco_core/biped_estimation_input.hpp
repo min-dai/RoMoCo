@@ -6,6 +6,8 @@
 namespace romoco
 {
 /**
+ * @struct BipedEstimationKinematicsInput
+ * @ingroup group_controller
  * @brief Input structure for estimation modules that require kinematic data.
  *
  * This struct encapsulates per-leg kinematic quantities needed for state

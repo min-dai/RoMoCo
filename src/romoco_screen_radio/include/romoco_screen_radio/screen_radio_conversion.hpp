@@ -9,7 +9,7 @@ namespace romoco
 
 /**
  * @brief Converts raw radio data from the screen radio into a DesiredCommand structure.
- *
+ * @ingroup group_ui
  * This function interprets the mode from the SB channel of the input vector and maps it to the corresponding
  * Mode enum value. It then assigns the remaining channels from the input vector to the appropriate fields
  * in the DesiredCommand's values array.

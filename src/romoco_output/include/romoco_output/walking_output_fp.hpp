@@ -11,8 +11,15 @@
 
 namespace romoco
 {
-using std::cout;
-using std::endl;
+
+/**
+ * @class WalkingOutputFp
+ * @brief An output class for generating desired outputs during walking using a foot placement strategy for a biped robot.
+ * @ingroup group_controller
+ * This class extends the WalkingOutputBase class to provide specific implementations for generating desired outputs
+ * during walking using a foot placement strategy. It manages the walking domain, contact status, and planner inputs/outputs.
+ * The WalkingOutputFp class utilizes a FlatFootFPPlanner to compute foot placements based on the robot's state and desired commands.
+ */
 
 class WalkingOutputFp : public WalkingOutputBase
 {

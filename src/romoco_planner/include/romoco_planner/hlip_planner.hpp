@@ -7,6 +7,11 @@
 
 namespace romoco
 {
+   /**
+    * @class HLIPPlanner
+    * @brief A class for planning using the Hybrid Linear Inverted Pendulum (HLIP) model.
+    * @ingroup group_controllers
+    */
    class HLIPPlanner : public FlatFootFPPlanner
    {
    public:

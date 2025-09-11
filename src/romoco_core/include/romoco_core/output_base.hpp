@@ -4,12 +4,18 @@
 #include <memory>
 #include "romoco_core/robot_base_pinocchio.hpp"
 #include <Eigen/Dense>
-#include "romoco_utils/bezier_tools.hpp"
+
 #include "romoco_core/biped_commands.hpp"
 
 namespace romoco
 {
-
+/**
+ * @class OutputBase
+ * @brief An abstract base class for robot output generation, providing common functionality for different output strategies.
+ * @ingroup group_controller
+ * This class serves as a foundation for generating desired outputs for biped robots, handling the selection of actuated joints, 
+ * and management of output states. It is designed to be extended by specific output strategies.
+ */
 class OutputBase 
 {
 public:

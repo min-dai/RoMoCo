@@ -1,5 +1,4 @@
 #include "romoco_core/mujoco_interface_base.hpp"
-#include "romoco_core/prep_proprioception.hpp"
 
 namespace romoco
 {

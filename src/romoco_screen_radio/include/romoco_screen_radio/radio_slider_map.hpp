@@ -3,7 +3,14 @@
 
 namespace romoco
 {
-namespace ScreenRadio
+/**
+ * @namespace romoco::ScreenRadio
+ * @brief Namespace for Screen Radio related enumerations and functionalities.
+ * @ingroup group_ui
+ * @details This namespace contains enumerations for mapping radio slider controls and commands.
+ * It is used in the context of GUI applications for controlling radio sliders.
+ */
+   namespace ScreenRadio
 {
    enum RadioSliderMap
    {

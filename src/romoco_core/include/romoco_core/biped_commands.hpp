@@ -6,6 +6,13 @@
 namespace romoco
 {
 
+   /**
+    * @namespace Channel
+    * @brief Enumeration of control channels for desired robot commands.\
+    * @ingroup group_controller
+    * @details This namespace defines the indices for various control channels used in commanding a bipedal robot.
+    * The channels include translational and rotational movements, as well as step parameters.
+    */
 namespace Channel
 {
    enum DesiredChannel
@@ -22,7 +29,16 @@ namespace Channel
    };
 
 }
-
+/**  
+ * @enum Mode
+ * @brief Enumeration of operational modes for the bipedal robot.
+ * @ingroup group_controller
+ * @details This enum defines the various modes the robot can operate in, including:
+ * - Null: No specific mode is set.
+ * - InAir: The robot is hanging in air by its torso.
+ * - Standing: The robot is in a standing position.
+ * - Walking: The robot is in motion, walking.
+ */
 enum class Mode
 {
    Null = -1,
@@ -30,7 +46,14 @@ enum class Mode
    Standing = 0,
    Walking = 1,
 };
-
+/**
+ * @struct DesiredCommand
+ * @brief Structure representing the desired command for a bipedal robot.
+ * @ingroup group_controller
+ * @details This structure contains the operational mode and a vector of channel values.
+ * The mode indicates the robot's current state, while the values vector holds the desired
+ * inputs for various control channels, each ranging between -1 and 1.
+ */
 struct DesiredCommand
 {
    Mode mode;                                                               // see enum class Mode for possible values

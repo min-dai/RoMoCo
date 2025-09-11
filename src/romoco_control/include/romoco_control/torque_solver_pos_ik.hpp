@@ -5,6 +5,14 @@
 #include "romoco_utils/pd_controller.hpp"
 namespace romoco
 {
+   /**
+    * @class TorqueSolverPOSIK
+    * @brief A torque solver that uses position-based inverse kinematics to compute torque commands for a biped robot.
+    * @ingroup group_controller
+    * This class extends the TorqueSolverBase class to implement a torque solver based on position-based inverse kinematics.
+    * It computes the required joint torques to achieve desired positions while compensating for gravity and other dynamic effects.
+    * The TorqueSolverPOSIK class utilizes the robot model and output generation provided by the RobotBasePinocchio and OutputBase classes.
+    */
    class TorqueSolverPOSIK : public TorqueSolverBase
    {
    public:

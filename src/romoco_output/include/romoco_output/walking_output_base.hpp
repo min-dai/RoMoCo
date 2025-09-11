@@ -9,82 +9,88 @@
 
 namespace romoco
 {
-class WalkingOutputBase : public OutputBase
-{
-public:
-    WalkingOutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
-        : OutputBase(robot)
+    /**
+     * @class WalkingOutputBase
+     * @brief An abstract base class for generating desired outputs during walking for a biped robot.
+     * @ingroup group_controller
+     * This class extends the OutputBase class to provide common functionalities for generating desired outputs
+     * during walking. It manages the walking domain, contact status, and planner inputs/outputs.
+     * The WalkingOutputBase class is designed to be further extended by specific walking output implementations.
+     */
+    class WalkingOutputBase : public OutputBase
     {
-    }
-
-    // Transition occurs if the center of mass (COM) velocity is low during the double support (DS) phase
-    // or if the system is at the end of the single support (SS) phase.
-    // virtual bool is_ready_to_transit() const override;
-
-    enum class Domain
-    {
-        domain_OA,
-        domain_FA,
-        domain_UA
-    };
-    struct DomainContactStatus
-    {
-        FootContactStatus leftC;
-        FootContactStatus rightC;
-        StanceStatus stance;
-
-        void NextStance()
+    public:
+        WalkingOutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
+            : OutputBase(robot)
         {
-            stance = (stance == StanceStatus::LeftStance) ? StanceStatus::RightStance : StanceStatus::LeftStance;
         }
 
-        bool isLeftStance() const { return stance == StanceStatus::LeftStance; }
-    } domain;
+        // Transition occurs if the center of mass (COM) velocity is low during the double support (DS) phase
+        // or if the system is at the end of the single support (SS) phase.
+        // virtual bool is_ready_to_transit() const override;
 
-protected:
-    PlannerOutput planner_output_;
-    PlannerInput planner_input_;
-    PlannerParams planner_params_;
+        enum class Domain
+        {
+            domain_OA,
+            domain_FA,
+            domain_UA
+        };
+        struct DomainContactStatus
+        {
+            FootContactStatus leftC;
+            FootContactStatus rightC;
+            StanceStatus stance;
 
-    struct ConfigBase
-    {
-        YAMLParser yaml_parser;
+            void NextStance()
+            {
+                stance = (stance == StanceStatus::LeftStance) ? StanceStatus::RightStance : StanceStatus::LeftStance;
+            }
 
-        std::string ro_planner_name;
+            bool isLeftStance() const { return stance == StanceStatus::LeftStance; }
+        } domain;
 
-        double dt_lowpass;
-        double velX_dt_cutoff;
-        double velY_dt_cutoff;
+    protected:
+        PlannerOutput planner_output_;
+        PlannerInput planner_input_;
+        PlannerParams planner_params_;
 
-        // offset for hardware mainly
-        double vx_offset;
-        double vy_offset;
+        struct ConfigBase
+        {
+            YAMLParser yaml_parser;
 
-        double TSS, TDS;
-        double znom;
-        double zsw_max, zsw_neg;
-        double stepWidthNominal = 0.25;
+            std::string ro_planner_name;
 
-        Eigen::VectorXd bezierSwingHorizontal;
-        Eigen::VectorXd bezierComVertical;
+            double dt_lowpass;
+            double velX_dt_cutoff;
+            double velY_dt_cutoff;
 
-        // walking safety params
-        double maxStepSize = 1, velXmax = 2, velYmax = 0.5;
+            // offset for hardware mainly
+            double vx_offset;
+            double vy_offset;
 
-        FrictionParams fric_params;
+            double TSS, TDS;
+            double znom;
+            double zsw_max, zsw_neg;
+            double stepWidthNominal = 0.25;
 
-        void InitConfigBase(const std::string &config_file, const RobotType &robot_type);
+            Eigen::VectorXd bezierSwingHorizontal;
+            Eigen::VectorXd bezierComVertical;
+
+            // walking safety params
+            double maxStepSize = 1, velXmax = 2, velYmax = 0.5;
+
+            FrictionParams fric_params;
+
+            void InitConfigBase(const std::string &config_file, const RobotType &robot_type);
+        };
+
+        // filters for desired walking beahviors from the joysticks
+        control_utilities::LowPassFilter lowpass_vel_x_des_ = control_utilities::LowPassFilter(NAN, NAN);
+        control_utilities::LowPassFilter lowpass_vel_y_des_ = control_utilities::LowPassFilter(NAN, NAN);
+
+        void ComputeHolonomicConstraints();
+        void ComputeFrictionConstraints(const FrictionParams &fric_params);
     };
-
-
-
-    // filters for desired walking beahviors from the joysticks
-    control_utilities::LowPassFilter lowpass_vel_x_des_ = control_utilities::LowPassFilter(NAN, NAN);
-    control_utilities::LowPassFilter lowpass_vel_y_des_ = control_utilities::LowPassFilter(NAN, NAN);
-
-    void ComputeHolonomicConstraints();
-    void ComputeFrictionConstraints(const FrictionParams &fric_params);
-};
 
 } // namespace romoco
 #endif // ROMOCO_WALKING_OUTPUT_BASE_HPP

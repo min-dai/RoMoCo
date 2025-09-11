@@ -7,7 +7,11 @@
 
 namespace romoco
 {
-
+    /**
+     * @class HLIP
+     * @brief A class for solving the Hybrid Linear Inverted Pendulum (HLIP) model.
+     * @ingroup group_controllers
+     */
     class HLIP : public LIPBase
     {
 
@@ -57,7 +61,6 @@ namespace romoco
             double DCM_des;
             double klqr_DCM;
 
-
         } p1;
 
         double SolveDesiredStepSizeP1(Eigen::Vector2d state);
@@ -74,7 +77,6 @@ namespace romoco
 
             double UleftDes = 0;
             double UrightDes = 0;
-
 
             Eigen::Vector2d K;
             Eigen::Vector2d StepX;

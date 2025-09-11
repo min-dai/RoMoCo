@@ -2,11 +2,19 @@
 #define MUJOCO_INTERFACE_BASE_HPP
 #include "romoco_core/interface_base.hpp"
 #include "romoco_utils/yaml_parser.hpp"
-#include "romoco_core/biped_proprioception.hpp"
+#include "romoco_core/biped_sensors.hpp"
 
 namespace romoco
 {
-class MujocoInterfaceBase : public InterfaceBase
+/**
+ * @class MujocoInterfaceBase
+ * @brief An abstract base class for MuJoCo-based robot interfaces, providing common functionality for simulation interfaces.
+ * @ingroup group_interface   
+ * This class extends the InterfaceBase class to provide functionalities specific to MuJoCo simulations.
+ * It includes methods for reading sensor data, sending control commands, and managing simulation state.
+ * The MujocoInterfaceBase class is designed to be further extended by specific MuJoCo simulation implementations.
+ */
+   class MujocoInterfaceBase : public InterfaceBase
 {
 public:
    MujocoInterfaceBase() : InterfaceBase(true) {} // Mujoco interface is always ready

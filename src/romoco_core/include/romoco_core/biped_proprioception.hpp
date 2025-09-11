@@ -2,77 +2,37 @@
 #define BIPED_PROPRIOCEPTION_HPP
 
 #include <Eigen/Dense>
-#include <Eigen/Geometry>
 
+#include "romoco_core/biped_sensors.hpp"
 namespace romoco
 {
-struct RawSensorData
-{
-   //initialize lin_pos as NAN
-   Eigen::Vector3d base_lin_pos = Eigen::Vector3d::Constant(NAN);
-   Eigen::Quaterniond base_ang_quat;
-   Eigen::Vector3d base_ang_vel;
-   Eigen::VectorXd encoders_pos_pinocchio_order;
-   Eigen::VectorXd encoders_vel_pinocchio_order;
 
-   void ResizeAll(int dof)
-   {
-       encoders_pos_pinocchio_order.resize(dof);
-       encoders_vel_pinocchio_order.resize(dof);
-   }
-
-   //overload <<
-   friend std::ostream &operator<<(std::ostream &os, const RawSensorData &data)
-   {
-       os << "Base Linear Position: " << data.base_lin_pos.transpose() << "\n";
-       os << "Base Angular Quaternion: " << data.base_ang_quat.w() << " " << data.base_ang_quat.x() << " " << data.base_ang_quat.y() << " " << data.base_ang_quat.z() << "\n";
-       os << "Base Angular Velocity: " << data.base_ang_vel.transpose() << "\n";
-       os << "Encoders Position (Pinocchio Order): " << data.encoders_pos_pinocchio_order.transpose() << "\n";
-       os << "Encoders Velocity (Pinocchio Order): " << data.encoders_vel_pinocchio_order.transpose() << "\n";
-       return os;
-   }
-};
-
-struct BipedEstimation
-{
-   Eigen::Vector3d base_lin_vel;
-   BipedEstimation() : base_lin_vel(Eigen::Vector3d::Zero()) {}
-};
-
-struct RawSensorDataHardware : RawSensorData
-{
-   Eigen::Vector3d base_lin_acc;
-
-   friend std::ostream &operator<<(std::ostream &os, const RawSensorDataHardware &data)
-   {
-       os << static_cast<const RawSensorData &>(data);
-       os << "Base Linear Acceleration: " << data.base_lin_acc.transpose() << "\n";
-       return os;
-   }
-};
-
-struct SensorDataPostEstimation : RawSensorData 
-{
-   Eigen::Vector3d base_lin_vel;
-   //overload << operator
-   friend std::ostream &operator<<(std::ostream &os, const SensorDataPostEstimation &data)
-   {
-       os << static_cast<const RawSensorData &>(data);
-       os << "Base Linear Velocity: " << data.base_lin_vel.transpose() << "\n";
-       return os;
-   }
-};
-
+/** 
+ * @struct BipedProprioception
+ * @brief Represents the proprioceptive state of a bipedal robot, including joint positions and velocities.
+ * @ingroup group_controller
+ */
 struct BipedProprioception
 {
-   Eigen::VectorXd q;    // floating base + encoders, in pinocchio order
-   Eigen::VectorXd qdot; // floating base + encoders velocities, in pinocchio order
+    /**
+     * @brief Joint positions vector, including floating base and encoders, ordered as in Pinocchio.
+     */
+   Eigen::VectorXd q;   
+    /**
+     * @brief Joint velocities vector, including floating base and encoders, ordered as in Pinocchio.
+     */
+   Eigen::VectorXd qdot; 
    friend std::ostream &operator<<(std::ostream &os, const BipedProprioception &data)
    {
        os << "Proprioception q: " << data.q.transpose() << "\n";
        os << "Proprioception qdot: " << data.qdot.transpose() << "\n";
        return os;
    }
+   /**
+    * @brief Extracts a subset of the proprioceptive data based on provided indices.
+    * @param indices A vector of indices specifying which elements to extract.
+    * @return A new BipedProprioception instance containing only the selected elements.
+    */
    BipedProprioception GetIndex(const std::vector<int> &indices) const
    {
        BipedProprioception result;
@@ -80,17 +40,48 @@ struct BipedProprioception
        result.qdot = qdot(indices);
        return result;
    }
+   /**
+    * @brief Resizes the joint position and velocity vectors to the specified degree of freedom (dof).
+    * @param dof The new size for the joint vectors.
+    */
    void ResizeAll(int dof)
    {
        q.resize(dof);
        qdot.resize(dof);
    }
+    /**
+     * @brief Sets all joint positions and velocities to zero for the specified degree of freedom (dof).
+     * @param dof The size of the joint vectors to be set to zero.
+     */
    void ZeroAll(int dof)
    {
        q = Eigen::VectorXd::Zero(dof);
        qdot = Eigen::VectorXd::Zero(dof);
    }
 };
+/**
+ * @brief Converts sensor data post-estimation to biped proprioception.
+ * @ingroup group_controller
+ * @param sensor_data The sensor data after estimation.
+ * @return A BipedProprioception instance containing joint positions and velocities.
+ */
+BipedProprioception GetBipedProprioceptionFromSensorDataPostEstimation(const SensorDataPostEstimation &sensor_data);
+/**
+ * @brief Converts raw hardware sensor data to biped proprioception, using provided estimation.
+ * @ingroup group_controller
+ * @param raw_sensor_data The raw sensor data from hardware.
+ * @param estimation The biped state estimation.
+ * @return A BipedProprioception instance containing joint positions and velocities.
+ */
+BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSensorDataHardware &raw_sensor_data, const BipedEstimation &estimation);
+/**
+ * @brief Converts raw hardware sensor data to biped proprioception, assuming zero estimation.
+ * @ingroup group_controller
+ * @param raw_sensor_data The raw sensor data from hardware.
+ * @return A BipedProprioception instance containing joint positions and velocities.
+ * @note This function assumes that the estimation is zero.
+ */
+BipedProprioception GetBipedProprioceptionFromRawSensorDataHardware(const RawSensorDataHardware &raw_sensor_data);
 
 } // namespace romoco
 

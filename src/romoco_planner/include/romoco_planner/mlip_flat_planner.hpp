@@ -8,6 +8,11 @@
 
 namespace romoco
 {
+   /**
+    * @class MLIPFlatPlanner
+    * @brief A class for planning using the Multi-Linear Inverted Pendulum (MLIP) model.
+    * @ingroup group_controllers
+    */
    class MLIPFlatPlanner : public FlatFootFPPlanner
    {
    public:

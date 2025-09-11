@@ -15,7 +15,15 @@ namespace romoco
     */
    Eigen::MatrixXd PseudoInverse(const Eigen::MatrixXd &matrix,
                                  const double &threshold = 1e-6);
-
+   /**
+    * @brief Compute the weighted pseudo-inverse of a matrix.
+    * @ingroup group_utils
+    * @param J Input matrix to be pseudo-inverted.
+    * @param W Positive definite weight matrix.
+    * @param threshold Singular values smaller than this relative to the largest singular value are set to zero.
+    * @return Weighted pseudo-inverse of the input matrix.
+    * @throws std::invalid_argument if the input matrix is empty or if W is not positive definite.
+    */   
    Eigen::MatrixXd WeightedPseudoInverse(const Eigen::MatrixXd &J,
                                          const Eigen::MatrixXd &W,
                                          const double &threshold = 1e-6);

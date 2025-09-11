@@ -1,5 +1,5 @@
 #include "romoco_core/output_base.hpp"
-
+#include "romoco_utils/bezier_tools.hpp"
 namespace romoco
 {
 OutputBase::OutputBase(std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)

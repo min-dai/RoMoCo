@@ -1,7 +1,6 @@
 #ifndef ROMOCO_STANDING_OUTPUT_HPP
 #define ROMOCO_STANDING_OUTPUT_HPP
 
-
 #include "romoco_core/output_base.hpp"
 
 #include "romoco_utils/filters.hpp"
@@ -9,80 +8,85 @@
 
 namespace romoco
 {
-class StandingOutput : public OutputBase
-{
-public:
-    StandingOutput(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot);
-
-    bool is_ready_to_transit() const override
+    /**
+     * @class StandingOutput
+     * @brief An output class for generating desired outputs when the biped robot is standing.
+     * @ingroup group_controller
+     * This class extends the OutputBase class to provide specific implementations for generating desired outputs
+     * when the biped robot is standing.
+     */
+    class StandingOutput : public OutputBase
     {
-        return this->updated.readyToTransition;
-    }
+    public:
+        StandingOutput(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot);
 
-    void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
+        bool is_ready_to_transit() const override
+        {
+            return this->updated.readyToTransition;
+        }
 
-private:
-    Contact contact;
+        void UpdateOutput(const DesiredCommand &command, const double &t, const double &t_old) override;
 
-    void ComputeActual() override;
+    private:
+        Contact contact;
 
-    void ComputeDesired(const DesiredCommand &command);
+        void ComputeActual() override;
 
-    void ComputeHolonomicConstraints();
+        void ComputeDesired(const DesiredCommand &command);
 
-    void ComputeFrictionConstraints();
+        void ComputeHolonomicConstraints();
 
+        void ComputeFrictionConstraints();
 
+        enum OutputIndex
+        {
+            xCOM = 0,
+            yCOM = 1,
+            zCOM = 2,
+            deltaYaw = 3,
+            pitch = 4,
+            roll = 5
+        };
+        Kinematics3D com2supportbase;
+        Kinematics3D deltaYaw_cross;
+        Kinematics3D leftMB, rightMB;
 
-    enum OutputIndex
-    {
-        xCOM = 0,
-        yCOM = 1,
-        zCOM = 2,
-        deltaYaw = 3,
-        pitch = 4,
-        roll = 5
+        struct Config
+        {
+            Eigen::VectorXd yd_lowpass_dt_cutoff;
+
+            double dt_lowpass = 0.001;
+
+            double stand2step_y_offset;
+
+            double x_offset;
+            double x_range;
+            double y_range;
+            double z_lb;
+            double z_ub;
+
+            double pitch_range, roll_range, yaw_range;
+
+            YAMLParser yaml_parser;
+
+            FrictionParams fric_params;
+
+            void Init(RobotType robot_type);
+        } config;
+
+        struct Updated
+        {
+            bool isInitialized = false;
+            bool readyToTransition = false;
+
+            bool queueTransition = false;
+
+            double initial_height = 0.;
+            double t;
+        } updated;
+
+        control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN *Eigen::VectorXd::Ones(1), 1);
     };
-    Kinematics3D com2supportbase;
-    Kinematics3D deltaYaw_cross;
-    Kinematics3D leftMB, rightMB;
-
-    struct Config
-    {
-        Eigen::VectorXd yd_lowpass_dt_cutoff;
-
-        double dt_lowpass = 0.001;
-
-        double stand2step_y_offset;
-
-        double x_offset;
-        double x_range;
-        double y_range;
-        double z_lb;
-        double z_ub;
-
-        double pitch_range, roll_range, yaw_range;
-
-        YAMLParser yaml_parser;
-
-        FrictionParams fric_params;
-
-        void Init(RobotType robot_type);
-    } config;
-
-    struct Updated
-    {
-        bool isInitialized = false;
-        bool readyToTransition = false;
-
-        bool queueTransition = false;
-
-        double initial_height = 0.;
-        double t;
-    } updated;
-
-    control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN * Eigen::VectorXd::Ones(1), 1);
-};
 
 } // namespace romoco
 #endif // ROMOCO_STANDING_OUTPUT_HPP

@@ -7,6 +7,15 @@
 
 namespace romoco
 {
+   /**
+    * @class ComStatesRelToStance
+    * @brief Computes the center of mass (COM) states relative to the stance foot frame for a biped robot.
+    * @ingroup group_controller
+    * This class calculates the position, velocity, and angular momentum of the robot's center of mass (COM)
+    * relative to the stance foot frame. It utilizes a Kalman filter, AngularMomentumKF, to estimate the angular momentum.
+    * The computed states include the COM position, COM velocity, angular momentum about the COM, and angular momentum about the pivot point.
+    * The class provides methods to reset the Kalman filter and compute the states based on the robot's current configuration and desired yaw.
+    */
 class ComStatesRelToStance
 {
 public:

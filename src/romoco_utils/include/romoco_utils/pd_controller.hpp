@@ -6,7 +6,7 @@ namespace romoco
 {
 /**
  * @brief A Proportional-Derivative (PD) controller for joint-level control.
- *
+ * @ingroup group_utils
  * This class provides methods for configuring and computing PD control outputs.
  * It supports two usage modes:
  *  - Compute using externally provided desired states.

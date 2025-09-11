@@ -59,6 +59,8 @@ inline double low_pass_first_order(double alpha, double prev_filt, double cur_ra
 
 /**
  * @brief Basic structure for a first-order low-pass IIR filter
+ * @ingroup group_utils
+ * @details Implements a simple first-order low-pass filter with methods to reset, reconfigure, and update the filter state.
  */
 class LowPassFilter
 {
@@ -123,6 +125,11 @@ public:
     }
 };
 
+/**
+ * @brief Basic structure for a first-order low-pass IIR filter for vector inputs
+ * @ingroup group_utils
+ * @details Implements a simple first-order low-pass filter for vector inputs with methods to reset, reconfigure, and update the filter state.
+ */
 class LowPassFilterVec
 {
     /** @brief Filtering coefficient */

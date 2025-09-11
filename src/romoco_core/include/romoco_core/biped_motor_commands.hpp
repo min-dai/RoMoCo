@@ -6,6 +6,15 @@
 
 namespace romoco
 {
+/**
+ * @struct BipedMotorCommands
+ * @brief Structure representing motor commands for a bipedal robot.
+ * @ingroup group_controller
+ * @details This structure contains vectors for joint positions, velocities,
+ * stiffness (kp), damping (kd), feedforward torques, and final torques after
+ * feedback. It also includes methods for resizing, zeroing, and updating these
+ * vectors, as well as computing the full torque based on current joint states.
+ */
 struct BipedMotorCommands
 {
 

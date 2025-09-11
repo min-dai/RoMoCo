@@ -34,7 +34,7 @@ add_library(${PROJECT_NAME} SHARED
             src/robot_base_pinocchio.cpp
             src/planefoot_robot_base_pinocchio.cpp
             src/linefoot_robot_base_pinocchio.cpp
-            src/prep_proprioception.cpp
+            src/biped_proprioception.cpp
             src/contact_kf.cpp
             src/interface_base.cpp
             src/mujoco_interface_base.cpp

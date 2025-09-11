@@ -11,6 +11,8 @@ namespace romoco
 /**
  * @ingroup group_utils
  * @brief A YAML Parser class for loading parameters of various types.
+ * This class provides methods to load and retrieve parameters from a YAML file,
+ * supporting types such as Eigen::VectorXd, int, double, std::string, std::vector<std::string>, and bool.
  */
 class YAMLParser {
 public:

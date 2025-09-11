@@ -13,30 +13,29 @@
  * organized into interfaces, outputs, torque solvers, and example robot stacks.
  *
  * \section modules_sec Modules
- * - \ref group_core
  * - \ref group_interface
  * - \ref group_utils
- * - \ref group_output
- * - \ref group_torque
+ * - \ref group_controller
  * - \ref group_examples
+ * - \ref group_ui
  */
 
-/// \defgroup group_core Core
-/// Core types, constants, math helpers.
-
-/// \defgroup group_interface Interfaces
-/// Hardware and simulation interfaces, ROS2 transport.
 
 /// \defgroup group_utils Utils
 /// Utility functions (e.g., algebraic Riccati solver).
 
-/// \defgroup group_output Outputs
-/// Output classes (HLIP, MLIP, MLIP_NLP), planners, tracking signals.
+/// \defgroup group_controller Controllers
+/// RO planners, Output embedding classes, torque solvers.
 
-/// \defgroup group_torque TorqueSolvers
-/// Torque controllers (PD, Velocity-IK, TSC/QP).
+/// \defgroup group_interface Interfaces
+/// Robot interfaces (e.g., MuJoCo, Hardware).
+/// State machines and desired command interpreters.
+
+/// \defgroup group_ui UI
+/// GUI and ROS2 nodes for radio slider control.
 
 /// \defgroup group_examples ExampleStacks
 /// End-to-end robot stacks (e.g., Unitree G1, Cassie).
+
 
 #endif  // ROMOCO_DOC_MAINPAGE_HPP_

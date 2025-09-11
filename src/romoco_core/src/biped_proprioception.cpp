@@ -1,6 +1,6 @@
-#include <romoco_core/prep_proprioception.hpp>
-#include <romoco_utils/geometry.hpp>
 
+#include <romoco_utils/geometry.hpp>
+#include "romoco_core/biped_proprioception.hpp"
 namespace romoco
 {
 

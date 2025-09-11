@@ -3,6 +3,11 @@
 
 namespace romoco
 {
+   /**
+    * @struct FrictionParams
+    * @brief Parameters defining friction characteristics for a biped robot's feet.
+    * @ingroup group_controller
+    */
 struct FrictionParams
 {
    double frictionCoef;

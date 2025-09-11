@@ -6,6 +6,8 @@
 
 namespace romoco
 {
+using std::cout;
+using std::endl;
 
 WalkingOutputFp::WalkingOutputFp(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot)
     : WalkingOutputBase(robot)
@@ -289,7 +291,7 @@ Eigen::Vector2d WalkingOutputFp::computeFPwithROmodel()
    planner_input_.UpdateInputLIP(x_now, domain.stance, T2imp);
    planner_output_ = ROplanner->UpdatePlan(planner_input_);
    Eigen::Vector2d stepSize = planner_output_.footstep;
-   double ang = updated.target_yaw - robot_->q()(BaseRotZ); // convert from target yaw frame to local frame
+   double ang = updated.target_yaw - robot_->q()(romoco::robot::RobotBasePinocchio::BaseRotZ); // convert from target yaw frame to local frame
    Eigen::MatrixXd mat = Eigen::AngleAxis<double>(ang, Eigen::Vector3d(0, 0, 1)).toRotationMatrix();
    Eigen::Vector3d StepLocal(stepSize(0), stepSize(1), 0);
    StepLocal = mat * StepLocal;
