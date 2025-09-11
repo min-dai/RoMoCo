@@ -2,6 +2,7 @@
 #include "romoco_planner/hlip_planner.hpp"
 #include "romoco_planner/dcm_planner.hpp"
 #include "romoco_planner/mlip_flat_planner.hpp"
+#include "romoco_planner/alip_planner.hpp"
 
 namespace romoco
 {
@@ -32,14 +33,23 @@ void WalkingOutputFp::Init(const std::string &config_file)
 {
    config.InitConfigBase(config_file, robot_->robot_type());
 
-   if (config.ro_planner_name == "mlip_flat")
+   if (config.ro_planner_name == "mlip_flat"){
       ROplanner = std::make_unique<MLIPFlatPlanner>();
-   else if (config.ro_planner_name == "hlip")
+   }
+   else if (config.ro_planner_name == "hlip"){
       ROplanner = std::make_unique<HLIPPlanner>();
-   else if (config.ro_planner_name == "dcm")
+   }
+   else if (config.ro_planner_name == "dcm"){
       ROplanner = std::make_unique<DCMPlanner>();
+   }
+   else if (config.ro_planner_name == "alip"){
+      ROplanner = std::make_unique<ALIPPlanner>();
+   }
    else
-      throw std::runtime_error("Unsupported ro_planner: " + config.ro_planner_name + ". Supported planners are: mlip_flat, hlip, dcm");
+   {
+      std::cerr << "Unsupported ro_planner: " << config.ro_planner_name << std::endl;
+      throw std::runtime_error("Unsupported ro_planner: " + config.ro_planner_name + ". Supported planners are: mlip_flat, hlip, dcm, alip");   
+   }
 
    // Update updated struct using config assuming radio is zero
    DesiredCommand command;

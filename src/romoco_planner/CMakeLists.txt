@@ -29,8 +29,10 @@ add_library(${PROJECT_NAME} SHARED
 src/lip_base.cpp
     src/hlip.cpp
     src/mlip.cpp
+    src/alip.cpp
     src/hlip_planner.cpp
     src/mlip_flat_planner.cpp
+    src/alip_planner.cpp
 ) 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

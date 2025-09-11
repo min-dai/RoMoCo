@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
-<!-- Cassie V4 Model Description                                                           -->
-<!-- Author: Jenna Reher (jreher@caltech.edu)                                              -->
+<!-- Cassie V4 Model Description                                                           -->                                        -->
 <!-- This URDF is up to date with Agility Robotics specifications as of 03/20/2018.        -->
 <!-- Reference: https://github.com/agilityrobotics/agility-cassie-doc/wiki/Kinematic-Model -->
 <robot name ="cassie_v4">
