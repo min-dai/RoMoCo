@@ -14,9 +14,9 @@ void TorqueSolverVELIK::Init(const std::string &config_file)
     // Load the configuration parameters
     // Implement the initialization of the solver
 
-    VectorXd JointKPtmp = yaml_parser_.get_VectorXd("velik/JointKP");
-    VectorXd JointKDtmp = yaml_parser_.get_VectorXd("velik/JointKD");
-    output_ik_gain_ = yaml_parser_.get_VectorXd("velik/output_ik_gain"); 
+    Eigen::VectorXd JointKPtmp = yaml_parser_.get_VectorXd("velik/JointKP");
+    Eigen::VectorXd JointKDtmp = yaml_parser_.get_VectorXd("velik/JointKD");
+    output_ik_gain_ = yaml_parser_.get_VectorXd("velik/output_ik_gain");
 
 
     // check if the size of JointKP and JointKD is the same as the number of actuated joints, or half number of actuated joints
@@ -29,8 +29,8 @@ void TorqueSolverVELIK::Init(const std::string &config_file)
     else if (JointKPtmp.size() == robot_->nu() / 2)
     {
         // stack the gains for each leg
-        JointKP_ = VectorXd::Zero(robot_->nu());
-        JointKD_ = VectorXd::Zero(robot_->nu());
+        JointKP_ = Eigen::VectorXd::Zero(robot_->nu());
+        JointKD_ = Eigen::VectorXd::Zero(robot_->nu());
         JointKP_ << JointKPtmp, JointKPtmp;
         JointKD_ << JointKDtmp, JointKDtmp;
     }
@@ -39,11 +39,6 @@ void TorqueSolverVELIK::Init(const std::string &config_file)
         std::cerr << "Invalid size of JointKP_ and JointKD_" << std::endl;
     }
 
-    // OutputKPing
-    JointKPing_ = JointKP_;
-    JointKDing_ = JointKD_;
-
-
     motor_commands_.ResizeAll(robot_->nu());
 }
 
@@ -51,17 +46,17 @@ BipedMotorCommands TorqueSolverVELIK::Solve()
 {
     SolveIk();
     
-    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKPing_);
-    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKDing_);
+    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKP_);
+    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKD_);
 
     pd_controller_.Reconfigure(KP, KD);
 
     qm_actual_ = output_->SelectActuatedStates(robot_->q());
     dqm_actual_ = output_->SelectActuatedStates(robot_->dq());
 
-    VectorXd u_ff = SolveGravityCompensation();
+    Eigen::VectorXd u_ff = SolveGravityCompensation();
 
-    VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
+    Eigen::VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
 
 
     motor_commands_.joint_torques_ff = output_->MapToFullMotors(u_ff);
@@ -78,12 +73,12 @@ void TorqueSolverVELIK::SolveIk()
 {
     qm_des_ = output_->SelectActuatedStates(robot_->q());
 
-    MatrixXd Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
+    Eigen::MatrixXd Nhol = Eigen::MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
 
-    VectorXd ik_gain_active = output_->SelectActiveOutputs(output_ik_gain_);
+    Eigen::VectorXd ik_gain_active = output_->SelectActiveOutputs(output_ik_gain_);
 
-    VectorXd delta_q_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->yd() - output_->ya()));
-    VectorXd dq_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->dyd()));
+    Eigen::VectorXd delta_q_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->yd() - output_->ya()));
+    Eigen::VectorXd dq_output = (output_->Jya() * Nhol).completeOrthogonalDecomposition().solve(ik_gain_active.cwiseProduct(output_->dyd()));
     qm_des_ += output_->SelectActuatedStates(delta_q_output);
     dqm_des_ = output_->SelectActuatedStates(dq_output);
 }

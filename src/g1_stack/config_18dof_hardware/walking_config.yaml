@@ -2,7 +2,8 @@
 # qp or posik
 controller: "posik"
 
-
+# mlip_flat, dcm, hlip, alip
+ro_planner: "dcm"
 
 pose_command: 
   dt_lowpass: 0.0005

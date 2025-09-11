@@ -2,7 +2,7 @@
 
 namespace romoco
 {
-LineFootRobotBasePinocchio::LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+LineFootRobotBasePinocchio::LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
 }
@@ -25,7 +25,7 @@ std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> LineF
 
 
 
-void LineFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B,  MatrixXd &Jh, VectorXd &dJhdq) 
+void LineFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B,  Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq) 
 {
    if (con == FootContactStatus::InAir)
    {
@@ -70,17 +70,17 @@ void LineFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootCon
    }
 }
 
-void LineFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Jh, VectorXd &dJhdq, const Matrix3d Rground)  
+void LineFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq, const Eigen::Matrix3d Rground)
 {
-   MatrixXd Jh_left, Jh_right;
-   VectorXd dJhdq_left, dJhdq_right;
+   Eigen::MatrixXd Jh_left, Jh_right;
+   Eigen::VectorXd dJhdq_left, dJhdq_right;
 
-   Matrix3d Rleft_fromeul = GetLeftToeRyaw();
-   Matrix3d Rleft = Rground*Rleft_fromeul;
+   Eigen::Matrix3d Rleft_fromeul = GetLeftToeRyaw();
+   Eigen::Matrix3d Rleft = Rground*Rleft_fromeul;
    GetHolonomicConstraintsSingleFoot(leftC, left_footF_.kinematics.Rot(Rleft.transpose()), left_footB_.kinematics.Rot(Rleft.transpose()), Jh_left, dJhdq_left);
 
-   Matrix3d Rright_fromeul = GetRightToeRyaw();
-   Matrix3d Rright = Rground*Rright_fromeul;
+   Eigen::Matrix3d Rright_fromeul = GetRightToeRyaw();
+   Eigen::Matrix3d Rright = Rground*Rright_fromeul;
    GetHolonomicConstraintsSingleFoot(rightC, right_footF_.kinematics.Rot(Rright.transpose()), right_footB_.kinematics.Rot(Rright.transpose()), Jh_right, dJhdq_right);
 
    
@@ -90,7 +90,7 @@ void LineFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootContac
    dJhdq << dJhdq_left, dJhdq_right;
 }
 
-void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, MatrixXd &Acone, VectorXd &bcone) 
+void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone) 
 {
    double mu = fric_params.frictionCoef;
    double nu = fric_params.Rot_frictionCoef;
@@ -108,18 +108,18 @@ void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams 
    {
       int nCone = 9;
       int nM = 5;
-      MatrixXd Acone_raw = MatrixXd::Zero(nCone, nM);
-      Acone_raw << 0, 0, -1, 0, 0, 
-          1, 0, -mu / sqrt(2.), 0, 0, 
-          -1, 0, -mu / sqrt(2.), 0, 0, 
-          0, 1, -mu / sqrt(2.), 0, 0, 
-          0, -1, -mu / sqrt(2.), 0, 0, 
+      Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
+      Acone_raw << 0, 0, -1, 0, 0,
+          1, 0, -mu / sqrt(2.), 0, 0,
+          -1, 0, -mu / sqrt(2.), 0, 0,
+          0, 1, -mu / sqrt(2.), 0, 0,
+          0, -1, -mu / sqrt(2.), 0, 0,
           0, 0, -l1, 1, 0,
           0, 0, -l2, -1, 0,
           0, 0, -nu, 0, 1,
           0, 0, -nu, 0, -1;
 
-      MatrixXd H(nM,nM);
+      Eigen::MatrixXd H(nM,nM);
       H <<   1, 0, 0, 0, 0,
              0, 1, 0, 1, 0, 
              0, 0, 1, 0, 1, 
@@ -129,23 +129,23 @@ void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams 
       Acone.resize(nCone, nM);
       Acone = Acone_raw*H;
 
-      bcone = VectorXd::Zero(nCone);
+      bcone = Eigen::VectorXd::Zero(nCone);
       bcone(0) = -fric_params.Fz_lb;
    }
    else if (con == FootContactStatus::ToePatchContact||con == FootContactStatus::HeelPatchContact)
    {
       int nCone = 7;
       int nM = 4;
-      MatrixXd Acone_raw = MatrixXd::Zero(nCone, nM);
-      Acone_raw << 0, 0, -1, 0, 
-          1, 0, -mu / sqrt(2.), 0, 
-          -1, 0, -mu / sqrt(2.), 0, 
-          0, 1, -mu / sqrt(2.), 0, 
+      Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
+      Acone_raw << 0, 0, -1, 0,
+          1, 0, -mu / sqrt(2.), 0,
+          -1, 0, -mu / sqrt(2.), 0,
+          0, 1, -mu / sqrt(2.), 0,
           0, -1, -mu / sqrt(2.), 0,
           0, 0, -nu,  1,
           0, 0, -nu,  -1;
 
-      MatrixXd H(nM,nM);
+      Eigen::MatrixXd H(nM,nM);
       H <<   1, 0, 0, 0,
              0, 1, 0, 1, 
              0, 0, 1, 0, 
@@ -154,7 +154,7 @@ void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams 
       Acone.resize(nCone, nM);
       Acone = Acone_raw*H;
 
-      bcone = VectorXd::Zero(nCone);
+      bcone = Eigen::VectorXd::Zero(nCone);
       bcone(0) = -fric_params.Fz_lb;
       //todo heel might be different
    }
@@ -164,13 +164,13 @@ void LineFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams 
    }
 }
 
-void LineFootRobotBasePinocchio::GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Acone, VectorXd &bcone) 
+void LineFootRobotBasePinocchio::GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone) 
 {
-   MatrixXd Acone_left, Acone_right;
-   VectorXd bcone_left, bcone_right;
+   Eigen::MatrixXd Acone_left, Acone_right;
+   Eigen::VectorXd bcone_left, bcone_right;
    GetFrictionConeSingleFoot(fric_params, leftC, Acone_left, bcone_left);
    GetFrictionConeSingleFoot(fric_params, rightC, Acone_right, bcone_right);
-   Acone = MatrixXd::Zero(Acone_left.rows() + Acone_right.rows(), Acone_left.cols() + Acone_right.cols());
+   Acone = Eigen::MatrixXd::Zero(Acone_left.rows() + Acone_right.rows(), Acone_left.cols() + Acone_right.cols());
    Acone.topLeftCorner(Acone_left.rows(), Acone_left.cols()) = Acone_left;
    Acone.bottomRightCorner(Acone_right.rows(), Acone_right.cols()) = Acone_right;
    bcone.resize(bcone_left.rows() + bcone_right.rows());

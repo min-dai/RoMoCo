@@ -3,12 +3,7 @@
 
 #include <romoco_core/biped_constants.hpp>
 #include <Eigen/Dense>
-
-
-#include <unsupported/Eigen/MatrixFunctions>
-#include <iostream>
-#include <romoco_utils/hyperbolic.hpp>
-#include <romoco_utils/algebraic_riccati.hpp>
+#include "romoco_planner/lip_base.hpp"
 
 
 
@@ -16,11 +11,11 @@
 namespace romoco
 {
 
-class MLIP
+class MLIP : public LIPBase
 {
 
 public:
-    MLIP(bool useMomentum_=true);
+    MLIP(bool useMomentum=true);
     void Init(double z0, double TOA, double TFA, double TUA, int orbitPeriod, double vel, double footlength, double stepwidth);
 
     int orbitPeriod = 0; // 1 is P1, 2 is P2
@@ -33,8 +28,7 @@ public:
 
     struct Params
     {
-        bool useMomentum = true;
-        
+
 
         double footlength;
 
@@ -42,8 +36,8 @@ public:
         double l_flat = 0;
         double l_toe2heel;
 
-        double z0, TOA, TFA, TUA, T, lambda;
-        double grav = 9.81;
+        double TUA, TFA, TOA, T;
+
 
         Eigen::Matrix3d A;
 
@@ -61,8 +55,8 @@ public:
 
         double velDes = 0;
 
-        Eigen::Matrix3d getAconvT(double T);
-        void getABC_S2S(double l, Eigen::MatrixXd &As2s, Eigen::MatrixXd &Bs2s, Eigen::MatrixXd &Cs2s);
+        Eigen::Matrix3d getA3convT(bool use_momentum, double T, double lam, double z0);
+        void getABC_S2S(bool use_momentum, double l, double lam, double z0, Eigen::MatrixXd &As2s, Eigen::MatrixXd &Bs2s, Eigen::MatrixXd &Cs2s);
     } params;
 
     Eigen::Vector2d Kdeadbeat_h2t, Kdeadbeat_flat, Kdeadbeat_t2h;
@@ -70,13 +64,14 @@ public:
 
     void updateMLIP(double z0, double TOA, double TFA, double TUA);
 
-    void updateDesiredWalking(double vel, double stepWidth);
+    void UpdateDesiredWalking(double vel, double stepWidth);
 
     void solveXdesFAminus_XdesFAplus(double l, Eigen::Vector2d Xdes, double Udes, Eigen::Vector2d &XdesFAminus, Eigen::Vector2d &XdesFAplus);
 
     void solveXdesUAminus_XdesUAplus(double l, Eigen::Vector2d Xdes, double Udes, Eigen::Vector2d &XdesFAminus, Eigen::Vector2d &XdesFAplus);
 
-    Eigen::Vector2d getDesiredStepSizeDeadbeat(Eigen::Vector2d X, bool isFlatFoot, int stanceLeg);
+    Eigen::Vector3d SolveLIPWithZMP(double t, Eigen::Vector3d X0, double dpzmp);
+
 
     struct P1
     {
@@ -90,8 +85,6 @@ public:
         Eigen::Vector2d K_h2t, K_flat, K_t2h;
         Eigen::Vector2d StepX;
 
-        double Ku = 0; //.1;
-
         int mode;
 
         bool isFlatFoot;
@@ -100,9 +93,9 @@ public:
 
     double getStepSize_P1(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, bool is_mode_fixed, int &mode);
 
-    double getStepSize_P1_varimode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int &mode);
+    // double getStepSize_P1_varimode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int &mode);
 
-    double getStepSize_P1_fixedmode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int mode, double deltau_prev);
+    double getStepSize_P1_fixedmode(Eigen::Vector2d Xtoe, Eigen::Vector2d Xheel, Eigen::Vector2d Xmid, int mode);
 
     struct P2
     {
@@ -118,22 +111,16 @@ public:
         Eigen::Vector2d K;
         Eigen::Vector2d StepX;
 
-        double Ku = 0; //.1;
+
 
         Eigen::Vector2d XdesFAminus_left, XdesFAminus_right;
         Eigen::Vector2d XdesFAplus_left, XdesFAplus_right;
 
     } p2;
-    double getStepSize_P2(Eigen::Vector2d X, StanceStatus stanceLegIdx, double deltau_prev);
+    double getStepSize_P2(Eigen::Vector2d X, StanceStatus stanceLegIdx);
+private:
+    double TOA_, TFA_, TUA_, T_;
 
-    double solve_Ts();
-
-    Eigen::Vector2d get_MLIPsol2(double t, Eigen::Vector3d X0, double dpzmp);
-    Eigen::Vector3d get_MLIPsol3(double t, Eigen::Vector3d X0, double dpzmp);
-
-    double getOrbitalEnergy(double p, double Ly);
-
-    Eigen::Vector2d solve_deadbeat_gain(Eigen::Matrix2d A, Eigen::Vector2d B);
 };
 } // namespace romoco
 #endif // MLIP_HPP

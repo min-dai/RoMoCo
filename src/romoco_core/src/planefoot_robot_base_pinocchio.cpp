@@ -1,7 +1,7 @@
 #include "romoco_core/planefoot_robot_base_pinocchio.hpp"
 namespace romoco
 {
-PlaneFootRobotBasePinocchio::PlaneFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+PlaneFootRobotBasePinocchio::PlaneFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
     : RobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
 }
@@ -22,7 +22,7 @@ std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> Plane
        baseF_, baseB_, baseL_, baseR_};
 }
 
-void PlaneFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &LF, const Kinematics3D &RF, const Kinematics3D &LB, const Kinematics3D &RB, MatrixXd &Jh, VectorXd &dJhdq)
+void PlaneFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &LF, const Kinematics3D &RF, const Kinematics3D &LB, const Kinematics3D &RB, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq)
 {
    // Add the implementation here
    if (con == FootContactStatus::InAir)
@@ -76,18 +76,18 @@ void PlaneFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootCo
    }
 }
 
-void PlaneFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Jh, VectorXd &dJhdq, const Matrix3d Rground)
+void PlaneFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq, const Eigen::Matrix3d Rground)
 {
    // Holonomic constraints should corresponds to ground plane frame but rotated to local foot yaw
-   MatrixXd Jh_left, Jh_right;
-   VectorXd dJhdq_left, dJhdq_right;
+   Eigen::MatrixXd Jh_left, Jh_right;
+   Eigen::VectorXd dJhdq_left, dJhdq_right;
 
-   Matrix3d Rleft_fromeul = GetLeftToeRyaw();
-   Matrix3d Rleft = Rground * Rleft_fromeul;
+   Eigen::Matrix3d Rleft_fromeul = GetLeftToeRyaw();
+   Eigen::Matrix3d Rleft = Rground * Rleft_fromeul;
    GetHolonomicConstraintsSingleFoot(leftC, left_footLF_.kinematics.Rot(Rleft.transpose()), left_footRF_.kinematics.Rot(Rleft.transpose()), left_footLB_.kinematics.Rot(Rleft.transpose()), left_footRB_.kinematics.Rot(Rleft.transpose()), Jh_left, dJhdq_left);
 
-   Matrix3d Rright_fromeul = GetRightToeRyaw();
-   Matrix3d Rright = Rground * Rright_fromeul;
+   Eigen::Matrix3d Rright_fromeul = GetRightToeRyaw();
+   Eigen::Matrix3d Rright = Rground * Rright_fromeul;
    GetHolonomicConstraintsSingleFoot(rightC, right_footLF_.kinematics.Rot(Rright.transpose()), right_footRF_.kinematics.Rot(Rright.transpose()), right_footLB_.kinematics.Rot(Rright.transpose()), right_footRB_.kinematics.Rot(Rright.transpose()), Jh_right, dJhdq_right);
 
    Jh.resize(Jh_left.rows() + Jh_right.rows(), nv());
@@ -96,7 +96,7 @@ void PlaneFootRobotBasePinocchio::GetContactHolonomicConstraints(const FootConta
    dJhdq << dJhdq_left, dJhdq_right;
 }
 
-void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, MatrixXd &Acone, VectorXd &bcone)
+void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone)
 {
    double mu = fric_params.frictionCoef;
    double nu = fric_params.Rot_frictionCoef;
@@ -114,7 +114,7 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
    {
       // int nCone = 11;
       // int nM = 6;
-      // MatrixXd Acone_raw = MatrixXd::Zero(nCone, nM);
+      // Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
       // Acone_raw << 0, 0, -1, 0, 0, 0,
       //     1, 0, -mu / sqrt(2.), 0, 0, 0,
       //     -1, 0, -mu / sqrt(2.), 0, 0, 0,
@@ -129,7 +129,7 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
 
       int nCone = 9;
       int nM = 6;
-      MatrixXd Acone_raw = MatrixXd::Zero(nCone, nM);
+      Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
       Acone_raw << 0, 0, -1, 0, 0, 0,
           1, 0, -mu / sqrt(2.), 0, 0, 0,
           -1, 0, -mu / sqrt(2.), 0, 0, 0,
@@ -140,7 +140,7 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
           0, 0, -l1, 0, 1, 0,
           0, 0, -l2, 0, -1, 0;
 
-      MatrixXd H(nM, nM);
+      Eigen::MatrixXd H(nM, nM);
       H << 1, 0, 0, 1, 0, 0,
           0, 1, 0, 0, 0, 0,
           0, 0, 1, 0, 1, 1,
@@ -151,14 +151,14 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
       Acone = Acone_raw * H;
 
       bcone.resize(nCone);
-      bcone = VectorXd::Zero(nCone);
+      bcone = Eigen::VectorXd::Zero(nCone);
       bcone(0) = -fric_params.Fz_lb;
    }
    else if (con == FootContactStatus::ToeLineContact || con == FootContactStatus::HeelLineContact)
    {
       int nCone = 9;
       int nM = 5;
-      MatrixXd Acone_raw = MatrixXd::Zero(nCone, nM);
+      Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
       Acone_raw << 0, 0, -1, 0, 0,
           1, 0, -mu / sqrt(2.), 0, 0,
           -1, 0, -mu / sqrt(2.), 0, 0,
@@ -169,7 +169,7 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
           0, 0, -nu, 0, 1,
           0, 0, -nu, 0, -1;
 
-      MatrixXd H(nM, nM);
+      Eigen::MatrixXd H(nM, nM);
       H << 1, 0, 0, 1, 0,
           0, 1, 0, 0, 0,
           0, 0, 1, 0, 1,
@@ -180,7 +180,7 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
       Acone = Acone_raw * H;
 
       bcone.resize(nCone);
-      bcone = VectorXd::Zero(nCone);
+      bcone = Eigen::VectorXd::Zero(nCone);
       bcone(0) = -fric_params.Fz_lb;
    }
    else
@@ -189,13 +189,13 @@ void PlaneFootRobotBasePinocchio::GetFrictionConeSingleFoot(const FrictionParams
    }
 }
 
-void PlaneFootRobotBasePinocchio::GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Acone, VectorXd &bcone)
+void PlaneFootRobotBasePinocchio::GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone)
 {
-   MatrixXd Acone_left, Acone_right;
-   VectorXd bcone_left, bcone_right;
+   Eigen::MatrixXd Acone_left, Acone_right;
+   Eigen::VectorXd bcone_left, bcone_right;
    GetFrictionConeSingleFoot(fric_params, leftC, Acone_left, bcone_left);
    GetFrictionConeSingleFoot(fric_params, rightC, Acone_right, bcone_right);
-   Acone = MatrixXd::Zero(Acone_left.rows() + Acone_right.rows(), Acone_left.cols() + Acone_right.cols());
+   Acone = Eigen::MatrixXd::Zero(Acone_left.rows() + Acone_right.rows(), Acone_left.cols() + Acone_right.cols());
    Acone.topLeftCorner(Acone_left.rows(), Acone_left.cols()) = Acone_left;
    Acone.bottomRightCorner(Acone_right.rows(), Acone_right.cols()) = Acone_right;
    bcone.resize(bcone_left.rows() + bcone_right.rows());

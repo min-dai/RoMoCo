@@ -5,7 +5,7 @@ namespace romoco
 using Eigen::Vector3d;
 
 CassieModel::CassieModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names)
-    : LineFootRobotBasePinocchio(urdf_path, locked_encoder_names, VectorXd::Zero(0))
+    : LineFootRobotBasePinocchio(urdf_path, locked_encoder_names, Eigen::VectorXd::Zero(0))
 {
     Init();
 }
@@ -95,7 +95,7 @@ void CassieModel::AddFrames()
         model_.addFrame(pinocchio::Frame(std::get<0>(frame), std::get<1>(frame), 0, placement, pinocchio::OP_FRAME));
     }
 
-    Matrix3d Rfoot, Rtoworld;
+    Eigen::Matrix3d Rfoot, Rtoworld;
     Rfoot << cos(50 / 180. * M_PI), -sin(50 / 180. * M_PI), 0,
         sin(50 / 180. * M_PI), cos(50 / 180. * M_PI), 0,
         0, 0, 1;
@@ -137,17 +137,17 @@ void CassieModel::AddFrames()
     placement.translation() = Eigen::Vector3d(0.0, 0.0, 0.045);
     model_.addFrame(pinocchio::Frame("right_thigh_connector", model_.getJointId("RightHipPitch"), 0, placement, pinocchio::OP_FRAME));
 
-    Vector3d p_tarsus2Heel;
+    Eigen::Vector3d p_tarsus2Heel;
     p_tarsus2Heel << -12.69e-3, -30.59e-3, 0.92e-3;
 
-    MatrixXd R_tarsus2Heel(3, 3);
+    Eigen::MatrixXd R_tarsus2Heel(3, 3);
     R_tarsus2Heel << -0.9121266047, -0.4098716742, 0.005501613619,
         0.4082402433, -0.9095420663, -0.07793031078,
         0.03694537597, -0.06883632969, 0.9969436288;
 
-    Vector3d rodJoint2heelJoint;
+    Eigen::Vector3d rodJoint2heelJoint;
     rodJoint2heelJoint << 0.11877, -0.01, 0;
-    Vector3d pHeelRodJoint = p_tarsus2Heel + R_tarsus2Heel * rodJoint2heelJoint;
+    Eigen::Vector3d pHeelRodJoint = p_tarsus2Heel + R_tarsus2Heel * rodJoint2heelJoint;
     placement.translation() = pHeelRodJoint;
     model_.addFrame(pinocchio::Frame("left_heel_spring_end", model_.getJointId("LeftTarsusPitch"), 0, placement, pinocchio::OP_FRAME));
     placement.translation() << pHeelRodJoint(0), pHeelRodJoint(1), -pHeelRodJoint(2);
@@ -182,7 +182,7 @@ void CassieModel::InitJointKinematics()
     right_hip_yaw_.joint_id = RightHipYaw;
 }
 
-void CassieModel::GetInternalHolonomicConstraints(MatrixXd &Jh, VectorXd &dJhdq)
+void CassieModel::GetInternalHolonomicConstraints(Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq)
 {
     Kinematics3D left = left_thigh_connector.kinematics - left_heel_spring_end.kinematics;
     Kinematics3D right = right_thigh_connector.kinematics - right_heel_spring_end.kinematics;
@@ -256,14 +256,14 @@ void CassieModel::ComputeContactClassifierInput()
     left_achilles = (left).dot(left);
     right_achilles = (right).dot(right);
 
-    MatrixXd Jleft_below_ankle = left_below_ankle_.kinematics.jacobian;
-    MatrixXd Jright_below_ankle = right_below_ankle_.kinematics.jacobian;
+    Eigen::MatrixXd Jleft_below_ankle = left_below_ankle_.kinematics.jacobian;
+    Eigen::MatrixXd Jright_below_ankle = right_below_ankle_.kinematics.jacobian;
 
-    MatrixXd Jleft_active = Jleft_below_ankle(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
-    MatrixXd Jright_active = Jright_below_ankle(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
+    Eigen::MatrixXd Jleft_active = Jleft_below_ankle(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
+    Eigen::MatrixXd Jright_active = Jright_below_ankle(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
 
-    MatrixXd Jleft_ach = left_achilles.jacobian(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
-    MatrixXd Jright_ach = right_achilles.jacobian(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
+    Eigen::MatrixXd Jleft_ach = left_achilles.jacobian(Eigen::all, {LeftHipRoll, LeftHipYaw, LeftHipPitch, LeftKneePitch, LeftFootPitch});
+    Eigen::MatrixXd Jright_ach = right_achilles.jacobian(Eigen::all, {RightHipRoll, RightHipYaw, RightHipPitch, RightKneePitch, RightFootPitch});
 
     contact_classifier_input_.ResizeAll(Jleft_active.rows(), Jright_active.rows());
 

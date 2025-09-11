@@ -16,8 +16,8 @@ public:
 
 private:
     double threshold_;
-    VectorXd OutputKP_, OutputKD_;
-    VectorXd OutputKPing_, OutputKDing_;
+    Eigen::VectorXd OutputKP_, OutputKD_;
+
 };
 
 } // namespace romoco

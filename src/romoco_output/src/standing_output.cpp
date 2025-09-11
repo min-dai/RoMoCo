@@ -144,8 +144,8 @@ void StandingOutput::ComputeDesired(const DesiredCommand &command)
 
 void StandingOutput::ComputeHolonomicConstraints()
 {
-    MatrixXd Jh_internal, Jh_contact;
-    VectorXd dJhdq_internal, dJhdq_contact;
+    Eigen::MatrixXd Jh_internal, Jh_contact;
+    Eigen::VectorXd dJhdq_internal, dJhdq_contact;
     robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
     robot_->GetContactHolonomicConstraints(contact.leftC, contact.rightC, Jh_contact, dJhdq_contact);
 

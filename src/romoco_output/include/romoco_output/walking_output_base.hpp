@@ -50,6 +50,8 @@ protected:
     {
         YAMLParser yaml_parser;
 
+        std::string ro_planner_name;
+
         double dt_lowpass;
         double velX_dt_cutoff;
         double velY_dt_cutoff;

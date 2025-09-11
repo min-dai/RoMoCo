@@ -35,7 +35,7 @@ public:
    void Close();
 
 private:
-   Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
+   Eigen::VectorXf CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors);
 
    void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
 

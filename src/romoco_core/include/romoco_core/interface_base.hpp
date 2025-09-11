@@ -92,7 +92,7 @@ protected:
     std::vector<int> pd_motor_command_indices_;
     std::vector<int> loco_motor_command_indices_;
 
-    Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
+    Eigen::VectorXf CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors);
 
     // for Log files
     std::fstream logFile_;

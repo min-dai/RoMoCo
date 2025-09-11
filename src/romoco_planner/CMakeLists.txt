@@ -26,9 +26,11 @@ set(dependencies
 
 # Library target
 add_library(${PROJECT_NAME} SHARED
-    src/HLIP.cpp
-    src/MLIP.cpp
-    src/HLIPplanner.cpp
+src/lip_base.cpp
+    src/hlip.cpp
+    src/mlip.cpp
+    src/hlip_planner.cpp
+    src/mlip_flat_planner.cpp
 ) 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

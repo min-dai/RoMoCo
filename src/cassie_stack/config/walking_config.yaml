@@ -1,7 +1,8 @@
 # qp, id, posik
 controller: "qp"
 
-
+# mlip_flat, dcm, hlip, alip
+ro_planner: "hlip"
 
 pose_command: 
   dt_lowpass: 0.0005
@@ -10,7 +11,7 @@ pose_command:
   vx_offset: 0.0
   vy_offset: 0.0
   TSS: 0.3
-  TDS: 0.0
+  TDS: 0.03
   znom: 0.75
   zsw_max: 0.2
   zsw_neg: -0.01 #-0.01

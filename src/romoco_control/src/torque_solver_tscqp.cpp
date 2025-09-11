@@ -22,10 +22,6 @@ void TorqueSolverTSCQP::Init(const std::string &config_file)
     OutputKP_ = yaml_parser_.get_VectorXd("qp/OutputKP");
     OutputKD_ = yaml_parser_.get_VectorXd("qp/OutputKD");
 
-    // OutputKPing
-    OutputKPing_ = OutputKP_;
-    OutputKDing_ = OutputKD_;
-
     ResetSize();
 
     // Settings
@@ -40,20 +36,20 @@ void TorqueSolverTSCQP::ResetSize()
 {
     nVar_ = robot_->nv() + output_->nu() + output_->nh();
 
+
+    G_ = Eigen::MatrixXd::Zero(nVar_, nVar_);
+    g_ = Eigen::VectorXd::Zero(nVar_);
+
+
+    Aeq_ = Eigen::MatrixXd::Zero(robot_->nv()+output_->nh(), nVar_);
+    beq_ = Eigen::VectorXd::Zero(robot_->nv()+output_->nh());
+
     
-    G_ = MatrixXd::Zero(nVar_, nVar_);
-    g_ = VectorXd::Zero(nVar_);
 
+    Aub_u_ = Eigen::MatrixXd::Zero(output_->nu(), nVar_);
+    Aub_u_.block(0, robot_->nv(), output_->nu(), output_->nu()) << Eigen::MatrixXd::Identity(output_->nu(), output_->nu());
 
-    Aeq_ = MatrixXd::Zero(robot_->nv()+output_->nh(), nVar_);
-    beq_ = VectorXd::Zero(robot_->nv()+output_->nh());
-
-    
-
-    Aub_u_ = MatrixXd::Zero(output_->nu(), nVar_);
-    Aub_u_.block(0, robot_->nv(), output_->nu(), output_->nu()) << MatrixXd::Identity(output_->nu(), output_->nu());
-
-    Aub_fric_ = MatrixXd::Zero(output_->nfric(), nVar_);
+    Aub_fric_ = Eigen::MatrixXd::Zero(output_->nfric(), nVar_);
     bub_fric_.resize(output_->nfric());
     if (output_->nfric() > 0){
         Aub_fric_.rightCols(output_->nFc())<< output_->Afric();
@@ -61,9 +57,9 @@ void TorqueSolverTSCQP::ResetSize()
         bub_fric_ << output_->bfric_ub();
     }
 
-    u_sol_ = VectorXd::Zero(output_->nu());
-    F_sol_ = VectorXd::Zero(output_->nh());
-    u_sol_prev_ = VectorXd::Zero(output_->nu());
+    u_sol_ = Eigen::VectorXd::Zero(output_->nu());
+    F_sol_ = Eigen::VectorXd::Zero(output_->nh());
+    u_sol_prev_ = Eigen::VectorXd::Zero(output_->nu());
 
     motor_commands_.ZeroAll(robot_->nu());
 }
@@ -74,13 +70,13 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     if (nVar_ != robot_->nv() + output_->nu() + output_->nh()){
         ResetSize();
     }
-    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKPing_);
-    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKDing_);
+    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKP_);
+    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKD_);
     
     //cost: ||Jya*ddq + dJyadq - ddy*||^2 
-    A_y_ = MatrixXd::Zero(output_->ny(), nVar_);
-    b_y_ = VectorXd::Zero(output_->ny());
-    A_y_.block(0, 0, output_->ny(), robot_->nv())  << output_->Jya();
+    A_y_ = Eigen::MatrixXd::Zero(output_->ny(), nVar_);
+    b_y_ = Eigen::VectorXd::Zero(output_->ny());
+    A_y_.block(0, 0, output_->ny(), robot_->nv()) << output_->Jya();
     b_y_ << output_->dJyadq()
          - output_->d2yd()
          + KP.cwiseProduct(output_->ya() - output_->yd())

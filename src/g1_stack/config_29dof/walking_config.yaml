@@ -1,7 +1,8 @@
 
 controller: "qpm"
 
-
+# mlip_flat, dcm, hlip, alip
+ro_planner: "mlip_flat"
 
 pose_command: 
   dt_lowpass: 0.0005

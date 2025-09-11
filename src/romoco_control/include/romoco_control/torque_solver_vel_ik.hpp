@@ -17,12 +17,12 @@ public:
 private:
     PDController pd_controller_;
     Eigen::VectorXd JointKP_, JointKD_;
-    Eigen::VectorXd JointKPing_, JointKDing_;
+
     Eigen::VectorXd output_ik_gain_;
 
-    VectorXd qm_des_, dqm_des_;
+    Eigen::VectorXd qm_des_, dqm_des_;
 
-    VectorXd qm_actual_, dqm_actual_;
+    Eigen::VectorXd qm_actual_, dqm_actual_;
 
     void SolveIk();
 };

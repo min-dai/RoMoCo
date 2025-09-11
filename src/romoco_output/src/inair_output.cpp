@@ -149,13 +149,13 @@ void InAirOutput::ComputeDesired(const DesiredCommand &command)
 
 void InAirOutput::ComputeHolonomicConstraints()
 {
-    MatrixXd Jh_internal, Jh_base;
-    VectorXd dJhdq_internal, dJhdq_base;
+    Eigen::MatrixXd Jh_internal, Jh_base;
+    Eigen::VectorXd dJhdq_internal, dJhdq_base;
     robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
 
-    Jh_base = MatrixXd::Zero(6, robot_->nv());
-    Jh_base.block(0, 0, 6, 6) = MatrixXd::Identity(6, 6);
-    dJhdq_base = VectorXd::Zero(6);
+    Jh_base = Eigen::MatrixXd::Zero(6, robot_->nv());
+    Jh_base.block(0, 0, 6, 6) = Eigen::MatrixXd::Identity(6, 6);
+    dJhdq_base = Eigen::VectorXd::Zero(6);
 
     Jh_.resize(Jh_internal.rows() + Jh_base.rows(), robot_->nv());
     Jh_ << Jh_internal,

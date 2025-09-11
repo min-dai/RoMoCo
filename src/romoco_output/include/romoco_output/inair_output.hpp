@@ -45,7 +45,7 @@ private:
 
     struct Config
     {
-        VectorXd yd_lowpass_dt_cutoff;
+        Eigen::VectorXd yd_lowpass_dt_cutoff;
 
         double dt_lowpass = 0.001;
 
@@ -70,12 +70,10 @@ private:
     struct Updated
     {
         bool isInitialized = false;
-        // Eigen::VectorXd yd_prev = VectorXd::Zero(12);
-        // Eigen::VectorXd dyd_prev = VectorXd::Zero(12);
         double t;
     } updated;
 
-    control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN *VectorXd::Ones(1), 1);
+    control_utilities::LowPassFilterVec lowpassyd = control_utilities::LowPassFilterVec(NAN, NAN * Eigen::VectorXd::Ones(1), 1);
 };
 
 } // namespace romoco

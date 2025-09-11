@@ -12,15 +12,15 @@
 
 #include "romoco_ros/ros_load_config.hpp"
 
-// need to set up sim
+
 #include "g1_mujoco_interface.hpp"
 
 using namespace romoco;
 
 
-VectorXd predefined_radio(double t)
+Eigen::VectorXd predefined_radio(double t)
 {
-    VectorXd radio = VectorXd::Zero(10);
+    Eigen::VectorXd radio = Eigen::VectorXd::Zero(10);
     if (t > 1.0)
     {
         radio(ScreenRadio::SB) = 1;
@@ -46,9 +46,9 @@ int main(int argc, char *argv[])
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 
-    auto getLegModel = [](const VectorXd &q)
+    auto getLegModel = [](const Eigen::VectorXd &q)
     { return q.head(18); };
-    auto getUpper = [](const VectorXd &q)
+    auto getUpper = [](const Eigen::VectorXd &q)
     { return q.segment(18, 17); }; // assuming 17 upper joints
 
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     BasicStateMachine state_machine(ros_config.config_folder, ros_config.log_path, robot_ptr, std::move(mujocosim));
 
     double t_sim=0;
-    VectorXd fake_radio;
+    Eigen::VectorXd fake_radio;
 
 
     while (rclcpp::ok())

@@ -24,17 +24,17 @@ private:
     bool ClarabelSolve();
 
     bool print_qp_ = false;
-    VectorXd OutputKP_, OutputKD_;
-    VectorXd OutputKPing_, OutputKDing_;
+    Eigen::VectorXd OutputKP_, OutputKD_;
+    Eigen::VectorXd OutputKPing_, OutputKDing_;
 
     int nVar_;
-    MatrixXd A_y_;
-    VectorXd b_y_;
-    MatrixXd G_, Aeq_, Aub_fric_, Aub_u_;
-    VectorXd g_, beq_, bub_fric_;
+    Eigen::MatrixXd A_y_;
+    Eigen::VectorXd b_y_;
+    Eigen::MatrixXd G_, Aeq_, Aub_fric_, Aub_u_;
+    Eigen::VectorXd g_, beq_, bub_fric_;
 
     bool if_solved_ = false;
-    VectorXd sol_, u_sol_, F_sol_, u_sol_prev_;
+    Eigen::VectorXd sol_, u_sol_, F_sol_, u_sol_prev_;
 
     // Settings for the Clarabel QP solver
     clarabel::DefaultSettings<double> settings_;

@@ -32,9 +32,7 @@
 namespace romoco
 {
 
-using Eigen::Matrix3d;
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
+
 class RobotBasePinocchio
 {
 public:
@@ -44,8 +42,8 @@ public:
      * @param locked_encoder_names: Names of joints to be locked (fixed) in the model.
      * @param locked_joints_q: Values for the locked joints (must match the size of locked_encoder_names).
      */
-    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q);
-    
+    explicit RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q);
+
     /**
      * @param config_folder: Path to the configuration folder.
      * This constructor initializes the robot model using configuration parameters
@@ -61,7 +59,7 @@ public:
     void Init();
 
     // estimation realted functions
-    void set_computed_torque(const VectorXd &torque) { computed_torque_ = torque; }
+    void set_computed_torque(const Eigen::VectorXd &torque) { computed_torque_ = torque; }
     void ReconfigureContactClassifier(const std::string &config_folder) { contact_classifier_.Reconfigure(config_folder); }
     virtual std::vector<int> left_leg_encoder_idx() const = 0;
     virtual std::vector<int> right_leg_encoder_idx() const = 0;
@@ -71,26 +69,26 @@ public:
     int nq() const { return model_.nq; }
     int nv() const { return model_.nv; }
     int nu() const { return nu_; }
-    const VectorXd &q() const { return q_; }
-    const VectorXd &dq() const { return dq_; }
+    const Eigen::VectorXd &q() const { return q_; }
+    const Eigen::VectorXd &dq() const { return dq_; }
 
-    const MatrixXd &D() const { return data_.M; }
-    const VectorXd &G() const { return data_.g; }
-    const VectorXd &H() const { return data_.nle; }
-    const MatrixXd &B() const { return B_; }
-    const VectorXd &u_lb() const { return u_lb_; }
-    const VectorXd &u_ub() const { return u_ub_; }
+    const Eigen::MatrixXd &D() const { return data_.M; }
+    const Eigen::VectorXd &G() const { return data_.g; }
+    const Eigen::VectorXd &H() const { return data_.nle; }
+    const Eigen::MatrixXd &B() const { return B_; }
+    const Eigen::VectorXd &u_lb() const { return u_lb_; }
+    const Eigen::VectorXd &u_ub() const { return u_ub_; }
 
-    VectorXd hg_angular() const { return data_.hg.angular(); }
-    VectorXd hg_linear() const { return data_.hg.linear(); }
+    Eigen::VectorXd hg_angular() const { return data_.hg.angular(); }
+    Eigen::VectorXd hg_linear() const { return data_.hg.linear(); }
     // hg stacks linear and angular momentum
-    VectorXd hg() const { return data_.hg.toVector(); }
+    Eigen::VectorXd hg() const { return data_.hg.toVector(); }
     // Ag stacks linear and angular momentum matrix, top 3 rows are linear, bottom 3 rows are angular
-    MatrixXd Ag() const { return data_.Ag; }
-    MatrixXd dAg() const { return data_.dAg; }
+    Eigen::MatrixXd Ag() const { return data_.Ag; }
+    Eigen::MatrixXd dAg() const { return data_.dAg; }
 
-    MatrixXd ComputeCentroidalMomentumMatrix();
-    MatrixXd ComputeCentroidalMomentumMatrixTimeVariation();
+    Eigen::MatrixXd ComputeCentroidalMomentumMatrix();
+    Eigen::MatrixXd ComputeCentroidalMomentumMatrixTimeVariation();
 
     virtual std::vector<int> actuated_q_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const = 0;
     virtual std::vector<int> actuated_u_idx(AnkleMotorStatus left_ankle_status, AnkleMotorStatus right_ankle_status) const = 0;
@@ -117,14 +115,14 @@ public:
     const Kinematics1D &right_hip_yaw_kinematics() const { return right_hip_yaw_.kinematics; }
 
     // for robots with internal holonomic constraints, like closed loop linkages
-    virtual void GetInternalHolonomicConstraints(MatrixXd &Jh, VectorXd &dJhdq)
+    virtual void GetInternalHolonomicConstraints(Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq)
     {
         Jh.resize(0, nv());
         dJhdq.setZero(0);
     }
     // for ground contact
-    virtual void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Jh, VectorXd &dJhdq, const Matrix3d Rground = MatrixXd::Identity(3, 3)) = 0;
-    virtual void GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Acone, VectorXd &bcone) = 0;
+    virtual void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq, const Eigen::Matrix3d Rground = Eigen::MatrixXd::Identity(3, 3)) = 0;
+    virtual void GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone) = 0;
 
     // Update kinematics and dynamics using pinocchio
     void UpdateAll(const Eigen::VectorXd &q, const Eigen::VectorXd &dq);
@@ -136,8 +134,8 @@ public:
 
     void ComputeForwardKinematics(const Eigen::VectorXd &q, const Eigen::VectorXd &dq);
 
-    VectorXd ComputeCentroidalMomentum();
-    VectorXd ComputeCentroidalAngularMomentum();
+    Eigen::VectorXd ComputeCentroidalMomentum();
+    Eigen::VectorXd ComputeCentroidalAngularMomentum();
 
     struct FrameKinematics3D
     {
@@ -154,7 +152,7 @@ public:
         void Update(pinocchio::Model &model, pinocchio::Data &data);
         void Init(int nv);
 
-        Matrix3d RotationMatrix(const pinocchio::Data &data) const
+        Eigen::Matrix3d RotationMatrix(const pinocchio::Data &data) const
         {
             return data.oMf[frame_id].rotation();
         }
@@ -204,7 +202,7 @@ public:
     }
 
 protected:
-    void InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const VectorXd &locked_joints_q = VectorXd::Zero(0));
+    void InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names = {}, const Eigen::VectorXd &locked_joints_q = Eigen::VectorXd::Zero(0));
     virtual void ComputeContactClassifierInput() = 0;
     pinocchio::Model model_; // Pinocchio model
     pinocchio::Data data_;   // Pinocchio data
@@ -233,9 +231,9 @@ protected:
     Eigen::VectorXd q_;  // Joint positions
     Eigen::VectorXd dq_; // Joint velocities
 
-    MatrixXd B_; // Declare the input matrix
-    VectorXd u_lb_;
-    VectorXd u_ub_;
+    Eigen::MatrixXd B_; // Declare the input matrix
+    Eigen::VectorXd u_lb_;
+    Eigen::VectorXd u_ub_;
 
 private:
     double mass_;

@@ -68,7 +68,7 @@ void BasicControllerStateMachine::Init(const std::string &config_folder, const s
    timer_.Reset();
 
 
-   locomotion_input_ = VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
+   locomotion_input_ = Eigen::VectorXd::Zero(robot_ptr->nu()); // Adjust the size as needed
 }
 
 BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredCommand &command,
@@ -194,7 +194,7 @@ BipedMotorCommands BasicControllerStateMachine::UpdateControl(const DesiredComma
    return motor_commands_;
 }
 
-Eigen::VectorXf BasicControllerStateMachine::CollectLog(const double t, const std::vector<VectorXd> &vectors)
+Eigen::VectorXf BasicControllerStateMachine::CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors)
 {
    int logsize = 1; // Start with 1 for the time
    for (const auto &vec : vectors)

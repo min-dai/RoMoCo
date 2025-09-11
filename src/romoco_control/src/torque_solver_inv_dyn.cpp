@@ -23,20 +23,16 @@ void TorqueSolverInvDyn::Init(const std::string &config_file)
     OutputKP_ = yaml_parser_.get_VectorXd("id/OutputKP");
     OutputKD_ = yaml_parser_.get_VectorXd("id/OutputKD");
 
-    // OutputKPing_
-    OutputKPing_ = OutputKP_;
-    OutputKDing_ = OutputKD_;
-
     motor_commands_.ZeroAll(robot_->nu());
 }
 
 BipedMotorCommands TorqueSolverInvDyn::Solve()
 {
-    VectorXd u_sol;
+    Eigen::VectorXd u_sol;
 
     Eigen::MatrixXd B = output_->B();
-    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKPing_);
-    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKDing_);
+    Eigen::VectorXd KP = output_->SelectActiveOutputs(OutputKP_);
+    Eigen::VectorXd KD = output_->SelectActiveOutputs(OutputKD_);
 
     Eigen::MatrixXd Jc = output_->Jh();
     Eigen::VectorXd ddy_star = output_->d2yd() - KP.cwiseProduct(output_->ya() - output_->yd()) - KD.cwiseProduct(output_->dya() - output_->dyd());
@@ -66,7 +62,7 @@ BipedMotorCommands TorqueSolverInvDyn::Solve()
 
         Eigen::MatrixXd invJ = PseudoInverse(Jfullrank, threshold_);
 
-        VectorXd ddq_target = invJ * bfullrank;
+        Eigen::VectorXd ddq_target = invJ * bfullrank;
 
         u_sol = (Su * Q.transpose() * B).completeOrthogonalDecomposition().solve(Su) * Q.transpose() * (robot_->D() * ddq_target + robot_->H());
     }

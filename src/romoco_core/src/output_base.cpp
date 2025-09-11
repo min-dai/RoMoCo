@@ -49,15 +49,15 @@ void OutputBase::SetOutputSize(int nq, int ny)
 
 
 
-void OutputBase::ForwardPosIK(const VectorXd &qk, VectorXd &fk, MatrixXd &Jk)
+void OutputBase::ForwardPosIK(const Eigen::VectorXd &qk, Eigen::VectorXd &fk, Eigen::MatrixXd &Jk)
 {
-    robot_->UpdateKinematics(qk, VectorXd::Zero(robot_->nv()));
+    robot_->UpdateKinematics(qk, Eigen::VectorXd::Zero(robot_->nv()));
     ComputeActual();
     fk = ya_(active_y_idx_);
     Jk = Jya_(active_y_idx_, Eigen::all);
 }
 
-void OutputBase::SetBezierDesiredOutputs(const VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx)
+void OutputBase::SetBezierDesiredOutputs(const Eigen::VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx)
 {
     yd_(OutputIdx) = bezier_tools::bezier(alpha, tau);
     dyd_(OutputIdx) = bezier_tools::dtimeBezier(alpha, tau, dtau);

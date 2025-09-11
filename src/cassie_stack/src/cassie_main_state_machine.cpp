@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
     std::shared_ptr<OutputBase> output;
     std::unique_ptr<TorqueSolverBase> torque_solver;
 
-    auto getLegModel = [](const VectorXd &q)
+    auto getLegModel = [](const Eigen::VectorXd &q)
     { return q.head(18); };
-    auto getUpper = [](const VectorXd &q)
-    { return VectorXd::Zero(0); };
+    auto getUpper = [](const Eigen::VectorXd &q)
+    { return Eigen::VectorXd::Zero(0); };
 
     // with estimation
     std::unique_ptr<RobotBasePinocchio> robot_ptr_estimation = std::make_unique<CassieModel>(ros_config.config_folder);
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     double t_sim = 0.0;
 
-    VectorXd fake_radio;
+    Eigen::VectorXd fake_radio;
 
     while (rclcpp::ok())
     {

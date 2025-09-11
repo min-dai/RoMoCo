@@ -85,11 +85,11 @@ public:
 
     virtual bool is_ready_to_transit() const { return true; }  // Base implementation
 
-    virtual std::vector<VectorXd> CollectLog() const { return std::vector<VectorXd>{VectorXd::Zero(0)}; } // Base implementation
+    virtual std::vector<Eigen::VectorXd> CollectLog() const { return std::vector<Eigen::VectorXd>{Eigen::VectorXd::Zero(0)}; } // Base implementation
 
-    virtual VectorXd NaiveUpperJointsDesired(const VectorXd& default_q){return default_q;};
+    virtual Eigen::VectorXd NaiveUpperJointsDesired(const Eigen::VectorXd& default_q){return default_q;};
 
-    void ForwardPosIK(const VectorXd &qk,  VectorXd &fk, MatrixXd &Jk);
+    void ForwardPosIK(const Eigen::VectorXd &qk,  Eigen::VectorXd &fk, Eigen::MatrixXd &Jk);
 
 
 protected:
@@ -110,14 +110,14 @@ protected:
 
     //actuated indices in actuator list
     //mostly just full list {0,1,2,...,nu}
-    //use to deactivate stance ankle torque for HLIP walking
+    //use to deactivate stance ankle torque for LIP walking
     std::vector<int> actuated_u_idx_;
     std::vector<int> actuated_q_idx_;
     std::vector<int> active_y_idx_;
 
     void SetOutputSize(int nq, int ny);
 
-    void SetBezierDesiredOutputs(const VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx);
+    void SetBezierDesiredOutputs(const Eigen::VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx);
 
     std::vector<int> generate_full_y_idx(int nY){
         std::vector<int> full_y_idx;

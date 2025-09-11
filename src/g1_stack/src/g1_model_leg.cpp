@@ -4,7 +4,7 @@
 namespace romoco
 {
 
-G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+G1ModelLeg::G1ModelLeg(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
     : PlaneFootRobotBasePinocchio(urdf_path, locked_encoder_names, locked_joints_q)
 {
     Init();
@@ -146,7 +146,7 @@ void G1ModelLeg::InitActuationImpl(int nu)
     nu_ = nu;
 
     // set actuateion matrix
-    VectorXd Btmp = model_.rotorGearRatio.tail(nu_);
+    Eigen::VectorXd Btmp = model_.rotorGearRatio.tail(nu_);
     B_.setZero(model_.nv, nu_);
     B_.bottomRows(nu_) = Btmp.asDiagonal();
     u_ub_ = model_.effortLimit.tail(nu_);
@@ -186,8 +186,8 @@ Kinematics1D G1ModelLeg::GetBaseDeltaRoll()
 
 void G1ModelLeg::ComputeContactClassifierInput()
 {
-    MatrixXd Jleft = left_below_ankle_.kinematics.jacobian;
-    MatrixXd Jright = right_below_ankle_.kinematics.jacobian;
+    Eigen::MatrixXd Jleft = left_below_ankle_.kinematics.jacobian;
+    Eigen::MatrixXd Jright = right_below_ankle_.kinematics.jacobian;
 
     contact_classifier_input_.Jleft_active = Jleft(Eigen::all, {LeftHipPitch, LeftHipRoll, LeftHipYaw, LeftKneePitch, LeftAnklePitch, LeftAnkleRoll});
     contact_classifier_input_.Jright_active = Jright(Eigen::all, {RightHipPitch, RightHipRoll, RightHipYaw, RightKneePitch, RightAnklePitch, RightAnkleRoll});

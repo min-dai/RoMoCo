@@ -1,6 +1,7 @@
 #include "romoco_output/walking_output_fp.hpp"
-#include "romoco_planner/HLIPplanner.hpp"
-#include "romoco_planner/DCMplanner.hpp"
+#include "romoco_planner/hlip_planner.hpp"
+#include "romoco_planner/dcm_planner.hpp"
+#include "romoco_planner/mlip_flat_planner.hpp"
 
 namespace romoco
 {
@@ -31,7 +32,14 @@ void WalkingOutputFp::Init(const std::string &config_file)
 {
    config.InitConfigBase(config_file, robot_->robot_type());
 
-   ROplanner = std::make_unique<DCMPlanner>();
+   if (config.ro_planner_name == "mlip_flat")
+      ROplanner = std::make_unique<MLIPFlatPlanner>();
+   else if (config.ro_planner_name == "hlip")
+      ROplanner = std::make_unique<HLIPPlanner>();
+   else if (config.ro_planner_name == "dcm")
+      ROplanner = std::make_unique<DCMPlanner>();
+   else
+      throw std::runtime_error("Unsupported ro_planner: " + config.ro_planner_name + ". Supported planners are: mlip_flat, hlip, dcm");
 
    // Update updated struct using config assuming radio is zero
    DesiredCommand command;
@@ -114,8 +122,8 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          // Update bezier parameters for swing and stance hip yaw
          double ToYaw = updated.delta_yaw / 2.;
          // double ToYaw = (updated.stance_toe_yaw) / 2.;
-         updated.bezierStanceHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(stanceHipYaw) + config.bezierSwingHorizontal * ToYaw;
-         updated.bezierSwingHipYaw = (VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingHipYaw) - config.bezierSwingHorizontal * ToYaw;
+         updated.bezierStanceHipYaw = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(stanceHipYaw) + config.bezierSwingHorizontal * ToYaw;
+         updated.bezierSwingHipYaw = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingHipYaw) - config.bezierSwingHorizontal * ToYaw;
 
          // Compute Friction Constraints
          ComputeFrictionConstraints(config.fric_params);
@@ -284,7 +292,7 @@ Eigen::Vector2d WalkingOutputFp::computeFPwithROmodel()
 void WalkingOutputFp::ComputeActual()
 {
    Eigen::Matrix3d Rbase = robot_->GetBaseR_yaw();
-   // TODO: changed COM to base
+
    if (domain.isLeftStance())
    {
       com2stance_zeroyaw = (robot_->com_kinematics() - robot_->left_below_ankle_kinematics()).Rot(Rbase.transpose());

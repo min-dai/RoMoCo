@@ -1,7 +1,9 @@
 
 # qp or posik
-controller: "posik"
+controller: "qp"
 
+# mlip_flat, dcm, hlip, alip
+ro_planner: "mlip_flat"
 
 
 pose_command: 

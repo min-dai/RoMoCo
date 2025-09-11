@@ -6,6 +6,8 @@ void WalkingOutputBase::ConfigBase::InitConfigBase(const std::string &config_fil
 {
    yaml_parser.Init(config_file);
 
+   ro_planner_name = yaml_parser.get_string("ro_planner");
+
    dt_lowpass = yaml_parser.get_double("pose_command/dt_lowpass");
    velX_dt_cutoff = yaml_parser.get_double("pose_command/velX_dt_cutoff");
    velY_dt_cutoff = yaml_parser.get_double("pose_command/velY_dt_cutoff");
@@ -36,8 +38,8 @@ void WalkingOutputBase::ConfigBase::InitConfigBase(const std::string &config_fil
 
 void WalkingOutputBase::ComputeHolonomicConstraints()
 {
-   MatrixXd Jh_internal, Jh_contact;
-   VectorXd dJhdq_internal, dJhdq_contact;
+   Eigen::MatrixXd Jh_internal, Jh_contact;
+   Eigen::VectorXd dJhdq_internal, dJhdq_contact;
    robot_->GetInternalHolonomicConstraints(Jh_internal, dJhdq_internal);
 
    robot_->GetContactHolonomicConstraints(domain.leftC, domain.rightC, Jh_contact, dJhdq_contact);

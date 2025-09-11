@@ -30,7 +30,7 @@ public:
    void Close();
 
 private:
-   Eigen::VectorXf CollectLog(const double t, const std::vector<VectorXd> &vectors);
+   Eigen::VectorXf CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors);
 
    void SelectControllers(Mode mode, const std::string &config_file, std::shared_ptr<RobotBasePinocchio> robot_ptr, std::shared_ptr<OutputBase> &output, std::unique_ptr<TorqueSolverBase> &torque_solver);
 
@@ -56,7 +56,7 @@ private:
 
    // for upper body locked joints PD control
    int n_locked_joints_ = 0;
-   VectorXd q_locked_joints_des_, dq_locked_joints_des_;
+   Eigen::VectorXd q_locked_joints_des_, dq_locked_joints_des_;
    PDController locked_joints_pd_controller_;
 };
 

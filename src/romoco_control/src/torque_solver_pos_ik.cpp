@@ -16,8 +16,8 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
     // Load the configuration parameters
     // Implement the initialization of the solver
 
-    VectorXd JointKPtmp = yaml_parser_.get_VectorXd("posik/JointKP");
-    VectorXd JointKDtmp = yaml_parser_.get_VectorXd("posik/JointKD");
+    Eigen::VectorXd JointKPtmp = yaml_parser_.get_VectorXd("posik/JointKP");
+    Eigen::VectorXd JointKDtmp = yaml_parser_.get_VectorXd("posik/JointKD");
 
     max_iter_ = yaml_parser_.get_int("posik/max_iter");
     tol_ = yaml_parser_.get_double("posik/tol");
@@ -27,8 +27,8 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
     if (JointKPtmp.size() == robot_->nu() / 2)
     {
         // stack the gains for each leg
-        JointKP_ = VectorXd::Zero(robot_->nu());
-        JointKD_ = VectorXd::Zero(robot_->nu());
+        JointKP_ = Eigen::VectorXd::Zero(robot_->nu());
+        JointKD_ = Eigen::VectorXd::Zero(robot_->nu());
         JointKP_ << JointKPtmp, JointKPtmp;
         JointKD_ << JointKDtmp, JointKDtmp;
     }
@@ -40,10 +40,6 @@ void TorqueSolverPOSIK::Init(const std::string &config_file)
         std::cerr << "Invalid size of JointKP_ and JointKD_" << std::endl;
     }
 
-    // OutputKPing
-    JointKPing_ = JointKP_;
-    JointKDing_ = JointKD_;
-
 
     motor_commands_.ResizeAll(robot_->nu());
 
@@ -54,14 +50,14 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 
     SolveIk();
 
-    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKPing_);
-    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKDing_);
+    Eigen::VectorXd KP = output_->SelectActuatedMotors(JointKP_);
+    Eigen::VectorXd KD = output_->SelectActuatedMotors(JointKD_);
 
     pd_controller_.Reconfigure(KP, KD);
 
-    VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
+    Eigen::VectorXd u_fb = pd_controller_.Compute(qm_des_, dqm_des_, qm_actual_, dqm_actual_);
 
-    VectorXd u_ff = SolveGravityCompensation();
+    Eigen::VectorXd u_ff = SolveGravityCompensation();
 
     motor_commands_.joint_torques_ff = output_->MapToFullMotors(u_ff);
     motor_commands_.joint_positions = output_->MapToFullMotors(qm_des_);
@@ -76,7 +72,7 @@ BipedMotorCommands TorqueSolverPOSIK::Solve()
 void TorqueSolverPOSIK::SolveIk()
 {
 
-    VectorXd q_now = robot_->q();
+    Eigen::VectorXd q_now = robot_->q();
 
     qm_actual_ = output_->SelectActuatedStates(q_now);
     dqm_actual_ = output_->SelectActuatedStates(robot_->dq());
@@ -85,19 +81,19 @@ void TorqueSolverPOSIK::SolveIk()
     qm_des_ = qm_actual_;
 
     // forward kinematics IK
-    VectorXd f = output_->ya();
-    MatrixXd J = output_->Jya();
+    Eigen::VectorXd f = output_->ya();
+    Eigen::MatrixXd J = output_->Jya();
 
-    VectorXd qfull = q_now;
+    Eigen::VectorXd qfull = q_now;
 
     // Null-space projection for holonomic constraints
-    MatrixXd Nhol = MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
+    Eigen::MatrixXd Nhol = Eigen::MatrixXd::Identity(robot_->nv(), robot_->nv()) - output_->Jh().completeOrthogonalDecomposition().solve(output_->Jh());
 
     int iter = 0;
     do
     {
         iter++;
-        VectorXd deltaq = (J * Nhol).completeOrthogonalDecomposition().solve(output_->yd() - f);
+        Eigen::VectorXd deltaq = (J * Nhol).completeOrthogonalDecomposition().solve(output_->yd() - f);
         qfull += deltaq;
         output_->ForwardPosIK(qfull, f, J);
     } while ((output_->yd() - f).norm() > tol_ && iter < max_iter_);
@@ -107,7 +103,7 @@ void TorqueSolverPOSIK::SolveIk()
         std::cerr << "[IK Warning] Did not converge after " << max_iter_ << " iterations. " << std::endl;
         return;
     }
-    VectorXd dqdes_full = (J * Nhol).completeOrthogonalDecomposition().solve(output_->dyd());
+    Eigen::VectorXd dqdes_full = (J * Nhol).completeOrthogonalDecomposition().solve(output_->dyd());
     qm_des_ = output_->SelectActuatedStates(qfull);
     dqm_des_ = output_->SelectActuatedStates(dqdes_full);
 

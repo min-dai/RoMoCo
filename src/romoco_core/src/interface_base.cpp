@@ -257,7 +257,7 @@ void InterfaceBase::PrintDebugInfo() const
    std::cout << "=========================" << std::endl;
 }
 
-Eigen::VectorXf InterfaceBase::CollectLog(const double t, const std::vector<VectorXd> &vectors)
+Eigen::VectorXf InterfaceBase::CollectLog(const double t, const std::vector<Eigen::VectorXd> &vectors)
 {
    int logsize = 1; // Start with 1 for the time
    for (const auto &vec : vectors)

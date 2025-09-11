@@ -18,14 +18,14 @@ namespace romoco
       double tol_ = 1e-3;
       int max_iter_ = 100;
 
-      VectorXd qm_des_, dqm_des_;
+      Eigen::VectorXd qm_des_, dqm_des_;
 
-      VectorXd qm_actual_, dqm_actual_;
+      Eigen::VectorXd qm_actual_, dqm_actual_;
 
-      VectorXd JointKP_, JointKD_;
-      VectorXd JointKPing_, JointKDing_;
+      Eigen::VectorXd JointKP_, JointKD_;
 
-      VectorXd u_sol;
+
+      Eigen::VectorXd u_sol;
 
       void SolveIk();
 

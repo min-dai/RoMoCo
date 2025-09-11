@@ -20,17 +20,17 @@ RobotBasePinocchio::RobotBasePinocchio(const std::string &config_folder)
     }
     else
     {
-        VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
+        Eigen::VectorXd locked_joints_q = yaml_parser.get_VectorXd("qdes_locked_joints");
         InitPinocchioModel(urdf_path, locked_encoder_names, locked_joints_q);
     }
 }
 
-RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+RobotBasePinocchio::RobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
 {
     InitPinocchioModel(urdf_path, locked_encoder_names, locked_joints_q);
 }
 
-void RobotBasePinocchio::InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q)
+void RobotBasePinocchio::InitPinocchioModel(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q)
 {
     pinocchio::JointModelComposite jointComposite(2);
     jointComposite.addJoint(pinocchio::JointModelTranslation());
@@ -163,18 +163,18 @@ void RobotBasePinocchio::UpdateAllZeroBase()
     UpdateDynamics(q_, dq_);
 }
 
-VectorXd RobotBasePinocchio::ComputeCentroidalAngularMomentum()
+Eigen::VectorXd RobotBasePinocchio::ComputeCentroidalAngularMomentum()
 {
     // Compute the centroidal momentum
     pinocchio::computeCentroidalMomentum(model_, data_);
     return data_.hg.angular();
 }
 
-VectorXd RobotBasePinocchio::ComputeCentroidalMomentum()
+Eigen::VectorXd RobotBasePinocchio::ComputeCentroidalMomentum()
 {
     // Compute the centroidal momentum
     pinocchio::computeCentroidalMomentum(model_, data_);
-    VectorXd hg(6);
+    Eigen::VectorXd hg(6);
     hg.head(3) = data_.hg.angular();
     hg.tail(3) = data_.hg.linear();
     return hg;
@@ -201,14 +201,14 @@ void RobotBasePinocchio::ComputeForwardKinematics(const Eigen::VectorXd &q, cons
 
 double RobotBasePinocchio::GetLeftToeYaw() const
 {
-    Matrix3d Rleft = left_below_ankle_.RotationMatrix(data_);
+    Eigen::Matrix3d Rleft = left_below_ankle_.RotationMatrix(data_);
     Eigen::EulerAnglesZYXd eul = eulerZYX(Rleft);
     return eul.alpha();
 }
 
 double RobotBasePinocchio::GetRightToeYaw() const
 {
-    Matrix3d Rright = right_below_ankle_.RotationMatrix(data_);
+    Eigen::Matrix3d Rright = right_below_ankle_.RotationMatrix(data_);
     Eigen::EulerAnglesZYXd eul = eulerZYX(Rright);
     return eul.alpha();
 }
@@ -265,7 +265,7 @@ void RobotBasePinocchio::FrameKinematics3D::Update(pinocchio::Model &model, pino
     pinocchio::ReferenceFrame ref_frame = local_world_aligned ? pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED : pinocchio::ReferenceFrame::LOCAL;
     kinematics.position = data.oMf[frame_id].translation();
     kinematics.velocity = pinocchio::getFrameVelocity(model, data, frame_id, ref_frame).linear();
-    MatrixXd Jtmp = Eigen::MatrixXd::Zero(6, model.nv);
+    Eigen::MatrixXd Jtmp = Eigen::MatrixXd::Zero(6, model.nv);
     pinocchio::getFrameJacobian(model, data, frame_id, ref_frame, Jtmp);
     kinematics.jacobian = Jtmp.topRows(3);
     pinocchio::Motion dJdqtmp = pinocchio::getFrameClassicalAcceleration(model, data, frame_id, ref_frame);

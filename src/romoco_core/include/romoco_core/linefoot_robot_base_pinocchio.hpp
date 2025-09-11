@@ -8,7 +8,7 @@ namespace romoco
 class LineFootRobotBasePinocchio : public RobotBasePinocchio
 {
 public:
-   explicit LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const VectorXd &locked_joints_q);
+   explicit LineFootRobotBasePinocchio(const std::string &urdf_path, const std::vector<std::string> &locked_encoder_names, const Eigen::VectorXd &locked_joints_q);
    explicit LineFootRobotBasePinocchio(const std::string &config_folder);
    virtual ~LineFootRobotBasePinocchio() override = default;
 
@@ -19,8 +19,8 @@ public:
 
    RobotType robot_type() const override { return RobotType::LineFoot; }
 
-   void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Jh, VectorXd &dJhdq, const Matrix3d Rground) override;
-   void GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, MatrixXd &Acone, VectorXd &bcone) override;
+   void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq, const Eigen::Matrix3d Rground) override;
+   void GetFrictionCone(const FrictionParams fric_params, const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone) override;
 
 protected:
    // all frame kinematics needed so far
@@ -32,8 +32,8 @@ protected:
    std::vector<std::pair<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>, std::string>> GetFrameIds() override;
 
 private:
-   void GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B, MatrixXd &Jh, VectorXd &dJhdq);
-   void GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, MatrixXd &Acone, VectorXd &bcone);
+   void GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq);
+   void GetFrictionConeSingleFoot(const FrictionParams fric_params, const FootContactStatus con, Eigen::MatrixXd &Acone, Eigen::VectorXd &bcone);
 };
 
 } // namespace romoco
