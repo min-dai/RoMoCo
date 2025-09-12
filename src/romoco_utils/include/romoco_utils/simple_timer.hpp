@@ -47,6 +47,8 @@ class SimpleTimer {
   // Seconds since start.
   double ElapsedSinceStart() const { return t_now_ - t0_; }
 
+  double OldElapsedSinceStart() const { return t_old_ - t0_; }
+
   // Seconds between last Tick() calls.
   double DeltaTime() const { return t_now_ - t_old_; }
 

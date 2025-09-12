@@ -13,10 +13,9 @@ def generate_launch_description() -> LaunchDescription:
             name="cassie_state_machine",
             output="screen"
         ),
-        Node(
-            package="romoco_screen_radio",
-            executable="screen_radio_node",
-            name="screen_radio_node",
-            output="screen"
-        )
+        # Node(
+        #     package="romoco_screen_radio",
+        #     executable="screen_radio_node",
+        #     name="screen_radio_node",
+        # )
     ])

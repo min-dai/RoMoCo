@@ -30,7 +30,7 @@ namespace romoco
 
         bool print_qp_ = false;
         Eigen::VectorXd OutputKP_, OutputKD_;
-        Eigen::VectorXd OutputKPing_, OutputKDing_;
+        Eigen::VectorXd OutputW_;
 
         int nVar_;
         Eigen::MatrixXd A_y_;

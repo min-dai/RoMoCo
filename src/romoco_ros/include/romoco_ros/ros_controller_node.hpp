@@ -4,7 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <mutex>
 #include <atomic>
-#include "romoco_state_machine/basic_controller_state_machine.hpp"
+#include "romoco_state_machine/controller_state_machine.hpp"
 #include "romoco_msgs/msg/biped_motor_commands.hpp"
 #include "romoco_msgs/msg/biped_proprioception.hpp"
 #include "romoco_core/biped_proprioception.hpp"

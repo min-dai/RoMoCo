@@ -4,6 +4,7 @@ classdef CassieLog < handle
         nConfigSpace = 18;
         nContactF = 5;
         path = [getenv('HOME') '/ROBOTLOG/Cassie/']
+        folder_name = 'logs_2025-09-03_20-03-28'
         
         inair_output_list = {'LeftFootx','LeftFooty','LeftFootz','LeftFootPitch','LeftFootYaw','RightFootx','RightFooty','RightFootz','RightFootPitch','RightFootYaw'};
         
@@ -38,6 +39,19 @@ classdef CassieLog < handle
     methods
         function  obj =   CassieLog()
 
+        end
+                function newestFolderName = getNewestG1LogFolderNameOnly(obj)
+
+            d = dir(obj.path);
+            d = d([d.isdir] & ~ismember({d.name}, {'.', '..'}));
+            if isempty(d)
+                newestFolderName = '';
+                return;
+            end
+            [~, idx] = max([d.datenum]);
+            newestFolderName = d(idx).name;
+        end
+        function  obj =   G1Log()
         end
         
         function plotInAir(obj)
@@ -106,7 +120,9 @@ classdef CassieLog < handle
         end
 
         function plotWalk(obj)
-            fileID = fopen( [obj.path, 'logWalk.bin']);
+                        newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logWalk.bin']);
             raw = fread(fileID,'float');
             
             nY = length(obj.walkHLIP_output_list);
@@ -134,9 +150,22 @@ classdef CassieLog < handle
             for i = 1:nU
                 nexttile; plot(t, u_leg(i,:)); title(obj.motor_list{i}); xlabel('Time (s)'); ylabel('Torque (Nm)'); grid on;
             end
+            % 
+            % plotJointPos(obj, t, q)
+            % plotJointVel(obj, t, dq)
 
-            plotJointPos(obj, t, q)
-            plotJointVel(obj, t, dq)
+            %plot COM
+            figure
+            tiledlayout(3,3);
+            nexttile; plot(t, pCOM(1,:)); title('COM X'); xlabel('Time (s)'); ylabel('X (m)'); grid on;
+            nexttile; plot(t, pCOM(2,:)); title('COM Y'); xlabel('Time (s)'); ylabel('Y (m)'); grid on;
+            nexttile; plot(t, pCOM(3,:)); title('COM Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
+            nexttile; plot(t, vCOM(1,:)); hold on; plot(t, vdx); title('COM Vel X'); xlabel('Time (s)'); legend('actual','desired'); grid on;
+            nexttile; plot(t, vCOM(2,:)); hold on; plot(t, vdy); title('COM Vel Y'); xlabel('Time (s)'); legend('actual','desired'); grid on;
+            nexttile; plot(t, vCOM(3,:)); title('COM Vel Z'); xlabel('Time (s)'); ylabel('Z (m/s)'); grid on;
+            nexttile; plot(t, Lpivot(1,:)); title('Lpivot X'); xlabel('Time (s)'); ylabel('X (m)'); grid on;
+            nexttile; plot(t, Lpivot(2,:)); title('Lpivot Y'); xlabel('Time (s)'); ylabel('Y (m)'); grid on;
+            nexttile; plot(t, Lpivot(3,:)); title('Lpivot Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
         end
 
 

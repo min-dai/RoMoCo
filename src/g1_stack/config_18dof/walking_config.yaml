@@ -1,9 +1,9 @@
 
-# qp or posik
-controller: "qp"
+# qp or posik, velik
+controller: "id"
 
 # mlip_flat, dcm, hlip, alip
-ro_planner: "mlip_flat"
+ro_planner: "dcm"
 
 
 pose_command: 
@@ -39,17 +39,20 @@ friction:
 qp:
   ifprintQP: true
   # #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
-  OutputKP: [150,  300,  400,  400,  300, 300,500,  300,     800,    400]
-  OutputKD: [10,    10,    8,   8,     8,   8 , 3,   10,      20,      3]
+  OutputW:  [1,     1,   1,    1,      1,  1,  1,   1,      1,       1]
+  OutputKP: [150,  300,  400,  400,  300, 300,500,  300,    1000,    400]
+  OutputKD: [10,    10,    8,   8,     8,   8 , 10,   10,    20,      3]
 
 
 id:
 #the ID gain works reasonably well, use it as baseline for tuning
   threshold: 0.000001
-  OutputKP: [150, 300, 400,400, 300, 300,300, 400,800,400]
-  OutputKD: [15,5,8,8,3,3,3,5,3,3]
+  # OutputKP: [150, 300, 400,400, 300, 300,300, 400,800,400]
+  # OutputKD: [15,5,8,8,3,3,3,5,3,3]
   # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200]
   # OutputKD: [2,5,8,8,3,3,3,3,5,3]
+  OutputKP: [150,  300,  400,  400,  300, 300,500,  300,    1000,    400]
+  OutputKD: [10,    10,    8,   8,     8,   8 , 10,   10,    20,      3]
 
 
 posik:

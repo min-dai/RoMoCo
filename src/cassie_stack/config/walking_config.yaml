@@ -2,16 +2,16 @@
 controller: "qp"
 
 # mlip_flat, dcm, hlip, alip
-ro_planner: "alip"
+ro_planner: "dcm"
 
 pose_command: 
   dt_lowpass: 0.0005
-  velX_dt_cutoff: 0.01
-  velY_dt_cutoff: 0.01
+  velX_dt_cutoff: 2
+  velY_dt_cutoff: 2
   vx_offset: 0.0
   vy_offset: 0.0
   TSS: 0.3
-  TDS: 0.0
+  TDS: 0.05
   znom: 0.75
   zsw_max: 0.2
   zsw_neg: -0.01 #-0.01
@@ -19,7 +19,7 @@ pose_command:
   bezierSwingHorizontal: [0, 0, 1, 1, 1]
   bezierComVertical: [0, 0, 0, 1, 1, 1]
   maxStepSize: 1.0
-  velXmax: 1.0
+  velXmax: 1
   velYmax: 0.5
 
 
@@ -36,9 +36,12 @@ friction:
 
 qp:
   ifprintQP: false
-  #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch 
-  OutputKP: [150, 200, 600,500, 300, 300,300, 200,200]
-  OutputKD: [2,5,8,8,3,3,3,5,3]
+  #        zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch 
+  OutputW:  [1,    1,      1,        1,      3,  3,  1,   1, 1]
+  OutputKP: [350,  200,    200,      200,   300, 300,200, 200,1000]
+  OutputKD: [10,   10,     10,       10,     10, 10, 10,  10, 50]
+
+
 
 
 

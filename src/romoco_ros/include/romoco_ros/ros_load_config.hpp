@@ -9,6 +9,43 @@
 
 namespace romoco
 {
+    // Utility function for recursive copy
+    inline void CopyFilesRecursively(const std::filesystem::path &source_dir,
+                                     const std::filesystem::path &target_dir)
+    {
+        if (!std::filesystem::exists(source_dir) ||
+            !std::filesystem::is_directory(source_dir))
+        {
+            std::cerr << "Warning: Source directory does not exist or is not a directory: "
+                      << source_dir << std::endl;
+            return;
+        }
+
+        for (const auto &entry : std::filesystem::directory_iterator(source_dir))
+        {
+            const auto &path = entry.path();
+            auto target_path = target_dir / path.filename();
+
+            try
+            {
+                if (std::filesystem::is_regular_file(path))
+                {
+                    std::filesystem::copy_file(
+                        path, target_path, std::filesystem::copy_options::overwrite_existing);
+                }
+                else if (std::filesystem::is_directory(path))
+                {
+                    std::filesystem::create_directories(target_path);
+                    CopyFilesRecursively(path, target_path);
+                }
+            }
+            catch (const std::filesystem::filesystem_error &e)
+            {
+                std::cerr << "Error copying " << path << ": " << e.what() << std::endl;
+            }
+        }
+    }
+
     /**
      * @struct RosLoadConfig
      * @ingroup group_interface
@@ -67,6 +104,8 @@ namespace romoco
                 std::cerr << "Warning: Failed to create log directory " << log_path
                           << ": " << e.what() << std::endl;
             }
+
+            CopyFilesRecursively(config_folder, log_path);
         }
     };
 } // namespace romoco

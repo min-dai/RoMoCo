@@ -21,6 +21,7 @@ void TorqueSolverTSCQP::Init(const std::string &config_file)
     print_qp_ = yaml_parser_.get_bool("qp/ifprintQP");
     OutputKP_ = yaml_parser_.get_VectorXd("qp/OutputKP");
     OutputKD_ = yaml_parser_.get_VectorXd("qp/OutputKD");
+    OutputW_ = yaml_parser_.get_VectorXd("qp/OutputW");
 
     ResetSize();
 
@@ -82,13 +83,8 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
          + KP.cwiseProduct(output_->ya() - output_->yd())
          + KD.cwiseProduct(output_->dya() - output_->dyd());
 
-    G_ << A_y_.transpose() * A_y_;
-    g_ << A_y_.transpose() * b_y_;
-
-
-    G_ += 1e-6 * Eigen::MatrixXd::Identity(G_.rows(), G_.cols());
-
-    
+    G_ << A_y_.transpose() * output_->SelectActiveOutputs(OutputW_).asDiagonal() * A_y_;
+    g_ << A_y_.transpose() * output_->SelectActiveOutputs(OutputW_).asDiagonal() * b_y_;
 
 
     //equality constraints

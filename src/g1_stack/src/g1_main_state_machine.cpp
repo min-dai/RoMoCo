@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 
-#include "romoco_state_machine/basic_state_machine.hpp"
+#include "romoco_state_machine/full_state_machine.hpp"
 
 #include "g1_model_leg.hpp"
 
@@ -12,11 +12,9 @@
 
 #include "romoco_ros/ros_load_config.hpp"
 
-
 #include "g1_mujoco_interface.hpp"
 
 using namespace romoco;
-
 
 Eigen::VectorXd predefined_radio(double t)
 {
@@ -52,14 +50,14 @@ int main(int argc, char *argv[])
     { return q.segment(18, 17); }; // assuming 17 upper joints
 
 
-    //with estimation
-    std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr_estimation = std::make_unique<romoco::robot::G1ModelLeg>(ros_config.config_folder);
+    // //with estimation
+    // std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_ptr_estimation = std::make_unique<romoco::robot::G1ModelLeg>(ros_config.config_folder);
 
-    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr_estimation));
+    // std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(ros_config.config_folder, ros_config.log_path, std::move(robot_ptr_estimation));
 
 
-    // //no estimation
-    // std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(ros_config.config_folder, ros_config.log_path);
+    //no estimation
+    std::unique_ptr<G1MujocoInterface> mujocosim = std::make_unique<G1MujocoInterface>(ros_config.config_folder, ros_config.log_path);
 
     BasicStateMachine state_machine(ros_config.config_folder, ros_config.log_path, robot_ptr, std::move(mujocosim));
 
@@ -71,9 +69,9 @@ int main(int argc, char *argv[])
     {
         rclcpp::spin_some(node);
 
-        fake_radio = node->fake_radio();
+        // fake_radio = node->fake_radio();
 
-        // fake_radio = predefined_radio(t_sim);
+        fake_radio = predefined_radio(t_sim);
         DesiredCommand command = ConvertScreenRadioToDesiredCommand(fake_radio);
 
 
