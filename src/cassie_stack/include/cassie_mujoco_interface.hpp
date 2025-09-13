@@ -6,7 +6,6 @@
 #include <vector>
 #include <Eigen/Dense>
 
-
 #include "romoco_core/mujoco_interface_base.hpp"
 #include "romoco_core/contact_kf.hpp"
 #include <cassie_interface/cassie_out_t.h>
@@ -15,55 +14,56 @@
 
 namespace romoco
 {
-class CassieMujocoInterface : public MujocoInterfaceBase
-{
-public:
-    CassieMujocoInterface();
-    CassieMujocoInterface(const std::string &config_file, const std::string &log_path);
-    CassieMujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot);
-    ~CassieMujocoInterface() override;
+    /**
+     * @class CassieMujocoInterface
+     * @brief A MuJoCo interface specialized for the Cassie robot.
+     * This class extends the MujocoInterfaceBase to provide Cassie-specific simulation and estimation functionalities.
+     * It integrates with the Cassie MuJoCo model and handles sensor data, control inputs, and state estimation.
+     * @ingroup group_cassie_examples
+     */
+    class CassieMujocoInterface : public MujocoInterfaceBase
+    {
+    public:
+        CassieMujocoInterface();
+        CassieMujocoInterface(const std::string &config_file, const std::string &log_path);
+        CassieMujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot);
+        ~CassieMujocoInterface() override;
 
-    BipedProprioception ReadAndEstimate() override;
-    void SendPacket() override;
+        BipedProprioception ReadAndEstimate() override;
+        void SendPacket() override;
 
+        bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) override;
 
-    
-    bool Step(const Eigen::VectorXd& leg_control_input, const Eigen::VectorXd& upper_control_input) override;
+        void SimHoldPelvis() override { cassie_sim_hold(sim); }
+        void SimReleasePelvis() override { cassie_sim_release(sim); }
 
-    void SimHoldPelvis() override {cassie_sim_hold(sim);}
-    void SimReleasePelvis() override {cassie_sim_release(sim);}
+        bool paused() const override { return cassie_vis_paused(vis); }
+        double sim_time() const override { return *timeMujoP; }
 
-    
-    bool paused() const override {return cassie_vis_paused(vis);}
-    double sim_time() const override {return *timeMujoP;}
+    private:
+        void Init(const std::string &config_file, const std::string &log_path) override;
 
+        void Close();
 
-private:
-    void Init(const std::string& config_file, const std::string& log_path) override;
+        void UpdateMujocoTrueSensorData();
 
-    void Close();
+        void HandleRendering();
 
-    void UpdateMujocoTrueSensorData();
+        void Estimate();
 
-   void HandleRendering();
+        cassie_sim_t *sim;
+        cassie_vis_t *vis;
+        double *timeMujoP;
 
-   void Estimate();
+        cassie_out_t cassie_out;
+        cassie_user_in_t cassie_user_in = {0};
 
-
-   cassie_sim_t *sim;
-   cassie_vis_t *vis;
-   double *timeMujoP;
-
-   cassie_out_t cassie_out;
-   cassie_user_in_t cassie_user_in = {0};
-
-   // for estimation
-   void UpdateHardwareSensorData();
-   std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_;
-   std::unique_ptr<ContactKf> contact_kf_;
-   Eigen::Vector3d true_lin_vel_;
-   Eigen::Vector3d est_lin_vel_;
-
-};
+        // for estimation
+        void UpdateHardwareSensorData();
+        std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_;
+        std::unique_ptr<ContactKf> contact_kf_;
+        Eigen::Vector3d true_lin_vel_;
+        Eigen::Vector3d est_lin_vel_;
+    };
 } // namespace romoco
 #endif // CASSIE_MUJOCO_INTERFACE_HPP

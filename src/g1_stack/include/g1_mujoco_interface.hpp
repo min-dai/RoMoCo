@@ -9,6 +9,14 @@
 
 namespace romoco
 {
+   /**
+    * @brief MuJoCo interface for the Unitree G1 robot.
+    * @ingroup group_g1_examples
+    * @details This class provides a MuJoCo interface for simulating the Unitree G1 robot.
+    * It extends the MujocoInterfaceBase and integrates with the RoMoCo framework.
+    * The interface handles reading sensor data, sending control inputs, and estimating
+    * the robot's state within the MuJoCo simulation environment.
+    */
 class G1MujocoInterface : public MujocoInterfaceBase
 {
 public:

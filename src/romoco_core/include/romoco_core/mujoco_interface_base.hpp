@@ -20,10 +20,7 @@ public:
    MujocoInterfaceBase() : InterfaceBase(true) {} // Mujoco interface is always ready
    virtual ~MujocoInterfaceBase() = default;
 
-   bool IsInterfaceRunning() const override
-   {
-      return !paused();
-   }
+   bool IsInterfaceRunning() const override { return !paused(); }
    bool is_sim() const override { return true; }
 
    virtual BipedProprioception ReadAndEstimate() override;

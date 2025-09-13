@@ -7,7 +7,13 @@ namespace romoco
 {
     namespace robot
     {
-class G1Model : public G1ModelLeg
+/**
+ * @brief Pinocchio model for the full Unitree G1 robot with 29 joints.
+ * @ingroup group_g1_examples
+ * @details This class extends the G1ModelLeg to include the upper body joints of the Unitree G1 robot.
+ * This class is used for hierachical QP control for natural arm swing motion.
+ */
+        class G1Model : public G1ModelLeg
 {
 public:
     enum JointIndexFull

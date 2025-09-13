@@ -8,10 +8,8 @@ namespace romoco
     {
         /**
          * @brief Cassie robot model specialization using Pinocchio.
-         *
-         * Provides Cassie-specific joint indices, kinematics frames, and actuation mapping.
-         *
-         * \ingroup group_examples
+         * @ingroup group_cassie_examples
+         * This class extends the LineFootRobotBasePinocchio to provide Cassie-specific kinematics, dynamics, and actuation.
          */
         class CassieModel : public LineFootRobotBasePinocchio
         {

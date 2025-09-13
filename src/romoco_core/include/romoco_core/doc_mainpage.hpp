@@ -16,8 +16,9 @@
  * - \ref group_interface
  * - \ref group_utils
  * - \ref group_controller
- * - \ref group_examples
  * - \ref group_ui
+ * - \ref group_cassie_examples
+ * - \ref group_g1_examples
  */
 
 
@@ -34,8 +35,11 @@
 /// \defgroup group_ui UI
 /// GUI and ROS2 nodes for radio slider control.
 
-/// \defgroup group_examples ExampleStacks
-/// End-to-end robot stacks (e.g., Unitree G1, Cassie).
+/// \defgroup group_cassie_examples ExampleCassieStacks
+/// End-to-end robot stacks for Cassie
+
+/// \defgroup group_g1_examples ExampleG1Stacks
+/// End-to-end robot stacks for G1
 
 
 #endif  // ROMOCO_DOC_MAINPAGE_HPP_

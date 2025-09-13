@@ -2,6 +2,14 @@
 
 #include <cmath>
 
+/**
+ * @file gamepad.hpp
+ * @brief Gamepad interface for robot control.
+ * @ingroup group_g1_examples
+ * @details This file defines a Gamepad class and related structures for interfacing with a gamepad controller.
+ * The Gamepad class processes raw input data, applies smoothing and dead zone filtering, and provides
+ * button state management. It is designed to facilitate robot control using a gamepad.
+ */
 namespace unitree::common
 {
 
