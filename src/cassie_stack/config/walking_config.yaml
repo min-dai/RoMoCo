@@ -25,8 +25,8 @@ pose_command:
 
 friction:  
   frictionCoef: 1
-  Lfront: 0.08
-  Lback: 0.08
+  Lfront: 0.08 #max 0.1
+  Lback: -0.04 #max -0.06
   W: 0
   Fz_lb: 100.
   Rot_frictionCoef: 0.046

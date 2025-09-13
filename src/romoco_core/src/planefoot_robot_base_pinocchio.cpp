@@ -24,6 +24,35 @@ namespace romoco
              baseF_, baseB_, baseL_, baseR_};
       }
 
+      Kinematics1D PlaneFootRobotBasePinocchio::GetLeftFootDeltaPitch()
+      {
+         return ((left_footLB_.kinematics.z() + left_footRB_.kinematics.z()) / 2. - (left_footLF_.kinematics.z() + left_footRF_.kinematics.z()) / 2.) / (position_params.footMF_x - position_params.footMB_x);
+      }
+
+      Kinematics1D PlaneFootRobotBasePinocchio::GetRightFootDeltaPitch()
+      {
+         return ((right_footLB_.kinematics.z() + right_footRB_.kinematics.z()) / 2. - (right_footLF_.kinematics.z() + right_footRF_.kinematics.z()) / 2.) / (position_params.footMF_x - position_params.footMB_x);
+      }
+
+      Kinematics1D PlaneFootRobotBasePinocchio::GetLeftFootDeltaRoll()
+      {
+         return ((left_footLF_.kinematics.z() + left_footLB_.kinematics.z()) / 2. - (left_footRF_.kinematics.z() + left_footRB_.kinematics.z()) / 2.) / (position_params.footLF_y - position_params.footRF_y);
+      }
+
+      Kinematics1D PlaneFootRobotBasePinocchio::GetRightFootDeltaRoll()
+      {
+         return ((right_footLF_.kinematics.z() + right_footLB_.kinematics.z()) / 2. - (right_footRF_.kinematics.z() + right_footRB_.kinematics.z()) / 2.) / (position_params.footLF_y - position_params.footRF_y);
+      }
+
+      Kinematics1D PlaneFootRobotBasePinocchio::GetBaseDeltaPitch()
+      {
+         return (baseB_.kinematics.z() - baseF_.kinematics.z()) / (position_params.baseF_x - position_params.baseB_x);
+      }
+      Kinematics1D PlaneFootRobotBasePinocchio::GetBaseDeltaRoll()
+      {
+         return (baseL_.kinematics.z() - baseR_.kinematics.z()) / (position_params.baseL_y - position_params.baseR_y);
+      }
+
       void PlaneFootRobotBasePinocchio::GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &LF, const Kinematics3D &RF, const Kinematics3D &LB, const Kinematics3D &RB, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq)
       {
          // Add the implementation here
@@ -106,7 +135,7 @@ namespace romoco
          double l2 = fric_params.Lback;
          double s = fric_params.W;
 
-         // nu = 2/3.*mu*(l1+l2) / 2.;
+         // nu = 2/3.*mu*(l1-l2) / 2.;
          if (con == FootContactStatus::InAir)
          {
             Acone.resize(0, 0);
@@ -114,22 +143,7 @@ namespace romoco
          }
          else if (con == FootContactStatus::FlatPlaneContact)
          {
-            // int nCone = 11;
-            // int nM = 6;
-            // Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
-            // Acone_raw << 0, 0, -1, 0, 0, 0,
-            //     1, 0, -mu / sqrt(2.), 0, 0, 0,
-            //     -1, 0, -mu / sqrt(2.), 0, 0, 0,
-            //     0, 1, -mu / sqrt(2.), 0, 0, 0,
-            //     0, -1, -mu / sqrt(2.), 0, 0, 0,
-            //     0, 0, -s, 1, 0, 0,
-            //     0, 0, -s, -1, 0, 0,
-            //     0, 0, -l1, 0, 1, 0,
-            //     0, 0, -l2, 0, -1, 0,
-            //     0, 0, -nu, 0, 0, 1,
-            //     0, 0, -nu, 0, 0, -1;
-
-            int nCone = 9;
+            int nCone = 11;
             int nM = 6;
             Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
             Acone_raw << 0, 0, -1, 0, 0, 0,
@@ -140,15 +154,19 @@ namespace romoco
                 0, 0, -s, 1, 0, 0,
                 0, 0, -s, -1, 0, 0,
                 0, 0, -l1, 0, 1, 0,
-                0, 0, -l2, 0, -1, 0;
+                0, 0, l2, 0, -1, 0,
+                0, 0, -nu, 0, 0, 1,
+                0, 0, -nu, 0, 0, -1;
+
+            double w = (position_params.footLF_y - position_params.footRF_y) / 2.;
 
             Eigen::MatrixXd H(nM, nM);
             H << 1, 0, 0, 1, 0, 0,
                 0, 1, 0, 0, 0, 0,
                 0, 0, 1, 0, 1, 1,
-                0, 0, s, 0, -s, 0,
-                0, 0, -l1, 0, -l1, l2,
-                -s, l1, 0, s, 0, 0;
+                0, 0, w, 0, -w, 0,
+                0, 0, -position_params.footMF_x, 0, -position_params.footMF_x, -position_params.footMB_x,
+                -w, position_params.footMF_x, 0, w, 0, 0;
             Acone.resize(nCone, nM);
             Acone = Acone_raw * H;
 
@@ -171,12 +189,13 @@ namespace romoco
                 0, 0, -nu, 0, 1,
                 0, 0, -nu, 0, -1;
 
+            double w = (position_params.footLF_y - position_params.footRF_y) / 2.;
             Eigen::MatrixXd H(nM, nM);
             H << 1, 0, 0, 1, 0,
                 0, 1, 0, 0, 0,
                 0, 0, 1, 0, 1,
-                0, 0, s, 0, -s,
-                -s, 0, 0, s, 0;
+                0, 0, w, 0, -w,
+                -w, 0, 0, w, 0;
 
             Acone.resize(nCone, nM);
             Acone = Acone_raw * H;

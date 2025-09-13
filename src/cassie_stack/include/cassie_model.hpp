@@ -67,10 +67,7 @@ namespace romoco
 
             void GetInternalHolonomicConstraints(Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq) override;
 
-            Kinematics1D GetLeftFootDeltaPitch() override;
-            Kinematics1D GetRightFootDeltaPitch() override;
-            Kinematics1D GetBaseDeltaPitch() override;
-            Kinematics1D GetBaseDeltaRoll() override;
+
 
         private:
             // Add the model specific functions here

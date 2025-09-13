@@ -28,6 +28,11 @@ namespace romoco
          Kinematics3D left_heel_kinematics() const override { return left_footB_.kinematics; }
          Kinematics3D right_heel_kinematics() const override { return right_footB_.kinematics; }
 
+         Kinematics1D GetLeftFootDeltaPitch() override;
+         Kinematics1D GetRightFootDeltaPitch() override;
+         Kinematics1D GetBaseDeltaPitch() override;
+         Kinematics1D GetBaseDeltaRoll() override;
+
          RobotType robot_type() const override { return RobotType::LineFoot; }
 
          void GetContactHolonomicConstraints(const FootContactStatus leftC, const FootContactStatus rightC, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq, const Eigen::Matrix3d Rground) override;
@@ -41,6 +46,16 @@ namespace romoco
          std::vector<std::reference_wrapper<FrameKinematics3D>> GetAllFrameKinematics() override;
 
          std::vector<std::pair<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>, std::string>> GetFrameIds() override;
+
+         struct PositionParams
+         {
+            double footF_x;
+            double footB_x;
+            double baseF_x;
+            double baseB_x;
+            double baseL_y;
+            double baseR_y;
+         } position_params;
 
       private:
          void GetHolonomicConstraintsSingleFoot(const FootContactStatus con, const Kinematics3D &F, const Kinematics3D &B, Eigen::MatrixXd &Jh, Eigen::VectorXd &dJhdq);

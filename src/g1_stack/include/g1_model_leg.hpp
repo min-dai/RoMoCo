@@ -64,12 +64,6 @@ namespace romoco
 
             void InitJointKinematics() override;
 
-            Kinematics1D GetLeftFootDeltaPitch() override;
-            Kinematics1D GetRightFootDeltaPitch() override;
-            Kinematics1D GetLeftFootDeltaRoll() override;
-            Kinematics1D GetRightFootDeltaRoll() override;
-            Kinematics1D GetBaseDeltaPitch() override;
-            Kinematics1D GetBaseDeltaRoll() override;
 
         protected:
             void AddFramesImpl(const std::string &base_joint_name);

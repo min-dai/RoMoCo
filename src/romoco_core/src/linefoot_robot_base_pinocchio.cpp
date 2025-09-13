@@ -12,6 +12,23 @@ namespace romoco
           : RobotBasePinocchio(config_folder)
       {
       }
+      Kinematics1D LineFootRobotBasePinocchio::GetLeftFootDeltaPitch()
+      {
+         return (left_footB_.kinematics.z() - left_footF_.kinematics.z()) / (position_params.footF_x - position_params.footB_x);
+      }
+
+      Kinematics1D LineFootRobotBasePinocchio::GetRightFootDeltaPitch()
+      {
+         return (right_footB_.kinematics.z() - right_footF_.kinematics.z()) / (position_params.footF_x - position_params.footB_x);
+      }
+      Kinematics1D LineFootRobotBasePinocchio::GetBaseDeltaPitch()
+      {
+         return (baseB_.kinematics.z() - baseF_.kinematics.z()) / (position_params.baseF_x - position_params.baseB_x);
+      }
+      Kinematics1D LineFootRobotBasePinocchio::GetBaseDeltaRoll()
+      {
+         return (baseL_.kinematics.z() - baseR_.kinematics.z()) / (position_params.baseL_y - position_params.baseR_y);
+      }
 
       std::vector<std::reference_wrapper<RobotBasePinocchio::FrameKinematics3D>> LineFootRobotBasePinocchio::GetAllFrameKinematics()
       {
@@ -97,7 +114,7 @@ namespace romoco
          double l1 = fric_params.Lfront;
          double l2 = fric_params.Lback;
 
-         nu = 2 / 3. * mu * (l1 + l2) / 2.;
+         nu = 2 / 3. * mu * (l1 - l2) / 2.;
          if (con == FootContactStatus::InAir)
          {
             Acone.resize(0, 0);
@@ -105,25 +122,32 @@ namespace romoco
          }
          else if (con == FootContactStatus::FlatLineContact)
          {
+            // F_C = [Fx1 Fy1 Fz1 Fy2 Fz2]'
+            // F_raw = [Fx, Fy, Fz, My, Mz]'
+            // F_raw = H * F_C
+
             int nCone = 9;
             int nM = 5;
             Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
+
             Acone_raw << 0, 0, -1, 0, 0,
                 1, 0, -mu / sqrt(2.), 0, 0,
                 -1, 0, -mu / sqrt(2.), 0, 0,
                 0, 1, -mu / sqrt(2.), 0, 0,
                 0, -1, -mu / sqrt(2.), 0, 0,
                 0, 0, -l1, 1, 0,
-                0, 0, -l2, -1, 0,
+                0, 0, l2, -1, 0,
                 0, 0, -nu, 0, 1,
                 0, 0, -nu, 0, -1;
+
+
 
             Eigen::MatrixXd H(nM, nM);
             H << 1, 0, 0, 0, 0,
                 0, 1, 0, 1, 0,
                 0, 0, 1, 0, 1,
-                0, 0, -l1, 0, l2,
-                0, l1, 0, -l2, 0;
+                0, 0, -position_params.footF_x, 0, -position_params.footB_x,
+                0, position_params.footF_x, 0, position_params.footB_x, 0;
 
             Acone.resize(nCone, nM);
             Acone = Acone_raw * H;
@@ -133,6 +157,9 @@ namespace romoco
          }
          else if (con == FootContactStatus::ToePatchContact || con == FootContactStatus::HeelPatchContact)
          {
+            // F_C = [Fx1 Fy1 Fz1 Fy2]'
+            // F_raw = [Fx, Fy, Fz, Mz]'
+            // F_raw = H * F_C
             int nCone = 7;
             int nM = 4;
             Eigen::MatrixXd Acone_raw = Eigen::MatrixXd::Zero(nCone, nM);
@@ -148,7 +175,7 @@ namespace romoco
             H << 1, 0, 0, 0,
                 0, 1, 0, 1,
                 0, 0, 1, 0,
-                0, l1, 0, -l2;
+                0, position_params.footF_x, 0, position_params.footB_x;
 
             Acone.resize(nCone, nM);
             Acone = Acone_raw * H;

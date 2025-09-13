@@ -111,15 +111,16 @@ void G1ModelLeg::AddFramesImpl(const std::string& base_joint_name)
     pinocchio::JointIndex left_ankle_joint_id = model_.getJointId("left_ankle_roll_joint");
     pinocchio::JointIndex righ_ankle_joint_id = model_.getJointId("right_ankle_roll_joint");
 
+    double y_one_side = 0.025;
     std::vector<std::tuple<std::string, Eigen::Vector3d, pinocchio::JointIndex>> frame_data = {
-        {"left_foot_LF", {0.12, 0.03, -0.03}, left_ankle_joint_id},
-        {"right_foot_LF", {0.12, 0.03, -0.03}, righ_ankle_joint_id},
-        {"left_foot_RF", {0.12, -0.03, -0.03}, left_ankle_joint_id},
-        {"right_foot_RF", {0.12, -0.03, -0.03}, righ_ankle_joint_id},
-        {"left_foot_LB", {-0.05, 0.025, -0.03}, left_ankle_joint_id},
-        {"right_foot_LB", {-0.05, 0.025, -0.03}, righ_ankle_joint_id},
-        {"left_foot_RB", {-0.05, -0.025, -0.03}, left_ankle_joint_id},
-        {"right_foot_RB", {-0.05, -0.025, -0.03}, righ_ankle_joint_id},
+        {"left_foot_LF", {0.12, y_one_side, -0.03}, left_ankle_joint_id},
+        {"right_foot_LF", {0.12, y_one_side, -0.03}, righ_ankle_joint_id},
+        {"left_foot_RF", {0.12, -y_one_side, -0.03}, left_ankle_joint_id},
+        {"right_foot_RF", {0.12, -y_one_side, -0.03}, righ_ankle_joint_id},
+        {"left_foot_LB", {-0.05, y_one_side, -0.03}, left_ankle_joint_id},
+        {"right_foot_LB", {-0.05, y_one_side, -0.03}, righ_ankle_joint_id},
+        {"left_foot_RB", {-0.05, -y_one_side, -0.03}, left_ankle_joint_id},
+        {"right_foot_RB", {-0.05, -y_one_side, -0.03}, righ_ankle_joint_id},
         {"left_below_ankle", {0.0, 0.0, -0.03}, left_ankle_joint_id},
         {"right_below_ankle", {0.0, 0.0, -0.03}, righ_ankle_joint_id},
         {"left_ankle", {0.0, 0.0, 0.0}, left_ankle_joint_id},
@@ -135,6 +136,15 @@ void G1ModelLeg::AddFramesImpl(const std::string& base_joint_name)
         {"baseR", {0.0, -0.05, .15}, model_.getJointId(base_joint_name)}
     };
 
+    position_params.footMF_x = 0.12;
+    position_params.footLF_y = y_one_side;
+    position_params.footRF_y = -y_one_side;
+    position_params.footMB_x = -0.05;
+    position_params.baseF_x = 0.05;
+    position_params.baseB_x = -0.05;
+    position_params.baseL_y = 0.05;
+    position_params.baseR_y = -0.05;
+    
     for (const auto &frame : frame_data)
     {
         placement.translation() = std::get<1>(frame);
@@ -154,35 +164,6 @@ void G1ModelLeg::InitActuationImpl(int nu)
     u_lb_ = -model_.effortLimit.tail(nu_);
 
     computed_torque_ = Eigen::VectorXd::Zero(nu_);
-}
-
-Kinematics1D G1ModelLeg::GetLeftFootDeltaPitch()
-{
-    return ((left_footLB_.kinematics.z() + left_footRB_.kinematics.z())/2.- (left_footLF_.kinematics.z() + left_footRF_.kinematics.z())/2.)/0.17;
-}
-
-Kinematics1D G1ModelLeg::GetRightFootDeltaPitch()
-{
-    return ((right_footLB_.kinematics.z() + right_footRB_.kinematics.z())/2.- (right_footLF_.kinematics.z() + right_footRF_.kinematics.z())/2.)/0.17;
-}
-
-Kinematics1D G1ModelLeg::GetLeftFootDeltaRoll()
-{
-    return ((left_footLF_.kinematics.z()+left_footLB_.kinematics.z())/2. - (left_footRF_.kinematics.z() +left_footRB_.kinematics.z() )/2.)/0.055;
-}
-
-Kinematics1D G1ModelLeg::GetRightFootDeltaRoll()
-{
-    return ((right_footLF_.kinematics.z()+right_footLB_.kinematics.z())/2. - (right_footRF_.kinematics.z() +right_footRB_.kinematics.z() )/2.)/0.055;
-}
-
-Kinematics1D G1ModelLeg::GetBaseDeltaPitch()
-{
-    return (baseB_.kinematics.z() - baseF_.kinematics.z())/0.1;
-}
-Kinematics1D G1ModelLeg::GetBaseDeltaRoll()
-{
-    return (baseL_.kinematics.z() - baseR_.kinematics.z())/0.1;
 }
 
 void G1ModelLeg::ComputeContactClassifierInput()

@@ -128,6 +128,14 @@ namespace romoco
                 {"baseB", {-0.05, 0.0, 0}, model_.getJointId(base_joint_name)},
                 {"baseL", {0.0, 0.05, 0}, model_.getJointId(base_joint_name)},
                 {"baseR", {0.0, -0.05, 0}, model_.getJointId(base_joint_name)}};
+
+            position_params.footF_x = 0.1;
+            position_params.footB_x = -0.06;
+            position_params.baseF_x = 0.05;
+            position_params.baseB_x = -0.05;
+            position_params.baseL_y = 0.05;
+            position_params.baseR_y = -0.05;
+
             for (const auto &frame : foot_frame_data)
             {
                 placement.translation() = std::get<1>(frame);
@@ -154,6 +162,9 @@ namespace romoco
             model_.addFrame(pinocchio::Frame("left_heel_spring_end", model_.getJointId("LeftTarsusPitch"), 0, placement, pinocchio::OP_FRAME));
             placement.translation() << pHeelRodJoint(0), pHeelRodJoint(1), -pHeelRodJoint(2);
             model_.addFrame(pinocchio::Frame("right_heel_spring_end", model_.getJointId("RightTarsusPitch"), 0, placement, pinocchio::OP_FRAME));
+        
+            
+        
         }
 
         void CassieModel::InitActuation()
@@ -230,24 +241,6 @@ namespace romoco
             auto base_ids = LineFootRobotBasePinocchio::GetFrameIds(); // implicit this
             base_ids.insert(base_ids.end(), {{left_thigh_connector, "left_thigh_connector"}, {right_thigh_connector, "right_thigh_connector"}, {left_heel_spring_end, "left_heel_spring_end"}, {right_heel_spring_end, "right_heel_spring_end"}});
             return base_ids;
-        }
-
-        Kinematics1D CassieModel::GetLeftFootDeltaPitch()
-        {
-            return (left_footB_.kinematics.z() - left_footF_.kinematics.z()) / 0.14;
-        }
-
-        Kinematics1D CassieModel::GetRightFootDeltaPitch()
-        {
-            return (right_footB_.kinematics.z() - right_footF_.kinematics.z()) / 0.14;
-        }
-        Kinematics1D CassieModel::GetBaseDeltaPitch()
-        {
-            return (baseB_.kinematics.z() - baseF_.kinematics.z()) / 0.1;
-        }
-        Kinematics1D CassieModel::GetBaseDeltaRoll()
-        {
-            return (baseL_.kinematics.z() - baseR_.kinematics.z()) / 0.1;
         }
 
         void CassieModel::ComputeContactClassifierInput()
