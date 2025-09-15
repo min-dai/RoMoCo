@@ -123,7 +123,7 @@ void InAirOutput::ComputeDesired(const DesiredCommand &command)
 
     double xcom_d = 0.5 * command.values(Channel::X) * (config.swingX_forward - config.swingX_backward) + 0.5 * (config.swingX_forward + config.swingX_backward);
     double ycom_d = 0.5 * command.values(Channel::Y) * (config.swingY_outer - config.swingY_inner) + 0.5 * (config.swingY_inner + config.swingY_outer);
-    double zcom_d = 0.5 * command.values(Channel::Z) * (config.swingZ_ub - config.swingZ_lb) + 0.5 * (config.swingZ_ub + config.swingZ_lb);
+    double zcom_d = -0.5 * command.values(Channel::Z) * (config.swingZ_ub - config.swingZ_lb) + 0.5 * (config.swingZ_ub + config.swingZ_lb);
     double pitch_d = 0.5 * command.values(Channel::Pitch) * (config.pitch_ub - config.pitch_lb) + 0.5 * (config.pitch_ub + config.pitch_lb);
     double yaw_d = 0.5 * command.values(Channel::Yaw) * (config.yaw_ub - config.yaw_lb) + 0.5 * (config.yaw_ub + config.yaw_lb);
 

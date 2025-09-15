@@ -21,11 +21,11 @@ Eigen::VectorXd predefined_radio(double t)
     Eigen::VectorXd radio = Eigen::VectorXd::Zero(10);
     if (t > 1.0)
     {
-        radio(ScreenRadio::SB) = 1;
+        radio(ScreenRadio::Mode) = 1;
     }
     if (t > 10.0)
     {
-        radio(ScreenRadio::LV) = 1;
+        radio(ScreenRadio::X) = 1;
     }
 
     return radio;

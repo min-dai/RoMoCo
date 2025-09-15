@@ -19,7 +19,7 @@ namespace romoco
  */
 inline DesiredCommand ConvertScreenRadioToDesiredCommand(Eigen::VectorXd raw_radio_data){
    DesiredCommand cmd;
-   switch (static_cast<int>(raw_radio_data(ScreenRadio::SB)))
+   switch (static_cast<int>(raw_radio_data(ScreenRadio::Mode)))
    {
    case -1:
       cmd.mode = Mode::Null;
@@ -35,14 +35,14 @@ inline DesiredCommand ConvertScreenRadioToDesiredCommand(Eigen::VectorXd raw_rad
       break;
    }
 
-   cmd.values(Channel::X) = raw_radio_data(ScreenRadio::LV);
-   cmd.values(Channel::Y) = raw_radio_data(ScreenRadio::LH);
-   cmd.values(Channel::Z) = raw_radio_data(ScreenRadio::LS);
-   cmd.values(Channel::Roll) = raw_radio_data(ScreenRadio::RS);
-   cmd.values(Channel::Pitch) = raw_radio_data(ScreenRadio::RV);
-   cmd.values(Channel::Yaw) = raw_radio_data(ScreenRadio::RH);
-   cmd.values(Channel::StepWidth) = raw_radio_data(ScreenRadio::S2);
-   cmd.values(Channel::StepTime) = raw_radio_data(ScreenRadio::S1);
+   cmd.values(Channel::X) = raw_radio_data(ScreenRadio::X);
+   cmd.values(Channel::Y) = raw_radio_data(ScreenRadio::Y);
+   cmd.values(Channel::Z) = raw_radio_data(ScreenRadio::Z);
+   cmd.values(Channel::Roll) = raw_radio_data(ScreenRadio::Roll);
+   cmd.values(Channel::Pitch) = raw_radio_data(ScreenRadio::Pitch);
+   cmd.values(Channel::Yaw) = raw_radio_data(ScreenRadio::Yaw);
+   cmd.values(Channel::StepWidth) = raw_radio_data(ScreenRadio::StepWidth);
+   cmd.values(Channel::StepTime) = raw_radio_data(ScreenRadio::StepTime);
 
    return cmd;
 }

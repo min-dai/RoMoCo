@@ -175,7 +175,7 @@ void WalkingOutputFp::updateTargetWalkingRadio(const DesiredCommand &command)
 {
    lowpass_vel_x_des_.Update(config.velXmax * command.values(Channel::X));
    lowpass_vel_y_des_.Update(config.velYmax * command.values(Channel::Y));
-   updated.delta_yaw_des = updated.delta_yaw_des + command.values(Channel::Yaw) * updated.dt;
+   updated.delta_yaw_des = updated.delta_yaw_des - command.values(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
    updated.desiredVy = lowpass_vel_y_des_.getValue() + config.vy_offset;

@@ -1,7 +1,6 @@
 #ifndef SLIDER_GUI_HPP
 #define SLIDER_GUI_HPP
 
-
 #include <QApplication>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -29,7 +28,7 @@ namespace romoco
      * slider values and input text.
      *
      * Main Features:
-     * - Sliders for SB, LV, LH, RV, RH, S1, S2, LS, RS parameters.
+     * - Sliders for Mode, X, Y, Z, Roll, Pitch, Yaw, StepTime, StepWidth parameters.
      * - Line edit for user input with integer validation.
      * - Signal-slot connections for handling slider changes and input updates.
      *
@@ -39,62 +38,56 @@ namespace romoco
      *
      * Note: This class requires the Qt framework to be properly set up in the development environment.
      */
-class RadioSliderGUI : public QWidget {
-    Q_OBJECT
+    class RadioSliderGUI : public QWidget
+    {
+        Q_OBJECT
 
-public:
-    RadioSliderGUI(QWidget *parent = nullptr);
-    Eigen::VectorXd getSliderValues() const;
+    public:
+        RadioSliderGUI(QWidget *parent = nullptr);
+        Eigen::VectorXd getSliderValues() const;
 
+    private slots:
+        void handleCTSliderChange(int value);
+        void handleDTSliderChange(int value);
+        // void handleSliderChange(int value) ;
+        void handleInputChange(const QString &text);
 
-private slots:
-    void handleCTSliderChange(int value);
-    void handleDTSliderChange(int value);
-    // void handleSliderChange(int value) ;
-    void handleInputChange(const QString &text);
+    private:
+        QSlider *sliderMode;
+        QSlider *sliderX;
+        QSlider *sliderY;
+        QSlider *sliderZ;
+        QSlider *sliderRoll;
+        QSlider *sliderPitch;
+        QSlider *sliderYaw;
+        QSlider *sliderStepTime;
+        QSlider *sliderStepWidth;
 
-private:
-    QSlider *sliderSB;
-    QSlider *sliderLV;
-    QSlider *sliderLH;
-    QSlider *sliderRV;
-    QSlider *sliderRH;
-    QSlider *sliderS1;
-    QSlider *sliderS2;
-    QSlider *sliderLS;
-    QSlider *sliderRS;
-    
-    QLabel *labelSB;
-    QLabel *labelLV;
-    QLabel *labelLH;
-    QLabel *labelRV;
-    QLabel *labelRH;
-    QLabel *labelS1;
-    QLabel *labelS2;
-    QLabel *labelLS;
-    QLabel *labelRS;
-    
+        QLabel *labelMode;
+        QLabel *labelX;
+        QLabel *labelY;
+        QLabel *labelZ;
+        QLabel *labelRoll;
+        QLabel *labelPitch;
+        QLabel *labelYaw;
+        QLabel *labelStepTime;
+        QLabel *labelStepWidth;
 
-    QLineEdit *lineEdit;
-    // QTimer *rosTimer;
+        QLineEdit *lineEdit;
 
+        int sliderMode_value = -1;
 
-    int sliderSB_value = -1;
+        double sliderX_value = 0;
+        double sliderY_value = 0;
+        double sliderZ_value = 0;
+        double sliderRoll_value = 0;
+        double sliderPitch_value = 0;
+        double sliderYaw_value = 0;
+        double sliderStepTime_value = 0;
+        double sliderStepWidth_value = 0;
 
-
-    double sliderLV_value = 0;
-    double sliderLH_value = 0;
-    double sliderRV_value = 0;
-    double sliderRH_value = 0;
-    double sliderS1_value = 0;
-    double sliderS2_value = 0;
-    double sliderLS_value = 0;
-    double sliderRS_value = 0;
-
-    
-
-    int input_value;
-};
+        int input_value;
+    };
 
 } // namespace romoco
 

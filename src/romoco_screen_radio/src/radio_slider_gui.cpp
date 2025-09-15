@@ -6,153 +6,149 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-    sliderSB = new QSlider(Qt::Horizontal);
-    sliderSB->setMinimum(0);
-    sliderSB->setMaximum(3);
-    sliderSB->setValue(1);
-    layout->addWidget(sliderSB);
-    labelSB = new QLabel("SB Value");
-    layout->addWidget(labelSB);
+    sliderMode = new QSlider(Qt::Horizontal);
+    sliderMode->setMinimum(0);
+    sliderMode->setMaximum(3);
+    sliderMode->setValue(1);
+    layout->addWidget(sliderMode);
+    labelMode = new QLabel("Mode Value");
+    layout->addWidget(labelMode);
 
-    sliderLV = new QSlider(Qt::Horizontal);
-    sliderLV->setMinimum(0);
-    sliderLV->setMaximum(100);
-    sliderLV->setValue(50);
-    layout->addWidget(sliderLV);
-    labelLV = new QLabel("LV Value");
-    layout->addWidget(labelLV);
+    sliderX = new QSlider(Qt::Horizontal);
+    sliderX->setMinimum(0);
+    sliderX->setMaximum(100);
+    sliderX->setValue(50);
+    layout->addWidget(sliderX);
+    labelX = new QLabel("X Value");
+    layout->addWidget(labelX);
 
-    sliderLH = new QSlider(Qt::Horizontal);
-    sliderLH->setMinimum(0);
-    sliderLH->setMaximum(100);
-    sliderLH->setValue(50);
-    layout->addWidget(sliderLH);
-    labelLH = new QLabel("LH Value");
-    layout->addWidget(labelLH);
+    sliderY = new QSlider(Qt::Horizontal);
+    sliderY->setMinimum(0);
+    sliderY->setMaximum(100);
+    sliderY->setValue(50);
+    layout->addWidget(sliderY);
+    labelY = new QLabel("Y Value");
+    layout->addWidget(labelY);
 
-    sliderRV = new QSlider(Qt::Horizontal);
-    sliderRV->setMinimum(0);
-    sliderRV->setMaximum(100);
-    sliderRV->setValue(50);
-    layout->addWidget(sliderRV);
-    labelRV = new QLabel("RV Value");
-    layout->addWidget(labelRV);
+    sliderZ = new QSlider(Qt::Horizontal);
+    sliderZ->setMinimum(0);
+    sliderZ->setMaximum(100);
+    sliderZ->setValue(50);
+    layout->addWidget(sliderZ);
+    labelZ = new QLabel("Z Value");
+    layout->addWidget(labelZ);
 
-    sliderRH = new QSlider(Qt::Horizontal);
-    sliderRH->setMinimum(0);
-    sliderRH->setMaximum(100);
-    sliderRH->setValue(50);
-    layout->addWidget(sliderRH);
-    labelRH = new QLabel("RH Value");
-    layout->addWidget(labelRH);
+    sliderRoll = new QSlider(Qt::Horizontal);
+    sliderRoll->setMinimum(0);
+    sliderRoll->setMaximum(100);
+    sliderRoll->setValue(50);
+    layout->addWidget(sliderRoll);
+    labelRoll = new QLabel("Roll Value");
+    layout->addWidget(labelRoll);
 
-    sliderS1 = new QSlider(Qt::Horizontal);
-    sliderS1->setMinimum(0);
-    sliderS1->setMaximum(100);
-    sliderS1->setValue(50);
-    layout->addWidget(sliderS1);
-    labelS1 = new QLabel("S1 Value");
-    layout->addWidget(labelS1);
+    sliderPitch = new QSlider(Qt::Horizontal);
+    sliderPitch->setMinimum(0);
+    sliderPitch->setMaximum(100);
+    sliderPitch->setValue(50);
+    layout->addWidget(sliderPitch);
+    labelPitch = new QLabel("Pitch Value");
+    layout->addWidget(labelPitch);
 
-    sliderS2 = new QSlider(Qt::Horizontal);
-    sliderS2->setMinimum(0);
-    sliderS2->setMaximum(100);
-    sliderS2->setValue(50);
-    layout->addWidget(sliderS2);
-    labelS2 = new QLabel("S2 Value");
-    layout->addWidget(labelS2);
+    sliderYaw = new QSlider(Qt::Horizontal);
+    sliderYaw->setMinimum(0);
+    sliderYaw->setMaximum(100);
+    sliderYaw->setValue(50);
+    layout->addWidget(sliderYaw);
+    labelYaw = new QLabel("Yaw Value");
+    layout->addWidget(labelYaw);
 
-    sliderLS = new QSlider(Qt::Horizontal);
-    sliderLS->setMinimum(0);
-    sliderLS->setMaximum(100);
-    sliderLS->setValue(50);
-    layout->addWidget(sliderLS);
-    labelLS = new QLabel("LS Value");
-    layout->addWidget(labelLS);
+    sliderStepTime = new QSlider(Qt::Horizontal);
+    sliderStepTime->setMinimum(0);
+    sliderStepTime->setMaximum(100);
+    sliderStepTime->setValue(50);
+    layout->addWidget(sliderStepTime);
+    labelStepTime = new QLabel("StepTime Value");
+    layout->addWidget(labelStepTime);
 
-    sliderRS = new QSlider(Qt::Horizontal);
-    sliderRS->setMinimum(0);
-    sliderRS->setMaximum(100);
-    sliderRS->setValue(50);
-    layout->addWidget(sliderRS);
-    labelRS = new QLabel("RS Value");
-    layout->addWidget(labelRS);
+    sliderStepWidth = new QSlider(Qt::Horizontal);
+    sliderStepWidth->setMinimum(0);
+    sliderStepWidth->setMaximum(100);
+    sliderStepWidth->setValue(50);
+    layout->addWidget(sliderStepWidth);
+    labelStepWidth = new QLabel("StepWidth Value");
+    layout->addWidget(labelStepWidth);
 
-    connect(sliderLV, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderLH, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderRV, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderRH, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderS1, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderS2, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderLS, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
-    connect(sliderRS, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderMode, &QSlider::valueChanged, this, &RadioSliderGUI::handleDTSliderChange);
 
-    connect(sliderSB, &QSlider::valueChanged, this, &RadioSliderGUI::handleDTSliderChange);
-
-    // lineEdit = new QLineEdit();
-    // lineEdit->setValidator(new QIntValidator(0, 100, this));
-    // layout->addWidget(lineEdit);
-    // success = connect(lineEdit, &QLineEdit::textChanged, this, &RadioSliderGUI::handleInputChange);
-
+    connect(sliderX, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderY, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderZ, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderRoll, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderPitch, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderYaw, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderStepTime, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    connect(sliderStepWidth, &QSlider::valueChanged, this, &RadioSliderGUI::handleCTSliderChange);
+    
     setLayout(layout);
 }
 
 Eigen::VectorXd RadioSliderGUI::getSliderValues() const
 {
     Eigen::VectorXd slider_values(9);
-    slider_values << sliderSB_value, sliderLV_value, sliderLH_value, sliderRV_value, sliderRH_value, sliderS1_value, sliderS2_value, sliderLS_value, sliderRS_value;
+    slider_values << sliderMode_value, sliderX_value, sliderY_value, sliderZ_value, sliderRoll_value, sliderPitch_value, sliderYaw_value, sliderStepTime_value, sliderStepWidth_value;
     return slider_values;
 }
 
 void RadioSliderGUI::handleDTSliderChange(int value)
 {
-    sliderSB_value = value - 2;
-    labelSB->setText("SB Value: " + QString::number(sliderSB_value));
+    sliderMode_value = value - 2;
+    labelMode->setText("Mode Value: " + QString::number(sliderMode_value));
 }
 
 void RadioSliderGUI::handleCTSliderChange(int value)
 {
     QSlider *slider = qobject_cast<QSlider *>(sender());
-    if (slider == sliderLV)
+    if (slider == sliderX)
     {
-        sliderLV_value = (value - 50) / 50.0;
-        labelLV->setText("LV Value: " + QString::number(sliderLV_value));
+        sliderX_value = (value - 50) / 50.0;
+        labelX->setText("X Value: " + QString::number(sliderX_value));
     }
-    else if (slider == sliderLH)
+    else if (slider == sliderY)
     {
-        sliderLH_value = (value - 50) / 50.0;
-        labelLH->setText("LH Value: " + QString::number(sliderLH_value));
+        sliderY_value = (value - 50) / 50.0;
+        labelY->setText("Y Value: " + QString::number(sliderY_value));
     }
-    else if (slider == sliderRV)
+    else if (slider == sliderZ)
     {
-        sliderRV_value = (value - 50) / 50.0;
-        labelRV->setText("RV Value: " + QString::number(sliderRV_value));
+        sliderZ_value = (value - 50) / 50.0;
+        labelZ->setText("Z Value: " + QString::number(sliderZ_value));
     }
-    else if (slider == sliderRH)
+    else if (slider == sliderRoll)
     {
-        sliderRH_value = (value - 50) / 50.0;
-        labelRH->setText("RH Value: " + QString::number(sliderRH_value));
+        sliderRoll_value = (value - 50) / 50.0;
+        labelRoll->setText("Roll Value: " + QString::number(sliderRoll_value));
     }
-    else if (slider == sliderS1)
+    else if (slider == sliderPitch)
     {
-        sliderS1_value = (value - 50) / 50.0;
-        labelS1->setText("S1 Value: " + QString::number(sliderS1_value));
+        sliderPitch_value = (value - 50) / 50.0;
+        labelPitch->setText("Pitch Value: " + QString::number(sliderPitch_value));
     }
-    else if (slider == sliderS2)
+    else if (slider == sliderYaw)
     {
-        sliderS2_value = (value - 50) / 50.0;
-        labelS2->setText("S2 Value: " + QString::number(sliderS2_value));
+        sliderYaw_value = (value - 50) / 50.0;
+        labelYaw->setText("Yaw Value: " + QString::number(sliderYaw_value));
     }
-    else if (slider == sliderLS)
+    else if (slider == sliderStepTime)
     {
-        sliderLS_value = (value - 50) / 50.0;
-        labelLS->setText("LS Value: " + QString::number(sliderLS_value));
+        sliderStepTime_value = (value - 50) / 50.0;
+        labelStepTime->setText("StepTime Value: " + QString::number(sliderStepTime_value));
     }
-    else if (slider == sliderRS)
+    else if (slider == sliderStepWidth)
     {
-        sliderRS_value = (value - 50) / 50.0;
-        labelRS->setText("RS Value: " + QString::number(sliderRS_value));
+        sliderStepWidth_value = (value - 50) / 50.0;
+        labelStepWidth->setText("StepWidth Value: " + QString::number(sliderStepWidth_value));
     }
+    
 }
 
 void RadioSliderGUI::handleInputChange(const QString &text)

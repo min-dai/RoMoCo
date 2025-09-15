@@ -83,9 +83,8 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
          + KP.cwiseProduct(output_->ya() - output_->yd())
          + KD.cwiseProduct(output_->dya() - output_->dyd());
 
-    G_ << A_y_.transpose() * output_->SelectActiveOutputs(OutputW_).asDiagonal() * A_y_;
-    g_ << A_y_.transpose() * output_->SelectActiveOutputs(OutputW_).asDiagonal() * b_y_;
 
+    ComputeWeightedQuadraticCostTerms(A_y_, b_y_, OutputW_, G_, g_);
 
     //equality constraints
     // [D  -B -Jh^T] [ddq] = [-H]
@@ -96,19 +95,26 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     beq_.topRows(robot_->nv()) << -robot_->H();
     beq_.bottomRows(output_->nh()) << -output_->dJhdq();
 
-
-
     //inequality constraints
     // [0  0  0  Aub_fric_] [ddq] <= [bub_fric_]
     //                     [u  ]  
     //                     [F_internal]  
     //                     [F_contact ]
+    Aub_.resize(bub_fric_.size() + output_->nu() + output_->nu(), nVar_);
+    Aub_ << Aub_fric_, // output nfric
+            Aub_u_,    // output nu
+            -Aub_u_;   // output nu
+    bub_.resize(bub_fric_.size() + output_->nu() + output_->nu());
+    bub_ << bub_fric_, // output nfric
+            output_->SelectActuatedMotors(robot_->u_ub()), // output nu
+            -output_->SelectActuatedMotors(robot_->u_lb()); // output nu
+
+
  
 
-    if_solved_ = ClarabelSolve();
+    // if_solved_ = ClarabelSolve();
+    if_solved_ = ClarabelSolve(G_, g_, Aub_, bub_, Aeq_, beq_, u_sol_); 
     Eigen::VectorXd u_full = output_->MapToFullMotors(u_sol_);
-
-
     motor_commands_.joint_torques_ff = u_full;
     motor_commands_.joint_torques = u_full;
 
@@ -117,40 +123,82 @@ BipedMotorCommands TorqueSolverTSCQP::Solve()
     return motor_commands_;
 }
 
-bool TorqueSolverTSCQP::ClarabelSolve()
+
+
+bool TorqueSolverTSCQP::ClarabelSolve(
+    const Eigen::MatrixXd &G,
+    const Eigen::VectorXd &g,
+    const std::optional<Eigen::MatrixXd> &Aub,
+    const std::optional<Eigen::VectorXd> &bub,
+    const std::optional<Eigen::MatrixXd> &Aeq,
+    const std::optional<Eigen::VectorXd> &beq,
+    Eigen::VectorXd &sol)
 {
-    Eigen::SparseMatrix<double> P(G_.sparseView());
+
+    Eigen::MatrixXd A_combined;
+    Eigen::VectorXd b_combined;
+    std::vector<clarabel::SupportedConeT<double>> cones;
+
+    int neq = 0;
+    int nub = 0;
+
+    Eigen::MatrixXd Aeq_, Aub_;
+    Eigen::VectorXd beq_, bub_;
+
+    // Add equality constraints if provided
+    if (Aeq.has_value() && beq.has_value())
+    {
+        Aeq_ = *Aeq;
+        beq_ = *beq;
+        neq = Aeq_.rows();
+        if (Aeq_.rows() != beq_.size())
+        {
+            std::cerr << "Error: Aeq and beq size mismatch!" << std::endl;
+            return false;
+        }
+        cones.emplace_back(clarabel::ZeroConeT<double>(neq));
+    }
+
+    // Add inequality constraints if provided
+    if (Aub.has_value() && bub.has_value())
+    {
+        Aub_ = *Aub;
+        bub_ = *bub;
+        nub = Aub_.rows();
+        if (Aub_.rows() != bub_.size())
+        {
+            std::cerr << "Error: Aub and bub size mismatch!" << std::endl;
+            return false;
+        }
+        cones.emplace_back(clarabel::NonnegativeConeT<double>(nub));
+    }
+
+    // Combine equality and inequality constraints
+    A_combined.resize(neq + nub, G.cols());
+    b_combined.resize(neq + nub);
+    if (neq > 0)
+    {
+        A_combined.topRows(neq) = Aeq_;
+        b_combined.head(neq) = beq_;
+    }
+    if (nub > 0)
+    {
+        A_combined.bottomRows(nub) = Aub_;
+        b_combined.tail(nub) = bub_;
+    }
+
+    Eigen::SparseMatrix<double> P(G.sparseView());
     P.makeCompressed();
 
+    Eigen::SparseMatrix<double> ASparse = A_combined.sparseView();
+    ASparse.makeCompressed();
 
-    Eigen::MatrixXd Alarge(beq_.size() + bub_fric_.size() + output_->nu() * 2, nVar_);
-    Alarge << Aeq_, //output nv+nh
-        Aub_fric_,  //output nfric
-        Aub_u_,     //output nu
-        -Aub_u_;    //output nu
+    //convert to nontemporary variables
+    Eigen::VectorXd p = g;
+    Eigen::VectorXd b = b_combined;
 
-    Eigen::SparseMatrix<double> AlargeSparse = Alarge.sparseView();
-    AlargeSparse.makeCompressed();
+    DefaultSolver<double> solver(P, p, ASparse, b, cones, settings_);
 
-    Eigen::VectorXd bLarge(beq_.size() + bub_fric_.size() + output_->nu() * 2);
-    bLarge << beq_,
-        bub_fric_,
-        output_->SelectActuatedMotors(robot_->u_ub()),
-        -output_->SelectActuatedMotors(robot_->u_lb());
-
-
-
-    std::vector<SupportedConeT<double>> cones{
-        ZeroConeT<double>(beq_.size()),
-        NonnegativeConeT<double>(bub_fric_.size() + output_->nu() * 2),
-    };
-
-
-
- 
-    
-
-    DefaultSolver<double> solver(P, g_, AlargeSparse, bLarge, cones, settings_);
     solver.solve();
     DefaultSolution<double> solution = solver.solution();
 
@@ -218,6 +266,22 @@ bool TorqueSolverTSCQP::ClarabelSolve()
     }
 
     return if_solved_;
+}
+
+void TorqueSolverTSCQP::ComputeWeightedQuadraticCostTerms(
+    const Eigen::MatrixXd &Acost,
+    const Eigen::VectorXd &bcost,
+    const Eigen::VectorXd &w,
+    Eigen::MatrixXd &G,
+    Eigen::VectorXd &g)
+{
+    // Convert weights to a diagonal matrix
+    Eigen::MatrixXd W = output_->SelectActiveOutputs(w).asDiagonal();
+    G.resize(Acost.cols(), Acost.cols());
+    g.resize(Acost.cols());
+
+    G = Acost.transpose() * W * Acost;
+    g = Acost.transpose() * W * bcost;
 }
 
 } // namespace romoco

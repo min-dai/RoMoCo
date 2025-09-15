@@ -3,7 +3,7 @@
 
 #include "romoco_control/torque_solver_base.hpp"
 #include <clarabel.hpp>
-
+#include <optional>
 namespace romoco
 {
     /**
@@ -26,7 +26,15 @@ namespace romoco
 
     private:
         void ResetSize();
-        bool ClarabelSolve();
+        bool ClarabelSolve(const Eigen::MatrixXd &G,
+                           const Eigen::VectorXd &g,
+                           const std::optional<Eigen::MatrixXd> &Aub,
+                           const std::optional<Eigen::VectorXd> &bub,
+                           const std::optional<Eigen::MatrixXd> &Aeq,
+                           const std::optional<Eigen::VectorXd> &beq,
+                           Eigen::VectorXd &sol);
+        void ComputeWeightedQuadraticCostTerms(const Eigen::MatrixXd &Acost, const Eigen::VectorXd &bcost, const Eigen::VectorXd &weights, Eigen::MatrixXd &G, Eigen::VectorXd &g);
+
 
         bool print_qp_ = false;
         Eigen::VectorXd OutputKP_, OutputKD_;
@@ -35,8 +43,8 @@ namespace romoco
         int nVar_;
         Eigen::MatrixXd A_y_;
         Eigen::VectorXd b_y_;
-        Eigen::MatrixXd G_, Aeq_, Aub_fric_, Aub_u_;
-        Eigen::VectorXd g_, beq_, bub_fric_;
+        Eigen::MatrixXd G_, Aeq_, Aub_, Aub_fric_, Aub_u_;
+        Eigen::VectorXd g_, beq_, bub_, bub_fric_;
 
         bool if_solved_ = false;
         Eigen::VectorXd sol_, u_sol_, F_sol_, u_sol_prev_;

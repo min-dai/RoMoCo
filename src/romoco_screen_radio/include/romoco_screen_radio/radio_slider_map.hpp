@@ -14,15 +14,15 @@ namespace romoco
 {
    enum RadioSliderMap
    {
-      SB = 0,
-      LV = 1,
-      LH = 2,
-      RV = 3,
-      RH = 4,
-      S1 = 5,
-      S2 = 6,
-      LS = 7,
-      RS = 8
+      Mode = 0,
+      X = 1,
+      Y = 2,
+      Z = 3,
+      Roll = 4,
+      Pitch = 5,
+      Yaw = 6,
+      StepTime = 7,
+      StepWidth = 8
    };
 
    enum RadioCommand

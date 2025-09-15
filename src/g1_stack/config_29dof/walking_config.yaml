@@ -37,28 +37,17 @@ friction:
 qp:
   ifprintQP: true
 
-  # #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
+  #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
   OutputKP: [150,  300,  400,  400,  300, 300,500,  300,     800,    400]
   OutputKD: [10,    10,    8,   8,     8,   8 , 3,   10,      20,      3]
-  # #multidomain
-  # #zCOM stHipYaw basePitch baseRoll StPitch swx swy swz swHipYaw SwPitch SwRoll
-  # # OutputKP: [ 150, 450, 500, 500, 600, 500, 500,  500, 450, 600, 900]   
-  # # OutputKD: [  15,    5,  5,  5,   10,  5,   5,   5,   5,   10,    10]
-  # OutputKP: [150, 400, 400,400,200, 300, 300,300, 400,200,200]
-  # OutputKD: [2,5,8,8,3,3,3,3,5,3,3]
 
 
 qpm:
   AngKD: [10,10, 10]
-  AngKP: [100, 100, 100]
-  LinKP: [10, 10, 10]
-  LinKD: [1, 1, 1]  
-  # AngKD: [10, 10, 10]
-  # LinKP: [10, 10, 10]
-  # LinKD: [1, 1, 1]  
-  # AngKD: [0, 0, 0]
-  # LinKP: [0, 0, 0]
-  # LinKD: [0, 0, 0]
+  q_upper_des: [0,0,0,.1, 0.3, 0, 1, .1, -0.3, 0, 1]
+  KP_upper: [100, 100, 100, 50, 50, 50, 50, 50, 50, 50, 50]
+  KD_upper: [1,   1,   1,   1,  1,  1,  1,  1,  1,  1,  1]
+
 
 id:
 #the ID gain works reasonably well, use it as baseline for tuning
