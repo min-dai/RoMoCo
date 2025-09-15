@@ -199,7 +199,7 @@ namespace romoco
         void ConvertMotorCommandsToG1(const BipedMotorCommands &commands);
         uint32_t Crc32Core(uint32_t *ptr, uint32_t len);
 
-        Eigen::VectorXd torque_loco_;
+
 
         Eigen::VectorXd default_pd_q_;
         Eigen::VectorXd default_loco_q_;

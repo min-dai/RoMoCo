@@ -54,6 +54,7 @@ set(include_dirs
 # Declare a C++ library
 add_library(${PROJECT_NAME}
    src/cassie_mujoco_interface.cpp
+    src/cassie_hardware_interface.cpp
    src/cassie_model.cpp
    src/cassie_interface/cassiemujoco.c
 )
@@ -121,6 +122,18 @@ target_link_libraries(cassie_controller_node_main
 )
 
 ## Ros Node
+add_executable(cassie_hardware_interface_main 
+  src/cassie_hardware_interface_main.cpp
+  src/cassie_hardware_interface.cpp
+  src/cassie_interface/udp.c
+)
+target_link_libraries(cassie_hardware_interface_main
+  ${PROJECT_NAME}
+)
+
+
+
+## Ros Node
 add_executable(cassie_mujoco_interface_node_main 
   src/cassie_mujoco_interface_node_main.cpp
 )
@@ -129,7 +142,7 @@ target_link_libraries(cassie_mujoco_interface_node_main
 )
 
 install(
-  TARGETS cassie_state_machine cassie_controller_node_main cassie_mujoco_interface_node_main
+  TARGETS cassie_state_machine cassie_controller_node_main cassie_mujoco_interface_node_main cassie_hardware_interface_main
   DESTINATION lib/${PROJECT_NAME}
 )
 

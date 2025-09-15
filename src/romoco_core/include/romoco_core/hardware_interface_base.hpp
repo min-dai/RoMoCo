@@ -42,6 +42,9 @@ namespace romoco
       RawSensorDataHardware sensor_hw_;
 
       SimpleTimer simple_timer_;
+
+
+      Eigen::VectorXd torque_loco_;
    };
 } // namespace romoco
 

@@ -1,6 +1,6 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
-#include "ament_index_cpp/get_package_share_directory.hpp"
+
 #include "romoco_ros/ros_interface_node.hpp"
 
 #include "g1_hardware_interface.hpp"
