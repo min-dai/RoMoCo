@@ -1,0 +1,83 @@
+#ifndef H1_MUJOCO_SIM_HPP
+#define H1_MUJOCO_SIM_HPP
+
+#include "romoco_mujoco/mujoco_sim.hpp"
+#include "romoco_core/mujoco_interface_base.hpp"
+
+#include "romoco_core/robot_base_pinocchio.hpp"
+#include "romoco_core/contact_kf.hpp"
+
+namespace romoco
+{
+   /**
+    * @brief MuJoCo interface for the Unitree H1 robot.
+    * @ingroup group_h1_examples
+    * @details This class provides a MuJoCo interface for simulating the Unitree H1 robot.
+    * It extends the MujocoInterfaceBase and integrates with the RoMoCo framework.
+    * The interface handles reading sensor data, sending control inputs, and estimating
+    * the robot's state within the MuJoCo simulation environment.
+    */
+class H1MujocoInterface : public MujocoInterfaceBase
+{
+public:
+   H1MujocoInterface();
+   H1MujocoInterface(const std::string &config_file, const std::string &log_path);
+   H1MujocoInterface(const std::string &config_file, const std::string &log_path, std::unique_ptr<romoco::robot::RobotBasePinocchio> robot);
+   ~H1MujocoInterface() override;
+
+   BipedProprioception ReadAndEstimate() override;
+   void SendPacket() override;
+
+   bool Step(const Eigen::VectorXd &leg_control_input, const Eigen::VectorXd &upper_control_input) override;
+
+   void SimHoldPelvis() override { mujoco_.SimHoldPelvis(); }
+   void SimReleasePelvis() override { mujoco_.SimReleasePelvis(); }
+
+   bool paused() const override { return mujoco_.paused(); }
+   double sim_time() const override { return mujoco_.time(); }
+
+private:
+   void Init(const std::string &config_folder, const std::string &log_path) override;
+
+
+
+   MujocoSim mujoco_;
+
+   void UpdateMujocoTrueSensorData();
+
+   void HandleRendering();
+
+   void Estimate();
+
+   void set_base_pos(const Eigen::Vector3d &pos) { mujoco_.set_base_pos(pos); }
+   void set_base_quaternion(const Eigen::Vector4d &quat) { mujoco_.set_base_quaternion(quat); }
+
+   const std::vector<std::string> gyro_name = {"imu-angular-velocity"};
+   const std::vector<std::string> accelerometer_name = {"imu-linear-acceleration"};
+   const std::vector<std::string> framequat_name = {"imu-orientation"};
+
+   // for joint position and velocities
+   std::vector<int> all_encoder_mj_ids_pinocchio_order; // Joint IDs
+
+   // for leg and upper body control
+   std::vector<int> locomotion_actuator_mj_ids_; // Actuator IDs
+   std::vector<int> locked_actuator_mj_ids_;     // Actuator IDs
+
+   // for sensor data
+   std::vector<int> gyro_mj_ids;          // IMU sensor IDs
+   std::vector<int> accelerometer_mj_ids; // Accelerometer sensor IDs
+   std::vector<int> framequat_mj_ids;     // Frame quaternion sensor IDs
+
+   // for testing
+   void UpdateHardwareSensorData();
+   std::unique_ptr<romoco::robot::RobotBasePinocchio> robot_;
+   std::unique_ptr<ContactKf> contact_kf_;
+   Eigen::Vector3d true_lin_vel_;
+   Eigen::Vector3d est_lin_vel_;
+
+
+
+};
+} // namespace romoco
+
+#endif // G1_MUJOCO_SIM_HPP

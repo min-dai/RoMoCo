@@ -1,5 +1,5 @@
 #include "romoco_utils/pd_controller.hpp"
-
+#include <iostream>
 namespace romoco
 {
 PDController::PDController() : is_initialized_(false) {}
@@ -55,6 +55,12 @@ Eigen::VectorXd PDController::Compute(const Eigen::VectorXd &q_desired, const Ei
         q_actual.size() != Kd_.size() ||
         dq_actual.size() != Kd_.size())
     {
+        std::cout << "Sizes: "
+                  << "q_desired: " << q_desired.size() << ", "
+                  << "dq_desired: " << dq_desired.size() << ", "
+                  << "q_actual: " << q_actual.size() << ", "
+                  << "dq_actual: " << dq_actual.size() << ", "
+                  << "Kd_: " << Kd_.size() << std::endl;
         throw std::invalid_argument("q_desired, dq_desired, q_actual, and dq_actual must all be the same size as Kd_");
     }
     // Compute and return the vector
