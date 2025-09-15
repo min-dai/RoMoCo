@@ -154,8 +154,8 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          { // recompute friction cone only if there is a valid OA phase
             domain.leftC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
             domain.rightC = (robot_->robot_type() == RobotType::PlaneFoot) ? FootContactStatus::FlatPlaneContact : FootContactStatus::FlatLineContact;
-            actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
-            actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
+            // actuated_q_idx_ = robot_->actuated_q_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
+            // actuated_u_idx_ = robot_->actuated_u_idx(AnkleMotorStatus::PassiveAll, AnkleMotorStatus::PassiveAll);
 
             // assume both passive ankle
             ComputeActual();

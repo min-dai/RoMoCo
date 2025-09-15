@@ -174,8 +174,14 @@ classdef G1Log < handle
             plotJointPos(obj, t, q)
         end
 
-        function plotWalk(obj)
-            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+        function plotWalk(obj, exportName, folderName)
+            if nargin > 2 && ~isempty(folderName)
+                newestFolderName = folderName;
+            else
+                newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            end
+
+
             full_path = [obj.path, newestFolderName, '/'];
             fileID = fopen( [full_path, 'logWalk.bin']);
 
@@ -188,7 +194,6 @@ classdef G1Log < handle
             N = floor(length(raw) / sum(LengthVec));  % Number of samples
             
             [t, q,dq,u_leg, ya,dya,yd,dyd,d2yd, pCOM, vCOM, Lcom, Lpivot,vdx,vdy] = obj.readRaw(raw, N, LengthVec);
-            
 
             output_list = {'zCOM',...
             'stanceHipYaw','basePitch','baseRoll',...
@@ -231,6 +236,21 @@ classdef G1Log < handle
             nexttile; plot(t, Lpivot(1,:)); title('Lpivot X'); xlabel('Time (s)'); ylabel('X (m)'); grid on;
             nexttile; plot(t, Lpivot(2,:)); title('Lpivot Y'); xlabel('Time (s)'); ylabel('Y (m)'); grid on;
             nexttile; plot(t, Lpivot(3,:)); title('Lpivot Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
+
+
+            % Export log data if exportName is provided
+            if nargin > 1 && ~isempty(exportName)
+                % Ensure exportName has .mat extension
+                if ~endsWith(exportName, '.mat')
+                    exportName = [exportName, '.mat'];
+                end
+
+                % Save to current directory
+                save(exportName, 't', 'q', 'dq', 'u_leg', ...
+                    'ya', 'dya', 'yd', 'dyd', 'd2yd', 'pCOM', 'vCOM', 'Lcom', 'Lpivot', 'vdx', 'vdy');
+
+                fprintf('Log data exported to: %s\n', exportName);
+            end
 
             
         end

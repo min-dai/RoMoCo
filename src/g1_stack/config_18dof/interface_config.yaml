@@ -68,6 +68,7 @@ all_encoder_names:
   - right_wrist_pitch_joint
   - right_wrist_yaw_joint
 
+
 contact_kf:
   base_process_std: 0.1
   foothold_std: 0.05
@@ -81,7 +82,6 @@ contact_kf:
     lowpass_dt_cutoff: 0.005
     linear_lb: 60.0
     linear_ub: 110.0
-
 # Optional
 Kp_locked_joints: [1000, 600, 1000, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700]
 Kd_locked_joints: [  15,  15,   15,   15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15,  15]

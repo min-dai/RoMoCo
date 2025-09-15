@@ -61,3 +61,5 @@ __pycache__/
 # vscode files
 .vscode/
 
+# data
+*.mat

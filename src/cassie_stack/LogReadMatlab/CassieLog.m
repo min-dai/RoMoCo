@@ -119,8 +119,13 @@ classdef CassieLog < handle
             % plotJointPos(obj, t, q)
         end
 
-        function plotWalk(obj)
-                        newestFolderName = obj.getNewestG1LogFolderNameOnly();
+        function plotWalk(obj, exportName, folderName)
+            if nargin > 2 && ~isempty(folderName)
+                newestFolderName = folderName;
+            else
+                newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            end
+
             full_path = [obj.path, newestFolderName, '/'];
             fileID = fopen( [full_path, 'logWalk.bin']);
             raw = fread(fileID,'float');
@@ -166,6 +171,48 @@ classdef CassieLog < handle
             nexttile; plot(t, Lpivot(1,:)); title('Lpivot X'); xlabel('Time (s)'); ylabel('X (m)'); grid on;
             nexttile; plot(t, Lpivot(2,:)); title('Lpivot Y'); xlabel('Time (s)'); ylabel('Y (m)'); grid on;
             nexttile; plot(t, Lpivot(3,:)); title('Lpivot Z'); xlabel('Time (s)'); ylabel('Z (m)'); grid on;
+
+
+               % Export log data if exportName is provided
+            if nargin > 1 && ~isempty(exportName)
+                % Ensure exportName has .mat extension
+                if ~endsWith(exportName, '.mat')
+                    exportName = [exportName, '.mat'];
+                end
+
+                % Save to current directory
+                save(exportName, 't', 'q', 'dq', 'u_leg', ...
+                    'ya', 'dya', 'yd', 'dyd', 'd2yd', 'pCOM', 'vCOM', 'Lcom', 'Lpivot', 'vdx', 'vdy');
+
+                fprintf('Log data exported to: %s\n', exportName);
+            end
+        end
+
+        function plotSimInterface(obj)
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
+            fileID = fopen( [full_path, 'logSimInterface.bin']);
+            raw = fread(fileID,'float');
+            
+   
+            LengthVec = [1,3,3];
+            
+            N = floor(length(raw) / sum(LengthVec));  % Number of samples
+            
+            [t, est_v, true_v] = obj.readRaw(raw, N, LengthVec);
+            
+
+            output_list = {'x','y','z'};
+
+
+            %plot ya yd
+            figure
+            tiledlayout(1,3);
+            for i=1:3
+                nexttile; plot(t, est_v(i,:));  hold on; plot(t, true_v(i,:),'k-'); title(output_list{i}); legend('est','true'); grid on;
+            end
+
+
         end
 
 

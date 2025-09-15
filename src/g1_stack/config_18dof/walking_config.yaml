@@ -1,6 +1,6 @@
 
 # qp or posik, velik
-controller: "qp"
+controller: "posik"
 
 # mlip_flat, dcm, hlip, alip
 ro_planner: "dcm"
@@ -41,7 +41,7 @@ qp:
   # #zCOM stHipYaw basePitch baseRoll swx swy swz swHipYaw SwPitch SwRoll
   OutputW:  [1,     1,   1,    1,      1,  1,  1,   1,      1,       1]
   OutputKP: [150,  300,  400,  400,  300, 300,500,  300,    1000,    400]
-  OutputKD: [10,    10,    8,   8,     8,   8 , 10,   10,    20,      3]
+  OutputKD: [10,    10,    8,   8,     8,   8 ,10,   10,    40,      3]
 
 
 id:

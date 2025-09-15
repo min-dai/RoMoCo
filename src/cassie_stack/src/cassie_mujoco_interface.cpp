@@ -220,6 +220,10 @@ void CassieMujocoInterface::UpdateHardwareSensorData()
     sensor_hw_.base_lin_acc << cassie_out.pelvis.vectorNav.linearAcceleration[0],
         cassie_out.pelvis.vectorNav.linearAcceleration[1],
         cassie_out.pelvis.vectorNav.linearAcceleration[2];
+
+    double *qvel;
+    qvel = cassie_sim_qvel(sim);
+    true_lin_vel_ << qvel[0], qvel[1], qvel[2];
 }
 
 void CassieMujocoInterface::Estimate()

@@ -8,7 +8,7 @@ def generate_launch_description() -> LaunchDescription:
     log_folder_timestamp = f"logs_{timestamp}"
     use_estimation_arg = DeclareLaunchArgument(
         'use_estimation',
-        default_value='true',
+        default_value='false',
         description='Whether to use estimation in the interface'
     )
     use_sim_gains_arg = DeclareLaunchArgument(
