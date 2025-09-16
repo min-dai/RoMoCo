@@ -26,8 +26,8 @@ It provides modular components for planning, control, and simulation interfaces,
 - Modular design for walking, standing, and in-air robot control
 - Pinocchio-based kinematics and dynamics
 - Integration with MuJoCo for simulation
-- Support for state-of-the-art reduced-order model planners (HLIP, DCM; ALIP/MLIP planned)
-- Multiple whole-body control methods: TSCQP, position IK, velocity IK, inverse dynamics, hierarchical QP (WIP)
+- Support for state-of-the-art reduced-order model planners (Alip, H-LIP, MLIP flat footed, DCM)
+- Multiple whole-body control methods: TSCQP, position IK, velocity IK, inverse dynamics
 - Easy-to-extend base classes for new robots or controllers
 
 ## Overview
@@ -186,7 +186,8 @@ python3 bin/eigengdb_register_printers
 
 
 ## Todo
-- [ ] Hierarchical QP controller for humanoids (WIP)
+- [ ] Hierarchical QP controller for humanoids 
+- [ ] Multi-domain walking
 
 
 
