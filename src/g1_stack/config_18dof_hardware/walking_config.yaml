@@ -3,7 +3,7 @@
 controller: "posik"
 
 # mlip_flat, dcm, hlip, alip
-ro_planner: "dcm"
+ro_planner: "hlip"
 
 pose_command: 
   dt_lowpass: 0.0005
@@ -20,7 +20,7 @@ pose_command:
   bezierSwingHorizontal: [0, 0, 1, 1, 1]
   bezierComVertical: [0, 0, 0, 1, 1, 1]
   maxStepSize: 1.
-  velXmax: 1
+  velXmax: 0.8
   velYmax: 0.5
 
 
@@ -30,14 +30,15 @@ friction:
   Lback: -0.04 #max -0.05
   W: 0.025 #max 0.025
   Fz_lb: 100.
-  Rot_frictionCoef: 1
+  Rot_frictionCoef: 0.046
+
 
 
 posik:
   tol: 0.0001
   max_iter: 1000
   #HipPitch HipRoll HipYaw KneePitch AnklePitch AnkleRoll
-  JointKP: [250, 200, 250, 150, 150, 150]
+  JointKP: [200, 200, 250, 150, 150, 150]
   JointKD: [10,10,10,10,10,10]
 
 

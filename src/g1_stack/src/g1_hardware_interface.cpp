@@ -20,7 +20,9 @@ namespace romoco
         Init(config_folder, log_path);
         InitDDS(network_interface);
         // 1 if active, 0 if inactive
-        g1_motor_mode = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0};
+        g1_motor_mode = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+        // g1_motor_mode = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0};
 
         // update t0
         simple_timer_.Reset();
@@ -170,6 +172,8 @@ namespace romoco
             if (low_state.motor_state()[i].motorstate() && i <= 11)
                 std::cout << "[ERROR] motor " << i << " with code " << low_state.motor_state()[i].motorstate() << "\n";
         }
+
+
         motor_state_buffer_.SetData(ms_tmp);
 
         // Extract pelvis IMU state

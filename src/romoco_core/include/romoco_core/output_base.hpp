@@ -125,6 +125,9 @@ protected:
 
     void SetBezierDesiredOutputs(const Eigen::VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx);
 
+    void SetBezierDesiredOutputsZeroD2yd(const Eigen::VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx);
+
+
     std::vector<int> generate_full_y_idx(int nY){
         std::vector<int> full_y_idx;
         for (int i = 0; i < nY; i++)

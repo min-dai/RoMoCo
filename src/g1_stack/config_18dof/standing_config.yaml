@@ -20,14 +20,9 @@ pose_command:
 qp:
   ifprintQP: true
   # OutputKP: [250, 250, 250, 250, 250, 250]
+  OutputW:  [1,     1,   1,    1,      1,  1]
   OutputKP: [250, 250, 250, 500, 500, 500]  
   OutputKD: [5,5,5,5,5,5]
-
-qpm:
-  AngKD: [.1, .1, .1]
-  AngKP: [100, 100, 100]
-  LinKP: [10, 10, 10]
-  LinKD: [1, 1, 1]  
 
 
 id:
@@ -45,9 +40,9 @@ velik:
   
 friction:  
   frictionCoef: 1
-  Lfront: 0.085
-  Lback: 0.085
-  W: 0.025
+  Lfront: 0.1 #max 0.12
+  Lback: -0.04 #max -0.05
+  W: 0.025 #max 0.025
   Fz_lb: 100.
   Rot_frictionCoef: 0.046
 

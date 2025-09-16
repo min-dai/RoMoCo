@@ -78,10 +78,10 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
    do
    {
       transitioned = false; // Reset transition flag at the start of each loop iteration
-      // OA to UA
+      // OA to UA, i.e. DS to SS
       if (t >= (updated.tOAp + updated.TOA) && updated.curSagDomain == Domain::domain_OA)
       {
-         cout << t << "entering UA phase" << endl;
+         cout << t << "entering UA/SS phase" << endl;
          transitioned = true; // Mark that a transition occurred
 
          updated.tUAp = t;
@@ -132,7 +132,9 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
              0, 0, config.zsw_neg;
          updated.bezierCOMz = (Eigen::VectorXd::Ones(updated.bezierCOMz.size()) - config.bezierComVertical) * updated.y0_UA(zCOM) + config.bezierComVertical * updated.zCOMdes;
          // Update bezier parameters for swing and stance hip yaw
+         //if use radio for yaw rate control
          double ToYaw = updated.delta_yaw / 2.;
+         //if track absolute zero yaw
          // double ToYaw = (updated.stance_toe_yaw) / 2.;
          updated.bezierStanceHipYaw = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(stanceHipYaw) + config.bezierSwingHorizontal * ToYaw;
          updated.bezierSwingHipYaw = (Eigen::VectorXd::Ones(config.bezierSwingHorizontal.size()) - config.bezierSwingHorizontal) * updated.y0_UA(swingHipYaw) - config.bezierSwingHorizontal * ToYaw;
@@ -141,12 +143,12 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          ComputeFrictionConstraints(config.fric_params);
       }
 
-      // UA to OA
+      // UA to OA, i.e. SS to DS
       if (t >= (updated.tUAp + updated.TUA) && updated.curSagDomain == Domain::domain_UA)
       {
          updated.curSagDomain = Domain::domain_OA;
          updated.tOAp = updated.t;
-         cout << t << "entering OA phase" << endl;
+         cout << t << "entering OA/DS phase" << endl;
          transitioned = true;
          updated.isDSP = true;
          updated.readyToTransition = true;
@@ -259,7 +261,7 @@ void WalkingOutputFp::ComputeDesired()
 
       // todo: for now, set yaw all as zero
       SetBezierDesiredOutputs(updated.bezierCOMz, phase.tau, phase.dtau, zCOM);
-      // SetBezierDesiredOutputs(updated.bezierStanceHipYaw, phase.tau, phase.dtau, stanceHipYaw);
+      SetBezierDesiredOutputs(updated.bezierStanceHipYaw, phase.tau, phase.dtau, stanceHipYaw);
       // base pitch and roll are zero
 
       Eigen::Vector2d StepLocal = computeFPwithROmodel();
@@ -273,7 +275,7 @@ void WalkingOutputFp::ComputeDesired()
       SetBezierDesiredOutputs(updated.bezierSwingy, phase.tau, phase.dtau, swingStepy);
 
       SetBezierDesiredOutputs(updated.bezierSwingz, phase.tau, phase.dtau, swingStepz);
-      // SetBezierDesiredOutputs(updated.bezierSwingHipYaw, phase.tau, phase.dtau, swingHipYaw);
+      SetBezierDesiredOutputs(updated.bezierSwingHipYaw, phase.tau, phase.dtau, swingHipYaw);
       // swing delta pitch and roll are zero
    }
 }

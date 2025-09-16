@@ -64,6 +64,14 @@ void OutputBase::SetBezierDesiredOutputs(const Eigen::VectorXd &alpha, const dou
     d2yd_(OutputIdx) = bezier_tools::dtime2Bezier(alpha, tau, dtau);
 }
 
+void OutputBase::SetBezierDesiredOutputsZeroD2yd(const Eigen::VectorXd &alpha, const double &tau, const double &dtau, const int &OutputIdx)
+{
+    yd_(OutputIdx) = bezier_tools::bezier(alpha, tau);
+    dyd_(OutputIdx) = bezier_tools::dtimeBezier(alpha, tau, dtau);
+    d2yd_(OutputIdx) = 0.;
+}
+
+
 Eigen::VectorXd OutputBase::MapU2FullIdx(const Eigen::VectorXd &u, const std::vector<int> &actuated_u_idx, const int &full_size){
     Eigen::VectorXd u_full = Eigen::VectorXd::Zero(full_size);
     for (int i = 0; i < actuated_u_idx.size(); i++){

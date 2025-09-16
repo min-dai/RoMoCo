@@ -11,7 +11,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderMode->setMaximum(3);
     sliderMode->setValue(1);
     layout->addWidget(sliderMode);
-    labelMode = new QLabel("Mode Value");
+    labelMode = new QLabel("Mode Value: 0");
     layout->addWidget(labelMode);
 
     sliderX = new QSlider(Qt::Horizontal);
@@ -19,7 +19,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderX->setMaximum(100);
     sliderX->setValue(50);
     layout->addWidget(sliderX);
-    labelX = new QLabel("X Value");
+    labelX = new QLabel("X Value: 0");
     layout->addWidget(labelX);
 
     sliderY = new QSlider(Qt::Horizontal);
@@ -27,7 +27,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderY->setMaximum(100);
     sliderY->setValue(50);
     layout->addWidget(sliderY);
-    labelY = new QLabel("Y Value");
+    labelY = new QLabel("Y Value: 0");
     layout->addWidget(labelY);
 
     sliderZ = new QSlider(Qt::Horizontal);
@@ -35,7 +35,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderZ->setMaximum(100);
     sliderZ->setValue(50);
     layout->addWidget(sliderZ);
-    labelZ = new QLabel("Z Value");
+    labelZ = new QLabel("Z Value: 0");
     layout->addWidget(labelZ);
 
     sliderRoll = new QSlider(Qt::Horizontal);
@@ -43,7 +43,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderRoll->setMaximum(100);
     sliderRoll->setValue(50);
     layout->addWidget(sliderRoll);
-    labelRoll = new QLabel("Roll Value");
+    labelRoll = new QLabel("Roll Value: 0");
     layout->addWidget(labelRoll);
 
     sliderPitch = new QSlider(Qt::Horizontal);
@@ -51,7 +51,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderPitch->setMaximum(100);
     sliderPitch->setValue(50);
     layout->addWidget(sliderPitch);
-    labelPitch = new QLabel("Pitch Value");
+    labelPitch = new QLabel("Pitch Value: 0");
     layout->addWidget(labelPitch);
 
     sliderYaw = new QSlider(Qt::Horizontal);
@@ -59,7 +59,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderYaw->setMaximum(100);
     sliderYaw->setValue(50);
     layout->addWidget(sliderYaw);
-    labelYaw = new QLabel("Yaw Value");
+    labelYaw = new QLabel("Yaw Value: 0");
     layout->addWidget(labelYaw);
 
     sliderStepTime = new QSlider(Qt::Horizontal);
@@ -67,7 +67,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderStepTime->setMaximum(100);
     sliderStepTime->setValue(50);
     layout->addWidget(sliderStepTime);
-    labelStepTime = new QLabel("StepTime Value");
+    labelStepTime = new QLabel("StepTime Value: 0");
     layout->addWidget(labelStepTime);
 
     sliderStepWidth = new QSlider(Qt::Horizontal);
@@ -75,7 +75,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderStepWidth->setMaximum(100);
     sliderStepWidth->setValue(50);
     layout->addWidget(sliderStepWidth);
-    labelStepWidth = new QLabel("StepWidth Value");
+    labelStepWidth = new QLabel("StepWidth Value: 0");
     layout->addWidget(labelStepWidth);
 
     connect(sliderMode, &QSlider::valueChanged, this, &RadioSliderGUI::handleDTSliderChange);

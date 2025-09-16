@@ -1,5 +1,5 @@
 
-controller: "posik"
+controller: "qp"
 
 
 
@@ -23,6 +23,7 @@ pose_command:
 
 qp:
   ifprintQP: true
+  OutputW:  [1,    1,   1,    1,   1,  1, 1,   1,   1,    1,      1,  1]
   OutputKP: [ 300, 250, 300, 300, 300, 300,  300, 250, 300, 300, 300, 300]   
   OutputKD: [ 10,   5,   10,  5,    5,   5,  10,   5,   10,    5,  5,   5]
 

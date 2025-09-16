@@ -43,11 +43,9 @@ classdef G1Log < handle
         end
 
         function plotInterface(obj)
-            % newestFolderName = obj.getNewestG1LogFolderNameOnly();
-            % full_path = [obj.path, newestFolderName, '/'];
-            full_path = [obj.path, 'default', '/'];
+            newestFolderName = obj.getNewestG1LogFolderNameOnly();
+            full_path = [obj.path, newestFolderName, '/'];
             fileID = fopen( [full_path, 'logInterface.bin']);
-            % fileID = fopen( [obj.path, 'logInterface.bin']);
             raw = fread(fileID,'float');
             
    
@@ -68,8 +66,13 @@ classdef G1Log < handle
                 nexttile; plot(t, est_v(i,:));  ; title(output_list{i});  grid on;
             end
 
-            obj.plotJointPos(t,q)
+            % obj.plotJointPos(t,q)
 
+            obj.plotJointPosUpper(t,q)
+
+            dt = [t t(end)]- [t(1) t];
+            figure
+            plot(t,dt(1:end-1))
 
 
         end
@@ -209,7 +212,7 @@ classdef G1Log < handle
             end
 
 
-            % for i = 5:7
+            % for i = 1:9
             % testGradient(obj,t,dyd(i,:),d2yd(i,:))
             % end
 
@@ -379,6 +382,33 @@ classdef G1Log < handle
             nexttile; plot(t, dq(17,:)); title('Right Ankle Pitch'); xlabel('Time (s)'); ylabel('Angle (rad/s)'); grid on;
             nexttile; plot(t, dq(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad/s)'); grid on;
         end
+        
+        function plotJointPosUpper(obj,t,q)
+            figure
+            tiledlayout(1,3);
+            nexttile; plot(t, q(19,:)); title('Waist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(20,:)); title('Waist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(21,:)); title('Waist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+
+            figure
+            tiledlayout(2,7);
+            nexttile; plot(t, q(22,:)); title('Left Shoulder Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(23,:)); title('Left Shoulder Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(24,:)); title('Left Shoulder Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(25,:)); title('Left Elbow'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(26,:)); title('Left Wrist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(27,:)); title('Left Wrist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(28,:)); title('Left Wrist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(29,:)); title('Right Shoulder Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(30,:)); title('Right Shoulder Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(31,:)); title('Right Shoulder Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(32,:)); title('Right Elbow'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(33,:)); title('Right Wrist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(34,:)); title('Right Wrist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            nexttile; plot(t, q(35,:)); title('Right Wrist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
+            
+        end
+
         function plotJointPos(obj, t, q)
             base_pos = q(1:3,:);
             base_rot = q(4:6,:);
@@ -408,28 +438,6 @@ classdef G1Log < handle
             nexttile; plot(t, q(18,:)); title('Right Ankle Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
 
                         % 
-            % figure
-            % tiledlayout(1,3);
-            % nexttile; plot(t, q(19,:)); title('Waist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(20,:)); title('Waist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(21,:)); title('Waist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % 
-            % figure
-            % tiledlayout(2,7);
-            % nexttile; plot(t, q(22,:)); title('Left Shoulder Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(23,:)); title('Left Shoulder Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(24,:)); title('Left Shoulder Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(25,:)); title('Left Elbow'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(26,:)); title('Left Wrist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(27,:)); title('Left Wrist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(28,:)); title('Left Wrist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(29,:)); title('Right Shoulder Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(30,:)); title('Right Shoulder Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(31,:)); title('Right Shoulder Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(32,:)); title('Right Elbow'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(33,:)); title('Right Wrist Roll'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(34,:)); title('Right Wrist Pitch'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
-            % nexttile; plot(t, q(35,:)); title('Right Wrist Yaw'); xlabel('Time (s)'); ylabel('Angle (rad)'); grid on;
             
 %             %test q gradient
 %             for i=1:35

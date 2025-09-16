@@ -21,6 +21,7 @@ qp:
   ifprintQP: false
   # OutputKP: [150, 150, 150, 120, 120, 120]
   # OutputKD: [3,3,3,3,3,3]
+  OutputW:  [1,    1,   1,    1,   1,  1]
   OutputKP: [200,200,200,50,50,50]
   OutputKD: [5,5,5,1,1,1]
 
@@ -40,8 +41,8 @@ velik:
   
 friction:  
   frictionCoef: 1
-  Lfront: 0.1
-  Lback: 0.06
+  Lfront: 0.08 #max 0.1
+  Lback: -0.04 #max -0.06
   W: 0
   Fz_lb: 100.
   Rot_frictionCoef: 0.046

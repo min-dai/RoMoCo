@@ -21,6 +21,7 @@ pose_command:
 
 qp:
   ifprintQP: true
+  OutputW:  [1,    1,   1,    1,   1,  1, 1,   1,   1,    1]
   OutputKP: [ 300, 250, 300, 300, 1000,  300, 250, 300, 300, 1000]   
   OutputKD: [ 10,   5,   10,  5,    5,  10,   5,   10,    5,  5]
 
