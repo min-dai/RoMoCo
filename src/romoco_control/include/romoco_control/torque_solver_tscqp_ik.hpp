@@ -1,24 +1,26 @@
-#ifndef TORQUE_SOLVER_TSCQP_HPP
-#define TORQUE_SOLVER_TSCQP_HPP
+#ifndef TORQUE_SOLVER_TSCQP_IK_HPP
+#define TORQUE_SOLVER_TSCQP_IK_HPP
 
 #include "romoco_control/torque_solver_base.hpp"
+#include "romoco_utils/pd_controller.hpp"
+
 #include <clarabel.hpp>
 #include <optional>
 namespace romoco
 {
     /**
-     * @class TorqueSolverTSCQP
-     * @brief A torque solver that uses a time-stepping contact QP approach to compute torque commands for a biped robot.
+     * @class TorqueSolverQPIK
+     * @brief A torque solver that uses a QP as feedforward for position IK.
      * @ingroup group_solver
-     * This class extends the TorqueSolverBase class to implement a torque solver based on a time-stepping contact QP approach.
-     * It computes the required joint torques to achieve desired accelerations while handling contact constraints and friction.
-     * The TorqueSolverTSCQP class utilizes the robot model and output generation provided by the RobotBasePinocchio and OutputBase classes.
+     * This class extends the TorqueSolverBase class to implement a torque solver that utilizes a Quadratic Programming (QP) approach
+     * for inverse kinematics (IK) with position control. It integrates with the Clarabel QP solver to compute optimal joint torques and forces
+     * while considering various constraints and objectivess
      */
-    class TorqueSolverTSCQP : public TorqueSolverBase
+    class TorqueSolverQPIK : public TorqueSolverBase
     {
     public:
         // var = [ddq; u; F]
-        TorqueSolverTSCQP(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
+        TorqueSolverQPIK(const std::string &config_file, std::shared_ptr<romoco::robot::RobotBasePinocchio> robot, std::shared_ptr<OutputBase> output);
 
         void Init(const std::string &config_file) override;
 
@@ -33,8 +35,8 @@ namespace romoco
                            const std::optional<Eigen::MatrixXd> &Aeq,
                            const std::optional<Eigen::VectorXd> &beq,
                            Eigen::VectorXd &sol);
-        void ComputeWeightedQuadraticCostTerms(const Eigen::MatrixXd &Acost, const Eigen::VectorXd &bcost, const Eigen::VectorXd &weights, Eigen::MatrixXd &G, Eigen::VectorXd &g);
-
+        void ComputeQuadraticCostTerms(const Eigen::MatrixXd &Acost, const Eigen::VectorXd &bcost, Eigen::MatrixXd &G, Eigen::VectorXd &g);
+        void SolveIk();
 
         bool print_qp_ = false;
         Eigen::VectorXd OutputKP_, OutputKD_;
@@ -49,10 +51,21 @@ namespace romoco
         bool if_solved_ = false;
         Eigen::VectorXd sol_, u_sol_, F_sol_, u_sol_prev_;
 
+        double tol_ = 1e-3;
+        int max_iter_ = 100;
+
+        Eigen::VectorXd qm_des_, dqm_des_;
+
+        Eigen::VectorXd qm_actual_, dqm_actual_;
+
+        Eigen::VectorXd JointKP_, JointKD_;
+        PDController pd_controller_;
+        Eigen::VectorXd u_sol;
+
         // Settings for the Clarabel QP solver
         clarabel::DefaultSettings<double> settings_;
     };
 
 } // namespace romoco
 
-#endif // TORQUE_SOLVER_TSCQP_HPP
+#endif // TORQUE_SOLVER_TSCQP_IK_HPP

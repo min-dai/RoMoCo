@@ -8,6 +8,7 @@
 #include "romoco_control/torque_solver_inv_dyn.hpp"
 #include "romoco_control/torque_solver_vel_ik.hpp"
 #include "romoco_control/torque_solver_pos_ik.hpp"
+#include "romoco_control/torque_solver_tscqp_ik.hpp"
 
 #include "romoco_output/walking_output_fp.hpp"
 
@@ -301,6 +302,10 @@ void BasicStateMachine::SelectControllers(
    else if (torque_solver_type == "posik")
    {
       torque_solver = std::make_unique<TorqueSolverPOSIK>(config_file, robot_ptr, output);
+   }
+   else if (torque_solver_type == "qpik")
+   {
+      torque_solver = std::make_unique<TorqueSolverQPIK>(config_file, robot_ptr, output);
    }
    else
    {

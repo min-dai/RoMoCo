@@ -8,7 +8,7 @@ namespace romoco
     /**
      * @class TorqueSolverInvDyn
      * @brief A torque solver that uses inverse dynamics to compute torque commands for a biped robot.
-     * @ingroup group_controller
+     * @ingroup group_solver
      * This class extends the TorqueSolverBase class to implement a torque solver based on inverse dynamics.
      * It computes the required joint torques to achieve desired accelerations while compensating for gravity and other dynamic effects.
      * The TorqueSolverInvDyn class utilizes the robot model and output generation provided by the RobotBasePinocchio and OutputBase classes.

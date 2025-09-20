@@ -10,7 +10,7 @@ namespace romoco
     /**
      * @class MLIP
      * @brief A class for solving the Multidomain Linear Inverted Pendulum (MLIP)
-     * @ingroup group_controllers
+     * @ingroup group_ro_planner
      */
     class MLIP : public LIPBase
     {

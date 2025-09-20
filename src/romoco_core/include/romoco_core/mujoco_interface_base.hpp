@@ -37,6 +37,7 @@ public:
    virtual double sim_time() const = 0;
 
 protected:
+   
    struct VideoSetting
    {
       bool record_video = false;

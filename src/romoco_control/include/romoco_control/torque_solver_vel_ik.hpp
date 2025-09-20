@@ -8,7 +8,7 @@ namespace romoco
     /**
      * @class TorqueSolverVELIK
      * @brief A torque solver that uses velocity-based inverse kinematics to compute torque commands for a biped robot.
-     * @ingroup group_controller
+     * @ingroup group_solver
      * This class extends the TorqueSolverBase class to implement a torque solver based on velocity-based inverse kinematics.
      * It computes the required joint torques to achieve desired velocities while compensating for gravity and other dynamic effects.
      * The TorqueSolverVELIK class utilizes the robot model and output generation provided by the RobotBasePinocchio and OutputBase classes.

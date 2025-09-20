@@ -10,7 +10,7 @@ namespace romoco
     /**
      * @class HLIP
      * @brief A class for solving the Hybrid Linear Inverted Pendulum (HLIP) model.
-     * @ingroup group_controllers
+     * @ingroup group_ro_planner
      */
     class HLIP : public LIPBase
     {

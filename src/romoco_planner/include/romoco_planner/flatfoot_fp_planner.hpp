@@ -8,7 +8,7 @@ namespace romoco
    /**
     * @class FlatFootFPPlanner
     * @brief A base class for flat-footed foot placement planners.
-    * @ingroup group_controllers
+    * @ingroup group_ro_planner
     *
     * This abstract class defines the interface for flat-footed foot placement planners.
     * It provides methods for initialization, parameter updates, and plan updates.

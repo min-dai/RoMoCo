@@ -9,7 +9,7 @@ namespace romoco
    /**
     * @struct PlannerInput
     * @brief A structure to hold the input state for the planner.
-    * @ingroup group_controllers
+    * @ingroup group_controller
     */
    struct PlannerInput
    {
@@ -29,7 +29,7 @@ namespace romoco
    /**
     * @struct PlannerOutput
     * @brief A structure to hold the output from the planner.
-    * @ingroup group_controllers
+    * @ingroup group_controller
     */
    struct PlannerOutput
    {
@@ -38,7 +38,7 @@ namespace romoco
    /**
     * @struct PlannerParams
     * @brief A structure to hold the parameters for the planner.
-    * @ingroup group_controllers
+    * @ingroup group_controller
     */
    struct PlannerParams
    {

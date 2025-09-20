@@ -12,7 +12,7 @@ namespace romoco
 /**
  * @class OutputBase
  * @brief An abstract base class for robot output generation, providing common functionality for different output strategies.
- * @ingroup group_controller
+ * @ingroup group_output
  * This class serves as a foundation for generating desired outputs for biped robots, handling the selection of actuated joints, 
  * and management of output states. It is designed to be extended by specific output strategies.
  */

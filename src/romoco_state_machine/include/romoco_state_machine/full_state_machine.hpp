@@ -18,7 +18,7 @@ namespace romoco
 {
    /**
     * @class BasicStateMachine
-    * @ingroup group_interface
+    * @ingroup group_controller
     * @brief A basic state machine for controlling a biped robot.
     * @details This class implements a simple state machine with mujoco simulation interface for synchronized control of a biped robot using different controllers based on the desired mode of operation.
     * It supports modes such as Null, Standing, and Walking, and switches between different controllers accordingly.

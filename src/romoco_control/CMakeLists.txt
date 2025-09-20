@@ -39,6 +39,7 @@ set(include_dirs
 add_library(${PROJECT_NAME} SHARED
   src/torque_solver_base.cpp
   src/torque_solver_tscqp.cpp
+  src/torque_solver_tscqp_ik.cpp
   src/torque_solver_inv_dyn.cpp
   src/torque_solver_vel_ik.cpp
   src/torque_solver_pos_ik.cpp

@@ -11,7 +11,7 @@ namespace romoco
     /**
      * @class InAirOutput
      * @brief An output class for generating desired outputs when the biped robot is in the air.
-     * @ingroup group_controller
+     * @ingroup group_output
      * This class extends the OutputBase class to provide specific implementations for generating desired outputs
      * when the biped robot is in the air.
      */

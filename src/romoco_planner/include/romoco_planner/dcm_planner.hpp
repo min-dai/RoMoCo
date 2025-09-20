@@ -8,7 +8,7 @@ namespace romoco
    /**
     * @class DCMPlanner
     * @brief A class for planning using the Divergent Component of Motion (DCM) model.
-    * @ingroup group_controllers
+    * @ingroup group_ro_planner
     */
    class DCMPlanner : public HLIPPlanner
    {

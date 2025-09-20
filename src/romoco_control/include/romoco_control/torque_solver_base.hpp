@@ -15,7 +15,7 @@ namespace romoco
      * @class TorqueSolverBase
      * @brief An abstract base class for torque solvers, providing common functionality for different torque solving strategies.
      * @note The Solve() method must be called after updating the RobotBasePinocchio and OutputBase instances.
-     * @ingroup group_controller
+     * @ingroup group_solver
      * This class serves as a foundation for implementing various torque solving algorithms for biped robots.
      * It manages the robot model and output generation, and provides a method for solving the torque commands.
      * The TorqueSolverBase class is designed to be extended by specific torque solver implementations.

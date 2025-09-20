@@ -10,7 +10,7 @@ namespace romoco
    /**
     * @class ALIPPlanner
     * @brief A class for planning using the Augmented Linear Inverted Pendulum (ALIP) model.
-    * @ingroup group_controllers
+    * @ingroup group_ro_planner
     */
    class ALIPPlanner : public FlatFootFPPlanner
    {

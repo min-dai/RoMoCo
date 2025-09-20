@@ -10,7 +10,7 @@ namespace romoco
    /**
     * @class ALIP
     * @brief A class for solving the Augmented Linear Inverted Pendulum (ALIP) model.
-    * @ingroup group_controllers
+    * @ingroup group_ro_planner
     */
    class ALIP : public LIPBase
    {

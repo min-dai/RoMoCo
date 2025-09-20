@@ -12,7 +12,7 @@ namespace romoco
     /**
      * @class WalkingOutputBase
      * @brief An abstract base class for generating desired outputs during walking for a biped robot.
-     * @ingroup group_controller
+     * @ingroup group_output
      * This class extends the OutputBase class to provide common functionalities for generating desired outputs
      * during walking. It manages the walking domain, contact status, and planner inputs/outputs.
      * The WalkingOutputBase class is designed to be further extended by specific walking output implementations.

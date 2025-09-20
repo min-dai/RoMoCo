@@ -33,7 +33,7 @@ namespace romoco
 {
     /**
      * @namespace robot
-     * @ingroup group_controller
+     * @ingroup group_robot
      * @brief Namespace containing robot-related classes and functions.
      * This namespace includes the RobotBasePinocchio class, which serves as a base class for robot models using the Pinocchio library.
      * It provides functionalities for kinematics, dynamics, and contact handling for biped robots.
@@ -44,7 +44,7 @@ namespace romoco
         /**
          * @class RobotBasePinocchio
          * @brief A base class for robot models using the Pinocchio library.
-         * @ingroup group_controller
+         * @ingroup group_robot
          * This class provides functionalities for kinematics, dynamics, and contact handling for biped robots.
          * It is designed to be extended by specific robot implementations, such as LineFootRobotBasePinocchio and PlaneFootRobotBasePinocchio.
          * The class handles the initialization of the robot model from a URDF file, computation of dynamics matrices, and kinematics of various robot parts.
