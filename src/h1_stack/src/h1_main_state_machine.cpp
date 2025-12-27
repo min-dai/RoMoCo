@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
     {
         rclcpp::spin_some(node);
 
-        // fake_radio = node->fake_radio();
+        fake_radio = node->fake_radio();
 
-        fake_radio = predefined_radio(t_sim);
+        // fake_radio = predefined_radio(t_sim);
         DesiredCommand command = ConvertScreenRadioToDesiredCommand(fake_radio);
 
 

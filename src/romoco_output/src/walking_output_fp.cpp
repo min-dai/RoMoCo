@@ -123,7 +123,7 @@ void WalkingOutputFp::timeBasedDomainContactStatusSwitch(double t)
          updated.delta_yaw = std::clamp(updated.delta_yaw_des, -0.2, 0.2);
          cout << "updated.delta_yaw_des" << updated.delta_yaw_des << endl;
          updated.delta_yaw_des = 0; // reset for next step
-         updated.target_yaw = updated.stance_toe_yaw - updated.delta_yaw;
+         updated.target_yaw = updated.stance_toe_yaw + updated.delta_yaw;
          cout << "delta: " << updated.delta_yaw << ", stance_toe: " << updated.stance_toe_yaw << ", target: " << updated.target_yaw << endl;
 
          // Update bezier polynomials that only need to Update once
@@ -177,7 +177,7 @@ void WalkingOutputFp::updateTargetWalkingRadio(const DesiredCommand &command)
 {
    lowpass_vel_x_des_.Update(config.velXmax * command.values(Channel::X));
    lowpass_vel_y_des_.Update(config.velYmax * command.values(Channel::Y));
-   updated.delta_yaw_des = updated.delta_yaw_des - command.values(Channel::Yaw) * updated.dt;
+   updated.delta_yaw_des = updated.delta_yaw_des + command.values(Channel::Yaw) * updated.dt;
 
    updated.desiredVx = lowpass_vel_x_des_.getValue() + config.vx_offset;
    updated.desiredVy = lowpass_vel_y_des_.getValue() + config.vy_offset;

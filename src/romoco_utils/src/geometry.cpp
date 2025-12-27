@@ -120,9 +120,12 @@ Eigen::Vector3d angularVel2EulerRate(const Eigen::EulerAnglesZYXd &euler, const 
 {
     // see convert_angvel.m
     Eigen::Matrix3d RateMatrix;
-    RateMatrix << -sin(euler.beta()), 0.0, 1.0,
-        cos(euler.beta()) * sin(euler.gamma()), cos(euler.gamma()), 0.0,
-        cos(euler.beta()) * cos(euler.gamma()), -sin(euler.gamma()), 0.0;
+    double yaw = euler.alpha();
+    double pitch = euler.beta();
+    double roll = euler.gamma();
+    RateMatrix << -sin(pitch), 0.0, 1.0,
+    cos(pitch) * sin(roll), cos(roll), 0.0,
+    cos(pitch) * cos(roll), -sin(roll), 0.0;
 
     return RateMatrix.completeOrthogonalDecomposition().solve(w);
 }

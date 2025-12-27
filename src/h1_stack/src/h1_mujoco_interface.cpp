@@ -57,7 +57,7 @@ void H1MujocoInterface::Init(const std::string &config_folder, const std::string
    std::vector<std::string> modify_joint_names = {"left_knee_joint", "right_knee_joint", "left_hip_pitch_joint", "right_hip_pitch_joint", "left_ankle_pitch_joint", "right_ankle_pitch_joint"};
    std::vector<int> modify_joint_mj_ids = mujoco_.GetJointIdsByName(modify_joint_names);
    Eigen::VectorXd modify_joint_pos(6);
-   modify_joint_pos << 0.8, 0.8, -0.4, -0.4, -0.4, -0.4;
+   modify_joint_pos << 1.0, 1.0, -0.5, -0.5, -0.5, -0.5;
 
    mujoco_.set_1dof_joint_qpos(modify_joint_pos, modify_joint_mj_ids);
 

@@ -11,7 +11,7 @@ RadioSliderGUI::RadioSliderGUI(QWidget *parent) : QWidget(parent)
     sliderMode->setMaximum(3);
     sliderMode->setValue(1);
     layout->addWidget(sliderMode);
-    labelMode = new QLabel("Mode Value: 0");
+    labelMode = new QLabel("Mode Value: -1");
     layout->addWidget(labelMode);
 
     sliderX = new QSlider(Qt::Horizontal);

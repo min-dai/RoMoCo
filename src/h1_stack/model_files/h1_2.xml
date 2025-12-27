@@ -63,7 +63,7 @@
     <mesh name="link22_R" file="link22_R.STL"/>
   </asset>
   <worldbody>
-    <body name="pelvis" pos="0 0 0.96">
+    <body name="pelvis" pos="0 0 0.93">
       <inertial pos="-0.0004 3.7e-05 -0.046864" quat="0.497097 0.496809 -0.503132 0.502925" mass="5.983" diaginertia="0.0531565 0.0491678 0.00902583"/>
       <joint type='slide' axis='1 0 0' limited='false'/>
       <joint type='slide' axis='0 1 0' limited='false'/>

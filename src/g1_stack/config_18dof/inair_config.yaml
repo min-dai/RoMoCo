@@ -5,9 +5,9 @@ controller: "qp"
 
 pose_command: 
   dt_lowpass: 0.0005
-  yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
+  yd_lowpass_dt_cutoff: [.1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1]
   swingZ_lb: -0.9
-  swingZ_ub: -0.4
+  swingZ_ub: -0.6
   swingX_backward: -0.2
   swingX_forward: 0.2
   swingY_inner: 0.04

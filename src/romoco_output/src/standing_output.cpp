@@ -136,7 +136,7 @@ void StandingOutput::ComputeDesired(const DesiredCommand &command)
     double pitch_d = (updated.queueTransition) ? 0 : command.values(Channel::Pitch) * config.pitch_range;
     double roll_d = (updated.queueTransition) ? 0 : command.values(Channel::Roll) * config.roll_range;
 
-    yd_ << x_d, y_d, z_d, yaw_d, pitch_d, roll_d;
+    yd_ << x_d, y_d, z_d, roll_d, pitch_d, yaw_d;
     yd_ = lowpassyd.Update(yd_);
     dyd_.setZero();
     d2yd_.setZero();

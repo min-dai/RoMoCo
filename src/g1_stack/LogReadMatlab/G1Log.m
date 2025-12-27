@@ -212,9 +212,9 @@ classdef G1Log < handle
             end
 
 
-            % for i = 1:9
-            % testGradient(obj,t,dyd(i,:),d2yd(i,:))
-            % end
+            for i = 4:6
+            testGradient(obj,t,q(i,:),dq(i,:))
+            end
 
 
             %plot u

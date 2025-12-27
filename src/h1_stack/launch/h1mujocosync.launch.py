@@ -22,9 +22,9 @@ def generate_launch_description() -> LaunchDescription:
             output="screen",
             emulate_tty=True
         ),
-        # Node(
-        #     package="romoco_screen_radio",
-        #     executable="screen_radio_node",
-        #     name="screen_radio_node"
-        # )
+        Node(
+            package="romoco_screen_radio",
+            executable="screen_radio_node",
+            name="screen_radio_node"
+        )
     ])

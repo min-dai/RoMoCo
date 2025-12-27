@@ -6,8 +6,8 @@ controller: "posik"
 pose_command: 
   dt_lowpass: 0.0005
   yd_lowpass_dt_cutoff: [.5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5]
-  swingZ_lb: -0.9
-  swingZ_ub: -0.4
+  swingZ_lb: -0.8
+  swingZ_ub: -0.5
   swingX_backward: -0.2
   swingX_forward: 0.2
   swingY_inner: 0.04
